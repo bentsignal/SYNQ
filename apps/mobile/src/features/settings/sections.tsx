@@ -1,4 +1,4 @@
-import { Linking, View } from "react-native";
+import { Alert, Linking, View } from "react-native";
 import * as Application from "expo-application";
 import { useRouter } from "expo-router";
 import {
@@ -26,11 +26,11 @@ import { Row, SECONDARY_LABEL } from "./form";
 import { useAppIcon } from "./use-app-icon";
 
 const LINKS = {
-  discord: "https://discord.gg/zaSkUrDvpz",
-  instagram: "https://instagram.com/synq.cc",
+  discord: "https://discord.gg/KwC24St29g",
+  instagram: "https://instagram.com/bentsignal",
   review: "https://apps.apple.com/app/id6624313712?action=write-review",
-  support: "https://directedbyshawn.com/synq-support",
-  x: "https://x.com/SYNQMusic",
+  support: "help@bentsignal.com",
+  x: "https://x.com/bentsignal",
 };
 
 function Swatch({
@@ -154,6 +154,14 @@ function openSocial(url: string) {
   void Linking.openURL(url);
 }
 
+/** Opens Mail; without a mail account set up, shows the address instead. */
+function contactSupport() {
+  track("social_press", { url: `mailto:${LINKS.support}` });
+  Linking.openURL(`mailto:${LINKS.support}`).catch(() =>
+    Alert.alert("Contact Support", LINKS.support),
+  );
+}
+
 function version() {
   const name = Application.nativeApplicationVersion ?? "";
   const build = Application.nativeBuildVersion;
@@ -173,7 +181,7 @@ export function AboutSection() {
         icon="envelope"
         label="Contact Support"
         trailing="external"
-        onPress={() => openSocial(LINKS.support)}
+        onPress={contactSupport}
       />
       <Row
         icon="at"

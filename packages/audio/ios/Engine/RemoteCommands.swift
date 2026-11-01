@@ -49,14 +49,6 @@ final class RemoteCommandController {
     center.seekBackwardCommand.isEnabled = false
   }
 
-  /// Disabled while the interstitial plays.
-  func setSkipAndSeekEnabled(_ enabled: Bool) {
-    let center = MPRemoteCommandCenter.shared()
-    center.nextTrackCommand.isEnabled = enabled
-    center.previousTrackCommand.isEnabled = enabled
-    center.changePlaybackPositionCommand.isEnabled = enabled
-  }
-
   func uninstall() {
     for (command, token) in targets {
       command.removeTarget(token)

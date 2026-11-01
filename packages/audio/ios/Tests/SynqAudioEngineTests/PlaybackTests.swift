@@ -57,7 +57,7 @@ final class PlaybackTests: EngineTestCase {
     engine.setQueue([Tracks.a, Tracks.b], play: true)
     waitForStatus(.playing)
     let first = engine.current!.item
-    XCTAssertEqual(engine.upcoming?.content, engine.current?.content, "same entry preloaded again")
+    XCTAssertEqual(engine.upcoming?.key, engine.current?.key, "same entry preloaded again")
     XCTAssertFalse(engine.upcoming!.item === first, "as a new item")
 
     waitUntil("repeat") { engine.current?.item !== first && engine.status == .playing }

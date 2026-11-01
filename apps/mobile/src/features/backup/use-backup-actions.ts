@@ -1,10 +1,7 @@
 import { useRef, useState } from "react";
 import { Alert, Linking } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
-import { useRouter } from "expo-router";
 
-import { track } from "~/features/analytics/analytics";
-import { usePremium } from "~/features/premium/premium";
 import { errorFeedback, successFeedback } from "~/lib/haptics";
 import {
   backUpLibrary,
@@ -73,12 +70,10 @@ async function pickBackup() {
 }
 
 /**
- * Back Up Library, Restore from Backup, and Erase Library (Premium, as in
- * 2.5.2), one at a time, with the running one's progress.
+ * Back Up Library, Restore from Backup, and Erase Library, one at a time,
+ * with the running one's progress.
  */
 export function useBackupActions() {
-  const router = useRouter();
-  const premium = usePremium();
   const [task, setTask] = useState<Task | null>(null);
   // One operation at a time; a second tap while one runs does nothing.
   const running = useRef(false);
@@ -104,15 +99,7 @@ export function useBackupActions() {
     );
   }
 
-  function requirePremium() {
-    if (premium) return true;
-    track("check_premium", { premium: false });
-    router.push("/premium");
-    return false;
-  }
-
   function backUp() {
-    if (!requirePremium()) return;
     run("Backing Up", backUpLibrary).catch(() =>
       failed("Couldn't Back Up Library"),
     );
@@ -154,12 +141,10 @@ export function useBackupActions() {
   }
 
   function restore() {
-    if (!requirePremium()) return;
     chooseBackup().catch(() => failed("Couldn't Open Backup"));
   }
 
   function erase() {
-    if (!requirePremium()) return;
     Alert.alert(
       "Erase Your Library?",
       "Every song, album, artist, and playlist is deleted from this iPhone. This can't be undone.",

@@ -6,9 +6,7 @@
  * on the same queue that runs `setAlternateIconName`, and a switch holds
  * that queue until the person dismisses iOS's "You have changed the icon"
  * alert. Reading the icon synchronously in that window blocked the
- * JavaScript thread, and with it the 2.5.2 import, until they tapped OK
- * (the premium check resets the icon at launch). Pure, so node tests
- * cover it.
+ * JavaScript thread until they tapped OK. Pure, so node tests cover it.
  */
 export interface IconNative {
   getAppIconName: () => string | null;

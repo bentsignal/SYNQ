@@ -22,9 +22,8 @@ import { useCurrentSong } from "./use-player-songs";
 export function MiniPlayer() {
   const placement = NativeTabs.BottomAccessory.usePlacement();
   const songId = usePlayer((state) => state.current?.songId ?? null);
-  const interstitial = usePlayer((state) => state.interstitial);
   const playing = usePlayer((state) => isPlaying(state.status));
-  const shown = describe(useCurrentSong(songId), interstitial);
+  const shown = describe(useCurrentSong(songId));
   return (
     <View className="flex-1 flex-row items-center gap-1 pr-2 pl-3">
       <Pressable
@@ -63,23 +62,15 @@ export function MiniPlayer() {
       <ControlButton
         label="Next"
         symbol="forward.fill"
-        disabled={shown.empty || interstitial}
+        disabled={shown.empty}
         onPress={skipToNext}
       />
     </View>
   );
 }
 
-/** What the accessory shows: the song, the ad, or Not Playing. */
-function describe(song: SongListItem | null, interstitial: boolean) {
-  if (interstitial) {
-    return {
-      artwork: null,
-      empty: false,
-      subtitle: "SYNQ",
-      title: "Premium Ad",
-    };
-  }
+/** What the accessory shows: the song, or Not Playing. */
+function describe(song: SongListItem | null) {
   if (song === null) {
     return { artwork: null, empty: true, subtitle: null, title: "Not Playing" };
   }

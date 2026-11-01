@@ -20,8 +20,8 @@ what you build, ask before building. Otherwise pick the sensible default
 and say so in the PR.
 
 **2.5.2 data is sacred.** If the change touches the database, files under
-`Documents/`, preferences, the app icon, or premium status, work out how a
-2.5.2 install upgrades through it before you write code, and test that path
+`Documents/`, preferences, or the app icon, work out how a 2.5.2 install
+upgrades through it before you write code, and test that path
 (docs/rewrite.md → Migrating a 2.5.2 install).
 
 For a change to an existing screen, bring the simulator up (step 4) and take

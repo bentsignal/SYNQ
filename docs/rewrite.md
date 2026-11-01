@@ -11,8 +11,8 @@ that makes them.
   TestFlight only and never shipped.
 - **Every 2.5.2 user's library survives the update untouched**: songs,
   files, artwork, artists, albums, track numbers, playlists and their order,
-  Liked Songs (including a renamed one), theme, app icon, haptics, shuffle and
-  repeat, and premium status. This is the one hard constraint.
+  Liked Songs (including a renamed one), theme, app icon, haptics, and shuffle
+  and repeat. This is the one hard constraint.
 - Code that is easy to extend: Vera's conventions, lint rules, React Doctor,
   perf gates, simulator workflow, and agent skills.
 - A native-feeling iOS app (native tabs with the mini player as the tab bar
@@ -27,10 +27,20 @@ that makes them.
 - **iOS only.** SYNQ has only ever shipped on iOS. Don't write Android code
   or `.android.tsx` files; keep native modules' JS API platform-neutral so
   Android can be added later.
-- Feature parity with 2.5.2 (see "Feature checklist"), with the same
-  monetization: free users hear the bundled audio ad after 10 minutes of
-  listening and see the import wait; Premium (monthly, yearly, lifetime)
-  removes both and unlocks bulk import/export, themes, app icons, and backup.
+- Feature parity with 2.5.2 (see "Feature checklist"), minus Premium and
+  the ad (see "Free").
+
+### Free
+
+SYNQ 3.0 is completely free (Shawn, October 2026). There is no Premium
+tier, paywall, or ad, and nothing is locked: import is unlimited and
+immediate, and export, backup, themes, and app icons are open to everyone.
+RevenueCat (`react-native-purchases`) and Facebook's SDK
+(`react-native-fbsdk-next`) are gone; PostHog stays. A 2.5.2 user's
+premium status no longer matters, and whatever theme and icon they had
+stays. Paid cloud services may come one day, priced differently, but
+nothing in the app anticipates them. The App Store side waits for launch
+day (see "Launch day").
 
 ## Repository layout
 
@@ -58,8 +68,8 @@ Expo SDK 57, React Native 0.86.3 (New Architecture), React 19, React
 Compiler, expo-router (`NativeTabs` from `expo-router/unstable-native-tabs`,
 native stacks), `@expo/ui` (SwiftUI), `expo-symbols`, Uniwind (Tailwind 4),
 `@legendapp/list`, Reanimated 4.5, `expo-image`, `expo-sqlite` + Drizzle,
-TanStack Query for reading the library, `react-native-purchases`
-(RevenueCat), `posthog-react-native`, `expo-updates`.
+TanStack Query for reading the library, `posthog-react-native`,
+`expo-updates`.
 
 From Vera's native setup, SYNQ carries the iOS 27 search tab patch
 (`patches/react-native-screens@4.26.2.patch`) and the UIScene life cycle
@@ -68,7 +78,7 @@ React Native built from source (a much slower build) and fixes dictation
 in React Native text inputs, which SYNQ barely has; revisit if editing
 fields need it.
 
-### Import, export, premium (decided with their build)
+### Import, export, backup (decided with their build)
 
 - **`modules/synq-media`** (a local Expo module in `apps/mobile`, Swift):
   reads imported audio with AVFoundation (tags, precise duration in ms,
@@ -84,13 +94,7 @@ fields need it.
 - ID3 (MP3) and FLAC tag blocks are read and written in TypeScript
   (`src/features/media`, node-tested); AVFoundation doesn't expose FLAC's
   Vorbis comments. AAC streams and WAV are exported as they are.
-- **react-native-purchases ~10.16**: 11.0 needs a `PurchasesHybridCommon`
-  pod that isn't on CocoaPods yet. Premium is the `Premium` entitlement or
-  any active SYNQ product (2.5.2's rule); purchases are never restored
-  automatically.
 - **react-native-zip-archive** for backups (zip64, SSZipArchive);
-  **react-native-fbsdk-next** initializes Facebook's SDK through its Expo
-  AppDelegate subscriber (SYNQ Dev never logs app events);
   **posthog-react-native** with `expo-application`, `expo-device`, and
   `expo-localization` for its device properties.
 
@@ -163,8 +167,7 @@ Durations are **milliseconds** everywhere in 3.0 (2.5.2 stored seconds).
 A song's artwork is its first album (by `album_songs.position`) that has
 artwork, else its own, else the placeholder (2.5.2's precedence).
 
-Preferences (accent, haptics, shuffle, repeat, ad listening time, review
-bookkeeping) and the playback session (queue song ids, index, position,
+Preferences (accent, haptics, shuffle, repeat, review bookkeeping) and the playback session (queue song ids, index, position,
 source) live in `expo-sqlite/kv-store` behind a small typed store, read
 synchronously at startup.
 
@@ -208,17 +211,10 @@ owns policy (what to queue, shuffle order, persistence).
 - Repeat off / all / one. Shuffle is a JavaScript-computed order; replacing
   the queue keeps the current item playing seamlessly when it's the same
   track.
-- **Interstitial (the free tier's ad)**: configured with a track and a
-  listening threshold. Native counts listened time; once past it, the next
-  transition (track end, next, previous to another track, skip, or a new
-  queue) plays the interstitial first, then continues. During it seeking
-  and skipping are disabled (remote commands too); pause works. Premium
-  configures none.
 - JavaScript API (async functions + events): `setQueue(tracks, {startIndex,
   positionMs, play})`, `insert(tracks, index)`, `remove(indices)`,
   `move(from, to)`, `play`, `pause`, `toggle`, `seekTo(ms)`, `next`,
-  `previous`, `skipTo(index)`, `setRepeatMode`, `configureInterstitial`,
-  `getState`, and events `state` (status, index, track id), `progress`
+  `previous`, `skipTo(index)`, `setRepeatMode`, `getState`, and events `state` (status, index, track id), `progress`
   (position/duration about twice a second while playing, only when
   subscribed), `queue` (native changed the queue), `error`.
 
@@ -249,24 +245,39 @@ Native first, then SYNQ's tone on top:
 ## Feature checklist (2.5.2 parity)
 
 - Import from Files (multi-select) and over Wi-Fi (local web page);
-  metadata and embedded artwork read on import; free tier keeps 2.5.2's
-  rules (one song per batch, import wait), Premium is unlimited.
+  metadata and embedded artwork read on import; unlimited and immediate
+  (2.5.2's free tier had a wait and one song per batch).
 - Library: Playlists, Artists, Albums, Songs with search and sort;
   detail pages for each; Liked Songs first.
 - Song actions: like, add to playlist, remove from playlist, play next /
   add to queue, edit (title, artwork, albums, artists), export (with tags),
   delete.
 - Playlist, album, artist: create, edit (name, artwork, year, artists),
-  delete, export (Premium), album track reorder.
+  delete, export, album track reorder.
 - Player, mini player, queue with drag reordering, shuffle, repeat.
-- Settings: Premium, theme accent, app icon, haptics, backup / restore /
-  erase (Premium), review, support and social links.
-- Premium paywall: monthly, yearly, lifetime (`Premium Monthly`,
-  `Premium Yearly`, `Premium Lifetime` offerings; products
-  `SYNQPremiumMonthly`, `SYNQPremiumYearly`, `SYNQPremiumLifetime`;
-  entitlement `Premium`), restore, terms and privacy links.
-- PostHog events as in 2.5.2; Facebook SDK initialization (install
-  attribution).
+- Settings: theme accent, app icon, haptics, backup / restore / erase,
+  review, support and social links.
+- PostHog events as in 2.5.2, less the paywall and purchase ones.
+- Not carried over: Premium, the paywall, Restore Purchases, the audio ad,
+  the import wait, and Facebook's SDK (see "Free").
+
+## Launch day
+
+Done by Shawn, or with his explicit go-ahead, never automatically:
+
+1. Once 3.0 is live, in App Store Connect remove `SYNQPremiumMonthly`,
+   `SYNQPremiumYearly`, and `SYNQPremiumLifetime` from sale. Don't delete
+   them. Removing a subscription from sale stops its renewals; removing
+   the products from sale keeps everyone's purchase records.
+2. Leave the RevenueCat project alone.
+3. Update the App Store privacy label: no purchase history (RevenueCat)
+   and no Facebook data.
+4. Update the store description and screenshots that mention Premium.
+
+This waits for launch day because until 3.0 is live, 2.5.2 is the only
+SYNQ there is, and it still checks Premium. Taking the products off sale
+earlier would stop 2.5.2 subscribers' renewals, and they'd lose Premium in
+2.5.2 before a free 3.0 existed to replace it.
 
 ## Working on a shared Mac
 

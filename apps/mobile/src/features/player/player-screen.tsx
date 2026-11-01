@@ -26,13 +26,12 @@ export function PlayerScreen() {
   const insets = useSafeAreaInsets();
   const entryKey = usePlayer((state) => state.current?.key ?? null);
   const songId = usePlayer((state) => state.current?.songId ?? null);
-  const interstitial = usePlayer((state) => state.interstitial);
   const playing = usePlayer((state) => isPlaying(state.status));
   const song = useCurrentSong(songId);
   const artwork = song?.artwork ?? null;
   return (
     <View className="flex-1">
-      <PlayerBackdrop artwork={interstitial ? null : artwork} />
+      <PlayerBackdrop artwork={artwork} />
       <View
         className="flex-1 gap-6 px-8 pt-3"
         style={{ paddingBottom: insets.bottom + 12 }}
@@ -41,17 +40,16 @@ export function PlayerScreen() {
         <View className="flex-1 items-center justify-center">
           <PlayerArtwork
             artwork={artwork}
-            interstitial={interstitial}
             playing={playing}
             size={width - ARTWORK_INSET}
           />
         </View>
-        <SongTitle song={song} interstitial={interstitial} />
+        <SongTitle song={song} />
         <Scrubber
-          // A new song (or the ad) starts with a fresh scrubber.
-          key={`${entryKey}-${interstitial}`}
-          disabled={interstitial || song === null}
-          fallbackDurationMs={interstitial ? 0 : (song?.durationMs ?? 0)}
+          // A new song starts with a fresh scrubber.
+          key={entryKey}
+          disabled={song === null}
+          fallbackDurationMs={song?.durationMs ?? 0}
         />
         <Transport />
         <PlayerOptions />
@@ -60,15 +58,9 @@ export function PlayerScreen() {
   );
 }
 
-function SongTitle({
-  song,
-  interstitial,
-}: {
-  song: SongListItem | null;
-  interstitial: boolean;
-}) {
-  const title = interstitial ? "Premium Ad" : (song?.title ?? "Not Playing");
-  const artist = interstitial ? "SYNQ" : song === null ? "" : artistLine(song);
+function SongTitle({ song }: { song: SongListItem | null }) {
+  const title = song?.title ?? "Not Playing";
+  const artist = song === null ? "" : artistLine(song);
   return (
     <View className="flex-row items-center gap-2">
       <View className="flex-1">
@@ -82,7 +74,7 @@ function SongTitle({
           {artist}
         </Text>
       </View>
-      {song !== null && !interstitial && (
+      {song !== null && (
         <>
           <LikeButton songId={song.id} />
           <SongMenuButton song={song} />

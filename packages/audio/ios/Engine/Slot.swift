@@ -1,16 +1,11 @@
 import AVFoundation
 import Foundation
 
-/// One `AVPlayerItem` in the player, and what it plays. The engine keeps at
-/// most two: the current item and the preloaded one after it.
+/// One `AVPlayerItem` in the player, and the queue entry it plays. The
+/// engine keeps at most two: the current item and the preloaded one after it.
 @MainActor
 final class Slot {
-  enum Content: Equatable {
-    case entry(EntryKey)
-    case interstitial
-  }
-
-  let content: Content
+  let key: EntryKey
   let item: AVPlayerItem
   var track: Track
 
@@ -19,8 +14,8 @@ final class Slot {
   nonisolated(unsafe) private var statusObservation: NSKeyValueObservation?
   nonisolated(unsafe) private var notificationTokens: [NSObjectProtocol] = []
 
-  init(content: Content, track: Track) {
-    self.content = content
+  init(key: EntryKey, track: Track) {
+    self.key = key
     self.track = track
     let asset = AVURLAsset(url: track.url, options: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
     item = AVPlayerItem(asset: asset)
@@ -31,11 +26,6 @@ final class Slot {
     for token in notificationTokens {
       NotificationCenter.default.removeObserver(token)
     }
-  }
-
-  var isEntry: Bool {
-    if case .entry = content { return true }
-    return false
   }
 
   var durationMs: Double {

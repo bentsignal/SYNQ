@@ -31,7 +31,7 @@ import {
 export { RestoreError } from "./restore-rows";
 
 /**
- * Backup & Restore (Premium). A backup is a zip of a consistent copy of
+ * Backup & Restore. A backup is a zip of a consistent copy of
  * library.db, the library's media folders (`library/`, `albums/`,
  * `artists/`, `playlists/`), and a manifest. It's built in the cache and
  * handed to the share sheet, never left in Documents. Restore takes a 3.0

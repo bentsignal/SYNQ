@@ -38,29 +38,19 @@ from the JavaScript queue (`native-queue.ts`).
 `session.ts` (pure, node-tested) is the stored shape, in the kv store under
 `synq.player.session`: the queue's song ids, which are Play Next entries,
 the current index and position, the unshuffled order (as indices), the
-source, shuffle, repeat, and the listening time toward the ad.
+source, shuffle, and repeat.
 `persistence.ts` writes it on every native `state` event (pause, track
-change, the ad), when the app leaves the foreground, and every 15 seconds
+change), when the app leaves the foreground, and every 15 seconds
 while playing, and restores it at launch with `setQueue(..., { play: false })`
 at the saved position. Songs deleted since are dropped (the position resets
 if the current one went).
 
 **From 2.5.2**: when there is no stored session yet, the player takes over
 2.5.2's: `takeLegacySettings("session")` (queue, index, position, source,
-`addOffset` as Play Next entries) and `("ads")` (listening time; a due ad
-stays due), and shuffle and repeat from the import record's preferences.
+`addOffset` as Play Next entries), and shuffle and repeat from the import record's preferences.
 It writes its own session right away, so they're taken once. 2.5.2's
 queue was already in shuffled order and it never kept the unshuffled one,
 so turning shuffle off after the update keeps that order.
-
-## The ad
-
-`ad-config.ts`: free users get the bundled 2.5.2 ad (`assets/audio/ad.mp3`,
-copied to a local file by `expo-asset`) as native's interstitial after 10
-minutes of listening, starting from the stored count; Premium gets none,
-and the gate changing reconfigures it. `premium-gate.ts` is the one place
-that knows about Premium (free until `features/premium` is wired in).
-`synqDev.player.adAfter(ms)` lowers the threshold in development builds.
 
 ## Startup
 
@@ -72,7 +62,7 @@ library is open) or a play action.
 
 - `mini-player.tsx`: the tab bar's bottom accessory (both placements).
 - `player-screen.tsx` (route `/player`, a modal sheet): backdrop, artwork
-  (eases to 85% when paused; the ad card during the ad), title, like and
+  (eases to 85% when paused), title, like and
   menu, `scrubber.tsx`, `player-controls.tsx` (transport, shuffle, repeat,
   AirPlay via `RoutePickerButton`, queue).
 - `queue-screen.tsx` (route `/queue`, a form sheet): a SwiftUI `List`, with

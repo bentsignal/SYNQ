@@ -15,17 +15,15 @@ import { usePlayer } from "./hooks";
 import { IconButton } from "./icon-button";
 import { isPlaying } from "./store";
 
-/** Previous, play/pause, next. Skipping is off during the ad. */
+/** Previous, play/pause, next. */
 export function Transport() {
   const playing = usePlayer((state) => isPlaying(state.status));
-  const interstitial = usePlayer((state) => state.interstitial);
   return (
     <View className="flex-row items-center justify-center gap-8">
       <IconButton
         label="Previous"
         symbol="backward.fill"
         size={30}
-        disabled={interstitial}
         onPress={skipToPrevious}
       />
       <IconButton
@@ -38,7 +36,6 @@ export function Transport() {
         label="Next"
         symbol="forward.fill"
         size={30}
-        disabled={interstitial}
         onPress={skipToNext}
       />
     </View>

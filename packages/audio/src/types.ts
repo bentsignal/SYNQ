@@ -27,21 +27,14 @@ export type PlaybackStatus =
 
 export interface PlaybackState {
   status: PlaybackStatus;
-  /**
-   * Index of the current queue entry. While the interstitial plays, the
-   * index of the entry that plays after it.
-   */
+  /** Index of the current queue entry. */
   index: number | null;
-  /** Id of the audible track (the interstitial's id while it plays). */
+  /** Id of the current track. */
   trackId: string | null;
   positionMs: number;
   durationMs: number;
   repeatMode: RepeatMode;
   queueLength: number;
-  /** The interstitial is playing: skipping and seeking are disabled. */
-  interstitial: boolean;
-  /** Listening time counted toward the interstitial (persist it). */
-  listenedMs: number;
 }
 
 export interface Progress {
@@ -58,7 +51,6 @@ export type PlaybackErrorCode =
   | "file-missing"
   | "load-failed"
   | "playback-failed"
-  | "interstitial-failed"
   | "audio-session";
 
 export interface PlaybackError {
@@ -83,17 +75,6 @@ export interface SetQueueOptions {
   play?: boolean;
 }
 
-export interface InterstitialConfig {
-  track: Track;
-  /** Listening time after which the next transition plays `track` first. */
-  afterListeningMs: number;
-  /**
-   * Listening time already counted, restored from storage at launch. Omit it
-   * to keep the count native already has (e.g. when reconfiguring).
-   */
-  listenedMs?: number;
-}
-
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- expo's `NativeModule<EventsMap>` needs an index signature, which interfaces lack
 export type AudioEvents = {
   state: (state: PlaybackState) => void;
@@ -101,8 +82,6 @@ export type AudioEvents = {
   progress: (progress: Progress) => void;
   queue: (change: QueueChange) => void;
   error: (error: PlaybackError) => void;
-  interstitialStart: () => void;
-  interstitialEnd: (event: { listenedMs: number }) => void;
 };
 
 export type AudioEventName = keyof AudioEvents;

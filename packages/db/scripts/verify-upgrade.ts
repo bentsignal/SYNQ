@@ -8,8 +8,8 @@
  *       compares the container with the fixture's expected migration and
  *       with `<run dir>/legacy-files.json`, writes `<run dir>/<label>.json`,
  *       and, for `relaunch`, compares the library with `first.json`.
- *       Options: `--theme <id>` (default: purple while the stored premium
- *       status is active, else blue); `--fresh-session` (3.0
+ *       Options: `--theme <id>` (default: purple, the fixture's 2.5.2
+ *       theme, which 3.0 keeps); `--fresh-session` (3.0
  *       hasn't played yet, so the session is exactly 2.5.2's); `--file
  *       <id>=<name>` (a song's file was renamed in this copy of the fixture)
  *
@@ -242,29 +242,14 @@ const LEGACY_SESSION = {
   source: { id: 4, kind: "playlist" },
 };
 
-/**
- * 2.5.2's purple, while premium is active (2.5.2's lifetime cache stands
- * in until RevenueCat answers). Once RevenueCat says the person isn't
- * premium, 3.0 resets the Premium theme to blue, as 2.5.2 did. The
- * fixture's premium came from a test toggle, so RevenueCat says so in the
- * simulator.
- */
-function expectedTheme(premium: unknown) {
-  const active =
-    typeof premium !== "object" ||
-    premium === null ||
-    Reflect.get(premium, "active") === true;
-  return active ? "purple" : "blue";
-}
-
 function checkKvStore(
   documents: string,
   importId: number,
   options: { theme: string | undefined; freshSession: boolean },
 ) {
   const kv = readKvStore(join(documents, "SQLite", "preferences.db"));
-  const premium = kv.get("synq.premium") ?? null;
-  const theme = options.theme ?? expectedTheme(premium);
+  // 2.5.2's purple. 3.0 is free, so a theme someone chose stays.
+  const theme = options.theme ?? "purple";
   check("2.5.2's settings were applied once", () => {
     assert.equal(kv.get("synq.legacy-import-applied"), importId);
   });
@@ -290,7 +275,6 @@ function checkKvStore(
       return JSON.stringify(session);
     },
   );
-  check("premium status", () => JSON.stringify(premium));
   check("2.5.2 settings not yet taken by a feature", () =>
     JSON.stringify(kv.get("synq.legacy-settings") ?? null),
   );

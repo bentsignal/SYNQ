@@ -68,9 +68,7 @@ files. `synq.db` is left in place (the app opens a copy, see below).
 | `position` (seconds) | `session.positionMs` | × 1000; 0 if the current track changed |
 | `sourceType` + `sourceId` | `session.source` | 1 = playlist (id 1 → `{ kind: 'library' }`), 2 album, 3 artist, 4 song; `null` if it no longer exists |
 | `addOffset` | `session.insertOffset` | Count of "add to queue" songs after the current one |
-| `expiration` | `premiumCache` | `'never'` → lifetime, ISO date → `until`, `'null'`/junk → `null`. A hint only: RevenueCat decides |
-| `timePlayed` (seconds) | `ads.listenedMs` | × 1000 |
-| `playAd` | `ads.due` | `'true'` → the ad plays at the next transition |
+| `expiration`, `timePlayed`, `playAd` | (ignored) | Premium's cached expiration and the ad's counter. 3.0 is free with no ad (docs/rewrite.md → Free) |
 | `importCount` | `bookkeeping.importCount` | |
 | `reviewAlreadyRequested` | `bookkeeping.reviewRequested` | |
 | `exportNumber` | `bookkeeping.exportNumber` | Export folders are named "batch N" |
@@ -164,8 +162,8 @@ the kv write idempotent: after an import, or on any launch where the
 kv-store lacks `legacyImportApplied = <legacy_import.id>`, write
 `getLegacyImport(db).settings` and then set that marker. A crash between
 the database commit and the kv write is then repaired on the next launch.
-Apply premium-gated preferences (accent) only once premium is known, as
-2.5.2 did. Treat `premiumCache` as a hint for the first render.
+The accent applies as 2.5.2 stored it, whatever premium status came with
+it: 3.0 is free, so a theme someone chose stays.
 
 ### Errors
 
@@ -245,12 +243,8 @@ since the captured library has no `#` in a name.
 once, `library.db` against `real-fixture-assert.ts` (the same assertion
 as the node test, with the stored paths matching the on-disk NFD bytes),
 and the kv-store: settings applied once, haptics off, 2.5.2's session, and
-the theme (purple while premium is active, blue once RevenueCat says
-otherwise: the fixture's premium came from a test toggle, so in the
-simulator RevenueCat resets it, as 2.5.2 would have). Relaunches compare
+2.5.2's purple theme, kept for good. Relaunches compare
 the library with the first launch's snapshot. Screenshots go to
 `.cache/evidence/upgrade-*.png`, results to `.cache/upgrade-test/`.
 
-What it can't show: a real Lifetime purchase surviving (that needs the
-App Store and the person's RevenueCat id), and over-the-air updates (a
-local build has no channel).
+What it can't show: over-the-air updates (a local build has no channel).

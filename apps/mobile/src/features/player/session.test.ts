@@ -21,7 +21,6 @@ import {
 } from "./session.ts";
 
 const REST = {
-  listenedMs: 1234,
   positionMs: 56_000,
   repeat: "all",
   shuffle: true,
@@ -79,8 +78,6 @@ void test("garbage in storage decodes to safe values", () => {
 
 void test("a 2.5.2 session becomes the first 3.0 session", () => {
   const session = sessionFromLegacy({
-    adThresholdMs: 600_000,
-    ads: { due: false, listenedMs: 42_000 },
     likedPlaylistId: 7,
     preferences: { repeat: "all", shuffle: true },
     session: {
@@ -93,7 +90,6 @@ void test("a 2.5.2 session becomes the first 3.0 session", () => {
   });
   assert.deepEqual(session, {
     index: 1,
-    listenedMs: 42_000,
     original: null,
     positionMs: 61_000,
     queued: [2, 3],
@@ -105,15 +101,12 @@ void test("a 2.5.2 session becomes the first 3.0 session", () => {
   });
 });
 
-void test("2.5.2's due ad stays due; no session keeps the preferences", () => {
+void test("with no 2.5.2 session, its preferences still apply", () => {
   const session = sessionFromLegacy({
-    adThresholdMs: 600_000,
-    ads: { due: true, listenedMs: 3000 },
     likedPlaylistId: null,
     preferences: { repeat: "off", shuffle: true },
     session: null,
   });
-  assert.equal(session.listenedMs, 600_000);
   assert.equal(session.shuffle, true);
   assert.deepEqual(session.songIds, []);
   assert.equal(session.index, -1);

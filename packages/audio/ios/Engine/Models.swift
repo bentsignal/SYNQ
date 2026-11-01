@@ -48,34 +48,16 @@ public enum PlaybackStatus: String, Sendable {
   case error
 }
 
-public struct InterstitialConfig: Equatable, Sendable {
-  public var track: Track
-  public var afterListeningMs: Double
-  /// Listening time already counted (restored from storage). Nil keeps the
-  /// engine's current count.
-  public var listenedMs: Double?
-
-  public init(track: Track, afterListeningMs: Double, listenedMs: Double? = nil) {
-    self.track = track
-    self.afterListeningMs = afterListeningMs
-    self.listenedMs = listenedMs
-  }
-}
-
 public struct PlaybackSnapshot: Equatable, Sendable {
   public var status: PlaybackStatus
-  /// Index of the current queue entry. While the interstitial plays, the
-  /// index of the entry that plays after it.
+  /// Index of the current queue entry.
   public var index: Int?
-  /// Id of the audible track (the interstitial's id while it plays).
+  /// Id of the current track.
   public var trackId: String?
   public var positionMs: Double
   public var durationMs: Double
   public var repeatMode: RepeatMode
   public var queueLength: Int
-  public var interstitial: Bool
-  /// Listening time counted toward the interstitial (0 when none is configured).
-  public var listenedMs: Double
 }
 
 public struct PlaybackError: Equatable, Sendable {
@@ -83,7 +65,6 @@ public struct PlaybackError: Equatable, Sendable {
     case fileMissing = "file-missing"
     case loadFailed = "load-failed"
     case playbackFailed = "playback-failed"
-    case interstitialFailed = "interstitial-failed"
     case audioSession = "audio-session"
   }
 
@@ -98,6 +79,4 @@ public enum EngineEvent: Equatable, Sendable {
   case progress(positionMs: Double, durationMs: Double)
   case queue(length: Int, index: Int?)
   case error(PlaybackError)
-  case interstitialStart
-  case interstitialEnd
 }

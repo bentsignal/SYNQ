@@ -1,5 +1,4 @@
 import { Directory, File, Paths } from "expo-file-system";
-import { router } from "expo-router";
 import * as Sharing from "expo-sharing";
 
 import type { SongListItem } from "@synq/db";
@@ -28,7 +27,6 @@ import { buildFlacHead } from "~/features/media/flac";
 import { readFlacBlocks, readId3Tag } from "~/features/media/heads";
 import { buildId3Tag } from "~/features/media/id3";
 import { synqMedia } from "~/features/media/native";
-import { isPremium } from "~/features/premium/premium";
 import { queryClient } from "~/lib/query-client";
 
 /**
@@ -237,35 +235,24 @@ export async function exportSongs(songIds: readonly number[]) {
   await shareSongs(songsById(songIds));
 }
 
-/** Free users see the paywall instead; collection exports are Premium. */
-function requirePremium() {
-  if (isPremium()) return true;
-  track("check_premium", { premium: false });
-  router.push("/premium");
-  return false;
-}
-
-/** Exports a playlist's songs as a folder named after it (Premium). */
+/** Exports a playlist's songs as a folder named after it. */
 export async function exportPlaylist(playlistId: number) {
-  if (!requirePremium()) return;
   track("export_playlist");
   const db = libraryDb();
   const playlist = getPlaylist(db, playlistId);
   await shareSongs(listPlaylistSongs(db, playlistId), playlist?.name);
 }
 
-/** Exports an album's tracks as a folder named after it (Premium). */
+/** Exports an album's tracks as a folder named after it. */
 export async function exportAlbum(albumId: number) {
-  if (!requirePremium()) return;
   track("export_album");
   const db = libraryDb();
   const album = getAlbum(db, albumId);
   await shareSongs(listAlbumTracks(db, albumId), album?.name);
 }
 
-/** Exports an artist's songs as a folder named after them (Premium). */
+/** Exports an artist's songs as a folder named after them. */
 export async function exportArtist(artistId: number) {
-  if (!requirePremium()) return;
   track("export_artist");
   const db = libraryDb();
   const artist = getArtist(db, artistId);

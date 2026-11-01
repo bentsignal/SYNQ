@@ -5,7 +5,6 @@ import {
   AppearanceSection,
   LibrarySection,
   PlaybackSection,
-  PremiumSection,
 } from "~/features/settings/sections";
 
 export default function SettingsScreen() {
@@ -13,7 +12,6 @@ export default function SettingsScreen() {
     <>
       <TabTitle title="Settings" />
       <Form>
-        <PremiumSection />
         <AppearanceSection />
         <PlaybackSection />
         <LibrarySection />

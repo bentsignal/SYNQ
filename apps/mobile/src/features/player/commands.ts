@@ -133,16 +133,16 @@ export function skipToPrevious() {
   native(Audio.previous());
 }
 
-/** Resolves once native has the seek (false during the ad). */
+/** Resolves once native has the seek. */
 export function seekTo(positionMs: number) {
   return Audio.seekTo(positionMs).catch(() => false);
 }
 
 /** Plays the entry at `index` (a tap in the queue). */
 export function playQueueIndex(index: number) {
-  const { interstitial, queue } = getPlayerState();
+  const { queue } = getPlayerState();
   const entry = queue.entries[index];
-  if (entry === undefined || interstitial) return;
+  if (entry === undefined) return;
   setPlayerState({ queue: { ...queue, currentKey: entry.key } });
   native(Audio.skipTo(index));
   persist();

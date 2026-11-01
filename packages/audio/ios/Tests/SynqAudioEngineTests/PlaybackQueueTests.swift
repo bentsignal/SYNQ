@@ -99,24 +99,3 @@ final class PlaybackQueueTests: XCTestCase {
     XCTAssertNotEqual(queue.entry(at: 0)?.key, queue.entry(at: 2)?.key)
   }
 }
-
-final class ListeningCounterTests: XCTestCase {
-  func testCountsOnlyWhileRunning() {
-    var counter = ListeningCounter()
-    counter.reset(to: 1000, nowMs: 0)
-    XCTAssertEqual(counter.value(nowMs: 500), 1000)
-    counter.start(nowMs: 500)
-    XCTAssertEqual(counter.value(nowMs: 800), 1300)
-    counter.start(nowMs: 700) // already running: no effect
-    counter.stop(nowMs: 900)
-    XCTAssertEqual(counter.value(nowMs: 5000), 1400)
-  }
-
-  func testResetWhileRunningRestartsFromNow() {
-    var counter = ListeningCounter()
-    counter.start(nowMs: 0)
-    counter.reset(to: 0, nowMs: 600)
-    XCTAssertEqual(counter.value(nowMs: 700), 100)
-    XCTAssertTrue(counter.isRunning)
-  }
-}

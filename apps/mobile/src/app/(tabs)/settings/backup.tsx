@@ -8,7 +8,7 @@ import { Form, Row, SECONDARY_LABEL } from "~/features/settings/form";
 
 const DESTRUCTIVE = "#FF453A";
 
-/** Backup & Restore (Premium): back up, restore (3.0 or 2.5.2 backups), erase. */
+/** Backup & Restore: back up, restore (3.0 or 2.5.2 backups), erase. */
 export default function BackupScreen() {
   const { backUp, erase, restore, task } = useBackupActions();
   return (

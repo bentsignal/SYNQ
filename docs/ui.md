@@ -102,7 +102,7 @@ The header scrolls with the list: 240 pt artwork centered (artists: 180 pt
 circle), name (`text-title` bold), detail line (`Album · 2021` with the
 artist in the accent and tappable; `14 songs, 52 minutes`), then Play /
 Shuffle. Toolbar `ellipsis` menu: Edit, Sort By (submenu, playlists only),
-Export (Premium), Delete (not for Liked Songs). Album: track-number rows
+Export, Delete (not for Liked Songs). Album: track-number rows
 and a footer `14 songs, 52 minutes`. Artist: "Albums" as a horizontal row
 of 140 pt album cards, then "Songs".
 
@@ -144,9 +144,6 @@ the sheet changed (`src/features/editing/draft.ts`):
   (`text-caption` tabular); `backward.fill`, large `play.fill` /
   `pause.fill`, `forward.fill`; bottom row `shuffle`, `repeat` /
   `repeat.1` (accent when on), AirPlay route picker, `list.bullet` (queue).
-- **The ad** (free tier): the artwork becomes a card with the SYNQ mark,
-  "Listen ad-free with Premium", and Learn More (opens the paywall);
-  scrubber and skip are disabled.
 - **Queue** (form sheet, detents medium and large): "Playing from
   <source>", the current song, then "Up Next" as a native SwiftUI `List`
   with drag reordering and swipe to remove; toolbar Shuffle / Repeat
@@ -161,44 +158,29 @@ Artists, Playlists), songs playable in place, the others navigating.
 ## Settings
 
 A native form (`FieldGroup`):
-- **Premium**: free users see a "SYNQ Premium" row with the accent
-  `sparkles` symbol that opens the paywall; subscribers see their plan
-  and renewal or "Lifetime".
 - **Appearance**: Theme (a row of the seven accent swatches, selected one
-  ringed; locked behind Premium for free users), App Icon (opens the icon
+  ringed), App Icon (opens the icon
   picker: the seven icons in a grid, current one checked).
 - **Playback**: Haptics toggle.
 - **Library**: Backup & Restore (Back Up Library shares a zip; Restore
   from Backup picks one, including 2.5.2 backups; Erase Library,
   destructive with confirmation), How to Import (the Spotify local files
   guide from 2.5.2's info modal, with its images).
-- **SYNQ**: Rate SYNQ, Contact Support, X, Instagram, Discord, Restore
-  Purchases, and the version in the section footer.
+- **SYNQ**: Rate SYNQ, Contact Support, X, Instagram, Discord, and the
+  version in the section footer.
 
 ## Import
 
 - **Files**: the document picker (audio types, multiple), then a form
   sheet listing each file as it's read (artwork, title, artist) and
-  imported, with a progress line; Done closes it. Free tier keeps 2.5.2's
-  rules: the first file is imported, the rest show locked with Import All
-  with Premium; the import wait shows as the ad card with progress.
+  imported, with a progress line; Done closes it. Every file imports
+  right away.
 - **Wi-Fi Transfer**: a screen showing the address to open on a computer
   (large, selectable) while a local server runs only while this screen is
   open; received files list in as they arrive, then import like Files. (The
   network's name would need location permission and the Wi-Fi Information
   entitlement, so it isn't shown.)
 - **Export / Share**: tags written into a copy, then the share sheet.
-
-## Paywall
-
-Form sheet, large detent. The eclipse image from 2.5.2's home banner as
-the hero, "SYNQ Premium", feature rows with symbols (Ad-Free Listening
-`speaker.slash`, Bulk Import and Export `square.and.arrow.down.on.square`,
-Themes and App Icons `paintpalette`, Backup and Restore
-`externaldrive`), three selectable plan cards (Monthly, Yearly marked Best
-Value and selected by default, Lifetime) with prices from RevenueCat, a
-prominent glass button whose label follows the plan and trial eligibility,
-and Restore · Terms · Privacy below.
 
 ## Updating from 2.5.2
 

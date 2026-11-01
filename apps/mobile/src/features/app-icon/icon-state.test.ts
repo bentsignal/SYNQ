@@ -49,7 +49,7 @@ void describe("app icon state", () => {
     let changes = 0;
     state.subscribe(() => (changes += 1));
     const switched = state.set("icon-blue");
-    // A second premium check during the alert reads the icon again.
+    // Reading the icon during the alert doesn't ask native again.
     assert.equal(state.get(), "icon-blue");
     assert.equal(native.reads, 1);
     assert.equal(changes, 1);

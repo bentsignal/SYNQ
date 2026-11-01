@@ -2,23 +2,15 @@ import type { ReactNode } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 import { LegendList } from "@legendapp/list/react-native";
 
 import type { ImportItem, ImportSessionState } from "./session";
 import { SymbolIcon } from "~/components/symbol-icon";
-import { track } from "~/features/analytics/analytics";
-import { ProminentButton } from "~/features/premium/prominent-button";
-import mark from "../../../assets/icons/icon-blue.png";
 import { progressLine } from "./progress-line";
 import { useImportSession } from "./session";
 
 function itemsOf(session: ImportSessionState) {
   return session.items;
-}
-
-function waitOf(session: ImportSessionState) {
-  return session.wait;
 }
 
 function StatusAccessory({ item }: { item: ImportItem }) {
@@ -31,7 +23,6 @@ function StatusAccessory({ item }: { item: ImportItem }) {
       );
     case "reading":
     case "queued":
-    case "waiting":
     case "importing":
       return <ActivityIndicator size="small" />;
     case "imported":
@@ -40,14 +31,6 @@ function StatusAccessory({ item }: { item: ImportItem }) {
           name="checkmark.circle.fill"
           size={20}
           tintColorClassName="accent-accent"
-        />
-      );
-    case "locked":
-      return (
-        <SymbolIcon
-          name="lock.fill"
-          size={15}
-          tintColorClassName="accent-subtle"
         />
       );
     case "failed":
@@ -62,7 +45,7 @@ function StatusAccessory({ item }: { item: ImportItem }) {
 }
 
 function ItemRow({ item }: { item: ImportItem }) {
-  const dimmed = item.status === "locked" || item.status === "failed";
+  const dimmed = item.status === "failed";
   return (
     <View
       className="h-16 flex-row items-center gap-3 px-5"
@@ -99,76 +82,7 @@ function ItemRow({ item }: { item: ImportItem }) {
   );
 }
 
-/**
- * The free tier's import wait (2.5.2's 18-second "ad"), as SYNQ's ad card:
- * the mark, the pitch, Learn More, and the wait's progress.
- */
-function WaitCard({ wait }: { wait: number }) {
-  const router = useRouter();
-  return (
-    <Animated.View
-      entering={FadeIn.duration(220)}
-      className="bg-fill mx-5 mb-2 gap-4 rounded-2xl p-5"
-    >
-      <View className="flex-row items-center gap-4">
-        <Image
-          source={mark}
-          style={{ borderRadius: 11, height: 48, width: 48 }}
-          accessibilityIgnoresInvertColors
-        />
-        <View className="flex-1 gap-0.5">
-          <Text className="text-headline text-foreground font-semibold">
-            Import Instantly with Premium
-          </Text>
-          <Text
-            className="text-subhead text-accent"
-            onPress={() => {
-              track("check_premium", { premium: false });
-              router.push("/premium");
-            }}
-          >
-            Learn More
-          </Text>
-        </View>
-      </View>
-      <View className="bg-fill h-1 overflow-hidden rounded-full">
-        <View
-          className="bg-accent h-1 rounded-full"
-          style={{ transform: [{ scaleX: wait }], transformOrigin: "left" }}
-        />
-      </View>
-    </Animated.View>
-  );
-}
-
-function LockedFooter() {
-  const router = useRouter();
-  return (
-    <View className="px-5 pt-3 pb-8">
-      <ProminentButton
-        label="Import All with Premium"
-        onPress={() => {
-          track("check_premium", { premium: false });
-          router.push("/premium");
-        }}
-      />
-    </View>
-  );
-}
-
-function ListFooter({ locked }: { locked: boolean }) {
-  return locked ? <LockedFooter /> : <View className="h-10" />;
-}
-
-function ListHeader({
-  header,
-  line,
-  wait,
-}: {
-  header: ReactNode;
-  line: string;
-  wait: number | null;
-}) {
+function ListHeader({ header, line }: { header: ReactNode; line: string }) {
   return (
     <>
       {header}
@@ -177,19 +91,16 @@ function ListHeader({
           {line}
         </Text>
       )}
-      {wait !== null && <WaitCard wait={wait} />}
     </>
   );
 }
 
 /**
- * An import batch as it happens: a progress line, the wait card (free
- * tier), each file as it's read and imported, and Import All with Premium
- * when songs are locked. `header` goes above (Wi-Fi Transfer's address).
+ * An import batch as it happens: a progress line and each file as it's
+ * read and imported. `header` goes above (Wi-Fi Transfer's address).
  */
 export function ImportList({ header }: { header?: ReactNode }) {
   const items = useImportSession(itemsOf);
-  const wait = useImportSession(waitOf);
   const line = items.length > 0 ? progressLine(items) : "";
   return (
     <LegendList
@@ -199,12 +110,8 @@ export function ImportList({ header }: { header?: ReactNode }) {
       keyExtractor={(item) => item.key}
       estimatedItemSize={64}
       recycleItems={false}
-      ListHeaderComponent={
-        <ListHeader header={header} line={line} wait={wait} />
-      }
-      ListFooterComponent={
-        <ListFooter locked={items.some((item) => item.status === "locked")} />
-      }
+      ListHeaderComponent={<ListHeader header={header} line={line} />}
+      ListFooterComponent={<View className="h-10" />}
       renderItem={({ item }) => (
         <Animated.View entering={FadeIn.duration(180)}>
           <ItemRow item={item} />

@@ -31,10 +31,9 @@ function flush() {
 /**
  * Native already moved past a song that can't play; this tells the person
  * once, quietly: one alert for a burst of failures (a folder of missing
- * files), never twice for the same entry, and nothing for the ad.
+ * files), and never twice for the same entry.
  */
 export function reportPlaybackError(error: PlaybackError) {
-  if (error.code === "interstitial-failed") return;
   const key = error.trackId ?? error.code;
   if (reported.has(key)) return;
   reported.add(key);

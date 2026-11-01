@@ -276,8 +276,6 @@ export const EXPECTED_SETTINGS = {
     source: { kind: "playlist", id: 3 },
     insertOffset: 1,
   },
-  premiumCache: { kind: "lifetime" },
-  ads: { listenedMs: 455_000, due: true },
   bookkeeping: {
     importCount: 4,
     reviewRequested: true,

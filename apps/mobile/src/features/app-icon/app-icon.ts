@@ -51,7 +51,7 @@ export function setAppIcon(name: AppIconName) {
   return icon.set(name);
 }
 
-/** Calls `listener` when the icon changes (here or from premium); returns an unsubscribe. */
+/** Calls `listener` when the icon changes; returns an unsubscribe. */
 export function subscribeAppIcon(listener: () => void) {
   return icon.subscribe(listener);
 }

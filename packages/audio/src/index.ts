@@ -4,7 +4,6 @@ import { NativeModule, requireNativeModule } from "expo";
 import type {
   AudioEventName,
   AudioEvents,
-  InterstitialConfig,
   PlaybackState,
   Progress,
   RepeatMode,
@@ -32,7 +31,6 @@ declare class SynqAudioModule extends NativeModule<AudioEvents> {
   previous(): Promise<boolean>;
   skipTo(index: number): Promise<boolean>;
   setRepeatMode(mode: RepeatMode): Promise<void>;
-  configureInterstitial(config: InterstitialConfig | null): Promise<void>;
   getState(): Promise<PlaybackState>;
   getQueue(): Promise<{ tracks: Track[]; index: number | null }>;
 }
@@ -76,36 +74,31 @@ export function toggle() {
   return native.toggle();
 }
 
-/** Resolves false while the interstitial plays or nothing is loaded. */
+/** Resolves false when nothing is loaded. */
 export function seekTo(positionMs: number) {
   return native.seekTo(positionMs);
 }
 
-/** Resolves false at the end of the queue (repeat off) or during the interstitial. */
+/** Resolves false at the end of the queue (repeat off). */
 export function next() {
   return native.next();
 }
 
 /**
  * Restarts the track after 3 seconds of it (or on the first entry), else goes
- * back. Resolves false during the interstitial.
+ * back.
  */
 export function previous() {
   return native.previous();
 }
 
-/** Resolves false for an invalid index or during the interstitial. */
+/** Resolves false for an invalid index. */
 export function skipTo(index: number) {
   return native.skipTo(index);
 }
 
 export function setRepeatMode(mode: RepeatMode) {
   return native.setRepeatMode(mode);
-}
-
-/** Free tier: the bundled ad and its threshold. Premium: `null`. */
-export function configureInterstitial(config: InterstitialConfig | null) {
-  return native.configureInterstitial(config);
 }
 
 export function getState() {
@@ -135,8 +128,6 @@ const idleState = {
   durationMs: 0,
   repeatMode: "off",
   queueLength: 0,
-  interstitial: false,
-  listenedMs: 0,
 } satisfies PlaybackState;
 
 const stateStore = createSnapshotStore<PlaybackState>(

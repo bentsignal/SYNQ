@@ -28,11 +28,6 @@ export interface LegacyPlaybackSession {
   insertOffset: number;
 }
 
-/** 2.5.2's cached premium status (`expiration`), a hint until RevenueCat answers. */
-export type LegacyPremiumCache =
-  | { kind: "lifetime" }
-  | { kind: "until"; expiresAt: number };
-
 export interface LegacySettings {
   preferences: {
     /** The theme accent hex (lowercase), or null for the default blue. */
@@ -42,13 +37,6 @@ export interface LegacySettings {
     repeat: LegacyRepeatMode;
   };
   session: LegacyPlaybackSession | null;
-  premiumCache: LegacyPremiumCache | null;
-  ads: {
-    /** Listening time counted toward the next ad (2.5.2's `timePlayed`, seconds). */
-    listenedMs: number;
-    /** 2.5.2's `playAd`: the threshold was reached and the ad plays at the next transition. */
-    due: boolean;
-  };
   bookkeeping: {
     importCount: number;
     reviewRequested: boolean;
@@ -78,6 +66,8 @@ const KNOWN_KEYS = new Set([
   "position",
   "sourceType",
   "sourceId",
+  // Premium's cached expiration and the ad's listening counter. 3.0 is free
+  // with no ad, so they're read and ignored.
   "expiration",
   "playAd",
   "timePlayed",
@@ -106,14 +96,6 @@ export function parseLegacySettings(
       repeat: values.loop === "true" ? ("all" as const) : ("off" as const),
     },
     session: parseSession(values, library),
-    premiumCache: parsePremiumCache(values.expiration),
-    ads: {
-      listenedMs: Math.max(
-        0,
-        Math.round((parseNumber(values.timePlayed) ?? 0) * 1000),
-      ),
-      due: values.playAd === "true",
-    },
     bookkeeping: {
       importCount: Math.max(0, parseInteger(values.importCount) ?? 0),
       reviewRequested: values.reviewAlreadyRequested === "true",
@@ -129,15 +111,6 @@ export function parseLegacySettings(
 function parseAccent(value: string | undefined) {
   return value && /^#[0-9a-f]{6}$/i.test(value.trim())
     ? value.trim().toLowerCase()
-    : null;
-}
-
-function parsePremiumCache(value: string | undefined) {
-  if (!value || value === "null") return null;
-  if (value === "never") return { kind: "lifetime" as const };
-  const expiresAt = Date.parse(value);
-  return Number.isFinite(expiresAt)
-    ? { kind: "until" as const, expiresAt }
     : null;
 }
 

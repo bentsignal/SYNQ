@@ -27,7 +27,7 @@ const TIME_STYLE = { fontVariant: ["tabular-nums" as const] };
  * The player's scrubber: a thin bar with a small thumb that grows while
  * dragged, elapsed time on the left and remaining on the right. The drag
  * is relative (touching doesn't jump), and the seek happens on release.
- * Disabled during the ad.
+ * Disabled while nothing is loaded.
  */
 export function Scrubber({
   disabled,

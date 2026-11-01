@@ -24,7 +24,6 @@ export {
   type LegacyLibraryIds,
   type LegacyPlaybackSession,
   type LegacyPlaybackSource,
-  type LegacyPremiumCache,
   type LegacyRepeatMode,
   type LegacySettings,
 } from "./settings.ts";

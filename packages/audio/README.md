@@ -2,8 +2,8 @@
 
 SYNQ's playback engine: an Expo native module (iOS) that owns the queue and
 plays it with `AVQueuePlayer`. Track changes, the lock screen, Control
-Center, headphone buttons, interruptions, and the free tier's interstitial all
-work natively, with no JavaScript in the loop. JavaScript owns policy: what
+Center, headphone buttons, and interruptions all work natively, with no
+JavaScript in the loop. JavaScript owns policy: what
 to queue, the shuffle order, persistence.
 
 See "Playback" in `docs/rewrite.md` for the plan this implements.
@@ -35,7 +35,6 @@ next(): Promise<boolean>
 previous(): Promise<boolean>
 skipTo(index: number): Promise<boolean>
 setRepeatMode(mode: "off" | "all" | "one"): Promise<void>
-configureInterstitial(config: { track: Track; afterListeningMs: number; listenedMs?: number } | null): Promise<void>
 getState(): Promise<PlaybackState>
 getQueue(): Promise<{ tracks: Track[]; index: number | null }>
 addListener(event, listener): { remove(): void }
@@ -50,33 +49,29 @@ useProgress(): { positionMs: number; durationMs: number }
 
 All durations and positions are milliseconds. The functions that can be
 refused resolve `false` when nothing happened: `next` at the end of the queue
-with repeat off (2.5.2 played an error haptic there), and `next`, `previous`,
-`skipTo`, `seekTo` while the interstitial plays.
+with repeat off (2.5.2 played an error haptic there), `skipTo` with an
+invalid index, and `seekTo` with nothing loaded.
 
 ```ts
 type PlaybackState = {
   status: "idle" | "loading" | "playing" | "paused" | "ended" | "error";
-  index: number | null; // current entry; during the interstitial, the entry after it
-  trackId: string | null; // what's audible (the interstitial's id while it plays)
+  index: number | null; // the current entry
+  trackId: string | null;
   positionMs: number;
   durationMs: number;
   repeatMode: "off" | "all" | "one";
   queueLength: number;
-  interstitial: boolean;
-  listenedMs: number; // counted toward the interstitial; persist it
 };
 ```
 
 ### Events
 
-| Event               | Payload                             | When                                                                                                                                                                                                                 |
-| ------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `state`             | `PlaybackState`                     | status, index, track, repeat mode, queue length, or interstitial changed                                                                                                                                             |
-| `progress`          | `{ positionMs, durationMs }`        | about twice a second while playing, plus seeks and track changes; **only produced while it has a listener**                                                                                                          |
-| `queue`             | `{ length, index }`                 | after any queue change (call `getQueue()` for the tracks)                                                                                                                                                            |
-| `error`             | `{ code, message, trackId, index }` | a file is missing (`file-missing`), can't be decoded (`load-failed`), fails mid-play (`playback-failed`), the interstitial can't play (`interstitial-failed`), or the audio session can't activate (`audio-session`) |
-| `interstitialStart` | `{}`                                | the interstitial started                                                                                                                                                                                             |
-| `interstitialEnd`   | `{ listenedMs: 0 }`                 | it ended (or was stopped); the counter is back to 0                                                                                                                                                                  |
+| Event      | Payload                             | When                                                                                                                                                 |
+| ---------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `state`    | `PlaybackState`                     | status, index, track, repeat mode, or queue length changed                                                                                           |
+| `progress` | `{ positionMs, durationMs }`        | about twice a second while playing, plus seeks and track changes; **only produced while it has a listener**                                          |
+| `queue`    | `{ length, index }`                 | after any queue change (call `getQueue()` for the tracks)                                                                                            |
+| `error`    | `{ code, message, trackId, index }` | a file is missing (`file-missing`), can't be decoded (`load-failed`), fails mid-play (`playback-failed`), or the audio session can't activate (`audio-session`) |
 
 ## Behavior
 
@@ -105,20 +100,6 @@ type PlaybackState = {
   preloading is reported then, and the entry is skipped. A failed entry
   isn't retried until the queue is replaced or it's chosen with `skipTo`. If
   nothing can play, the status is `error`.
-- **Interstitial (the free tier's ad).** Native counts listening time while
-  queue tracks are audible (not while paused, loading, or during the
-  interstitial). Once the count reaches `afterListeningMs`, the interstitial
-  is preloaded in place of the next track, and the next transition plays it
-  first: a track ending, `next`, `previous` to another track, `skipTo`, a
-  new queue that starts playing, or `play()` after the queue ended. Then
-  playback continues where that transition was going. During it, `next`,
-  `previous`, `skipTo`, and `seekTo` are refused, and the lock screen's
-  next/previous/scrubbing are disabled. Pause and play work. Queue edits and
-  `setQueue` change what plays after it. At the end of the queue (repeat
-  off) nothing follows, so it isn't played and stays due.
-  `configureInterstitial(null)` (the user went Premium) stops it at once and
-  continues. Restoring with `setQueue(..., { play: false })` doesn't trigger
-  it.
 - **System.** The audio session is `.playback`, activated on play.
   Interruptions pause, and playback resumes when iOS says `shouldResume` and
   it was playing. Losing the output route (`oldDeviceUnavailable`, e.g.
@@ -135,31 +116,23 @@ type PlaybackState = {
 1. Add the plugin to the app config: `plugins: ["@synq/audio"]` (adds
    `UIBackgroundModes: audio`).
 2. **Persist the session**: the queue's song ids, `index`, `positionMs`,
-   repeat mode, and `listenedMs`. A `state` event fires on every pause,
-   track change, and interstitial change, which is when to write. Also write
+   and repeat mode. A `state` event fires on every pause and track change,
+   which is when to write. Also write
    `getState()` when the app goes to the background.
 3. **Restore on launch** with `setQueue(tracks, { startIndex, positionMs, play: false })`
-   and `setRepeatMode(...)`. Nothing plays and no interstitial starts until
-   the user presses play.
-4. **Free users**: at launch, call
-   `configureInterstitial({ track: ad, afterListeningMs: 600_000, listenedMs: persisted })`
-   with the bundled ad as a `Track` (resolve the asset to a local file URL,
-   e.g. with `expo-asset`; 2.5.2 titled it "Premium Ad" by "SYNQ").
-   **Premium**: `configureInterstitial(null)`, including the moment a
-   purchase completes. Show the "Listen ad-free" UI while
-   `state.interstitial` is true.
-5. **Shuffle** is the app's: compute the order and `setQueue` it with
+   and `setRepeatMode(...)`. Nothing plays until the user presses play.
+4. **Shuffle** is the app's: compute the order and `setQueue` it with
    `startIndex` at the current track, so it keeps playing.
-6. Resolve paths relative to `Documents/` at runtime (the container path
+5. Resolve paths relative to `Documents/` at runtime (the container path
    changes across updates) into absolute `file://` URLs before queueing.
-7. Show `error` events (2.5.2 showed "Unable to play …").
-8. Subscribe to `progress` (or `useProgress()`) only on screens that show
+6. Show `error` events (2.5.2 showed "Unable to play …").
+7. Subscribe to `progress` (or `useProgress()`) only on screens that show
    the position; the native time observer runs only while there is a
    listener.
 
 ## Threading
 
-Every engine method, AVFoundation callback, and timer runs on the main
+Every engine method and AVFoundation callback runs on the main
 queue:
 
 - JS calls are `AsyncFunction(...).runOnQueue(.main)` and enter the engine
@@ -187,10 +160,9 @@ isolated and trapped when called off main.
 ```
 ios/
   Engine/                 plain Swift (AVFoundation + MediaPlayer), no Expo
-    AudioEngine.swift     the engine: queue, transitions, preload, interstitial, state
+    AudioEngine.swift     the engine: queue, transitions, preload, state
     PlaybackQueue.swift   value type: entries with stable keys, next/previous rules
     Slot.swift            one AVPlayerItem + its scoped KVO and end/failure observers
-    ListeningCounter.swift
     NowPlaying.swift      MPNowPlayingInfoCenter + off-main artwork loading
     RemoteCommands.swift  MPRemoteCommandCenter
     AudioSession.swift    AVAudioSession (iOS only)
@@ -209,7 +181,7 @@ app.plugin.js             UIBackgroundModes: audio
   playing". The engine keeps `currentKey` (the entry playback is on) and at
   most two `Slot`s in the player: `current` and `upcoming`.
 - **Preload invariant.** After every change (current item, queue edit,
-  repeat mode, interstitial due or configured, a failure),
+  repeat mode, a failure),
   `refreshUpcoming()` computes what should follow the current item and
   makes the player's second item exactly that, replacing it if needed.
   When the current item ends, AVQueuePlayer has already moved into
@@ -222,11 +194,6 @@ app.plugin.js             UIBackgroundModes: audio
   toggle plays.
 - **Starting at a position** holds playback until the seek lands, so the
   first moments of the track are never heard.
-- **The interstitial** is just another kind of slot (`.interstitial`).
-  `currentKey` points at the entry that plays after it, so queue edits
-  during it need no special cases. The listening counter runs only while a
-  queue entry is audible, and a one-shot main-queue timer fires when it
-  crosses the threshold, which swaps the preload for the interstitial.
 
 ## Development
 

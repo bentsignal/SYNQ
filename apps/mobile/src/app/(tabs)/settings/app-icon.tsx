@@ -1,13 +1,11 @@
 import type { ImageSourcePropType } from "react-native";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { Image } from "expo-image";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 
 import type { AppIconName } from "~/features/app-icon/app-icon";
 import { SymbolIcon } from "~/components/symbol-icon";
-import { track } from "~/features/analytics/analytics";
 import { APP_ICONS } from "~/features/app-icon/app-icon";
-import { usePremium } from "~/features/premium/premium";
 import { chooseAppIcon, useAppIcon } from "~/features/settings/use-app-icon";
 import { cn } from "~/lib/cn";
 import blue from "../../../../assets/icons/icon-blue.png";
@@ -83,8 +81,6 @@ function IconChoice({
 }
 
 function IconGrid() {
-  const router = useRouter();
-  const premium = usePremium();
   const { current } = useAppIcon();
   return (
     <View className="flex-row flex-wrap px-4 pt-4">
@@ -94,21 +90,14 @@ function IconGrid() {
           name={icon.name}
           label={icon.label}
           selected={current === icon.name}
-          onPress={() => {
-            if (premium) {
-              chooseAppIcon(icon.name);
-              return;
-            }
-            track("check_premium", { premium: false });
-            router.push("/premium");
-          }}
+          onPress={() => chooseAppIcon(icon.name)}
         />
       ))}
     </View>
   );
 }
 
-/** The seven 2.5.2 icons (Premium), the current one checked. */
+/** The seven 2.5.2 icons, the current one checked. */
 export default function AppIconScreen() {
   return (
     <>

@@ -11,14 +11,12 @@ import { currentIndex, EMPTY_QUEUE } from "./queue-model";
  */
 export interface PlayerState {
   readonly queue: Queue;
-  /** The entry playing (or, during the ad, the one after it). */
+  /** The entry playing. */
   readonly current: QueueEntry | null;
   readonly source: PlaybackSource | null;
   readonly shuffle: boolean;
   readonly repeat: RepeatMode;
   readonly status: PlaybackStatus;
-  /** The free tier's ad is playing: skipping and seeking are off. */
-  readonly interstitial: boolean;
 }
 
 function playerState(fields: PlayerState) {
@@ -27,7 +25,6 @@ function playerState(fields: PlayerState) {
 
 let state = playerState({
   current: null,
-  interstitial: false,
   queue: EMPTY_QUEUE,
   repeat: "off",
   shuffle: false,

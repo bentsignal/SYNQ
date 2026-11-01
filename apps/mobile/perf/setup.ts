@@ -97,14 +97,11 @@ jest.mock("~/components/native-menu-row", () => {
 Object.assign(Reflect.get(globalThis, "expo").modules, {
   SynqAudio: {
     addListener: jest.fn(() => ({ remove: jest.fn() })),
-    configureInterstitial: jest.fn(() => Promise.resolve()),
     getQueue: () => Promise.resolve({ index: null, tracks: [] }),
     getState: () =>
       Promise.resolve({
         durationMs: 0,
         index: null,
-        interstitial: false,
-        listenedMs: 0,
         positionMs: 0,
         queueLength: 0,
         repeatMode: "off",
@@ -164,26 +161,12 @@ jest.mock("expo-file-system", () => {
 jest.mock("expo-image-manipulator", () => ({}));
 jest.mock("expo-sharing", () => ({}));
 
-// RevenueCat's SDK is ESM and native; premium status stays unresolved, as
-// before the first customer info arrives.
-jest.mock("react-native-purchases", () => ({
-  __esModule: true,
-  default: {
-    addCustomerInfoUpdateListener: jest.fn(),
-    configure: jest.fn(),
-    getCustomerInfo: () => new Promise(() => undefined),
-    setLogLevel: jest.fn(),
-  },
-  LOG_LEVEL: { WARN: "WARN" },
-}));
-
 // Saving and restoring the player's session reads and writes the library
 // database and the preferences file; the scenarios start from an empty
 // player.
 jest.mock("~/features/player/persistence", () => ({
   noteNativeState: jest.fn(),
   persist: jest.fn(),
-  restoredListening: () => 0,
   restoreSession: jest.fn(),
   saveFromNative: jest.fn(),
 }));

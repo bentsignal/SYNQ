@@ -7,7 +7,6 @@ import * as Audio from "@synq/audio";
 import type { PlayerSongs } from "./songs";
 import { onLibraryReplaced } from "~/features/backup/backup";
 import { queryClient } from "~/lib/query-client";
-import { configureAd } from "./ad-config";
 import { clearQueue, forgetSongs } from "./commands";
 import { reportPlaybackError } from "./errors";
 import { pushedTrack, resyncNative } from "./native-queue";
@@ -17,7 +16,6 @@ import {
   restoreSession,
   saveFromNative,
 } from "./persistence";
-import { subscribePremiumTier } from "./premium-gate";
 import { isSettingSongs, PLAYER_SONGS_QUERY } from "./songs";
 import { getPlayerState, onFirstUse, setPlayerState } from "./store";
 import { sameTrack, trackFor } from "./tracks";
@@ -26,21 +24,17 @@ import { sameTrack, trackFor } from "./tracks";
 const SAVE_EVERY_MS = 15_000;
 
 /**
- * Native's state: what's playing (by entry key; during the ad, by the
- * index of the entry after it), the status, and the ad. Every one is a
- * moment worth saving (pause, track change, the ad starting or ending).
+ * Native's state: what's playing (by entry key) and the status. Every one
+ * is a moment worth saving (pause, track change).
  */
 function onNativeState(native: PlaybackState) {
   noteNativeState(native);
   const { queue } = getPlayerState();
-  const key = native.interstitial
-    ? queue.entries[native.index ?? -1]?.key
-    : native.trackId;
+  const key = native.trackId;
   const known = queue.entries.some((entry) => entry.key === key);
   setPlayerState({
-    interstitial: native.interstitial,
     queue:
-      known && key !== undefined && key !== queue.currentKey
+      known && key !== null && key !== queue.currentKey
         ? { ...queue, currentKey: key }
         : queue,
     status: native.status,
@@ -86,8 +80,7 @@ function watchLibrary() {
 }
 
 /**
- * Restores the last session (paused where it was), configures the ad, and
- * starts listening to native and the app's life cycle. Runs once, on the
+ * Restores the last session (paused where it was) and starts listening to native and the app's life cycle. Runs once, on the
  * player's first use (the mini player mounting, or a play action), which
  * is always after the library is open.
  */
@@ -95,8 +88,6 @@ function startPlayer() {
   Audio.addListener("state", onNativeState);
   Audio.addListener("error", reportPlaybackError);
   restoreSession();
-  configureAd();
-  subscribePremiumTier(configureAd);
   watchLibrary();
   // A restore or erase reuses song ids for other songs, or removes them.
   onLibraryReplaced(clearQueue);

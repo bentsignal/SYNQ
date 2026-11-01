@@ -9,8 +9,6 @@ public struct EngineEnvironment {
   var loadsArtwork: Bool
   var installsRemoteCommands: Bool
   var managesAudioSession: Bool
-  /// Monotonic clock in milliseconds.
-  var nowMs: @MainActor () -> Double
   var fileExists: @MainActor (URL) -> Bool
   /// Called on every player the engine creates.
   var configurePlayer: @MainActor (AVQueuePlayer) -> Void = { _ in }
@@ -22,7 +20,6 @@ public struct EngineEnvironment {
       loadsArtwork: true,
       installsRemoteCommands: true,
       managesAudioSession: true,
-      nowMs: { ProcessInfo.processInfo.systemUptime * 1000 },
       fileExists: { FileManager.default.fileExists(atPath: $0.path) }
     )
   }
@@ -49,10 +46,9 @@ public final class AudioEngine {
   private(set) var queue = PlaybackQueue()
   private(set) var repeatMode: RepeatMode = .off
 
-  /// The queue entry playback is on. While the interstitial plays, the entry
-  /// that plays after it. Kept after the queue ends or fails.
+  /// The queue entry playback is on. Kept after the queue ends or fails.
   private var currentKey: EntryKey?
-  /// The item in the player for `currentKey` (or the interstitial).
+  /// The item in the player for `currentKey`.
   private(set) var current: Slot?
   /// The preloaded item after `current`.
   private(set) var upcoming: Slot?
@@ -72,13 +68,6 @@ public final class AudioEngine {
   /// Target of the seek in flight, reported as the position until it lands.
   private(set) var seekingToMs: Double?
   private var seekGeneration: UInt64 = 0
-
-  private var interstitialConfig: InterstitialConfig?
-  private var counter = ListeningCounter()
-  /// Where the queue entry resumes after the interstitial.
-  private var resumePositionMs: Double = 0
-  private var dueCheck: DispatchWorkItem?
-  private(set) var skipAndSeekEnabled = true
 
   private var playerObservations: [NSKeyValueObservation] = []
   private var progressObserver: Any?
@@ -103,7 +92,6 @@ public final class AudioEngine {
 
   /// Stops playback and releases system resources.
   public func tearDown() {
-    cancelDueCheck()
     setProgressObserved(false)
     playerObservations.forEach { $0.invalidate() }
     playerObservations.removeAll()
@@ -134,22 +122,15 @@ public final class AudioEngine {
       return
     }
     let start = min(max(startIndex, 0), tracks.count - 1)
-    let inInterstitial = isInterstitialActive
-    let liveKey = (ended || failed) && !inInterstitial ? nil : currentKey
+    let liveKey = ended || failed ? nil : currentKey
     let keep = liveKey != nil && liveKey.flatMap { queue.entry(for: $0) }?.track.id == tracks[start].id
 
     queue.replace(with: tracks, reusing: keep ? liveKey : nil, at: start)
     failedKeys.removeAll()
     guard let key = queue.entry(at: start)?.key else { return }
 
-    if inInterstitial {
-      // The interstitial keeps playing; afterward, the new queue starts.
-      currentKey = key
-      if !keep { resumePositionMs = positionMs ?? 0 }
-      if let play { setPlayWhenReady(play) }
-      refreshUpcoming()
-    } else if keep {
-      if let current, current.content == .entry(key), current.track != tracks[start] {
+    if keep {
+      if let current, current.key == key, current.track != tracks[start] {
         current.track = tracks[start]
         publishNowPlayingItem()
       }
@@ -158,10 +139,8 @@ public final class AudioEngine {
       refreshUpcoming()
       nowPlaying.updateQueue(index: currentIndex, count: queue.count)
     } else {
-      let shouldPlay = play ?? true
-      playWhenReady = shouldPlay
-      // Restoring a paused session isn't a transition the listener hears.
-      transition(to: key, positionMs: positionMs ?? 0, direction: .natural, allowsInterstitial: shouldPlay)
+      playWhenReady = play ?? true
+      transition(to: key, positionMs: positionMs ?? 0, direction: .natural)
     }
     emitQueue()
     emitState()
@@ -172,15 +151,11 @@ public final class AudioEngine {
   public func insert(_ tracks: [Track], at index: Int? = nil) {
     guard !tracks.isEmpty else { return }
     let wasEmpty = queue.isEmpty
-    let firstInserted = queue.insert(tracks, at: index ?? queue.count)
-    if isInterstitialActive {
-      // Nothing was going to follow the interstitial; now the insert does.
-      if currentKey == nil { currentKey = queue.entry(at: firstInserted)?.key }
-      refreshUpcoming()
-    } else if wasEmpty || currentKey == nil, let first = queue.entry(at: 0) {
+    queue.insert(tracks, at: index ?? queue.count)
+    if wasEmpty || currentKey == nil, let first = queue.entry(at: 0) {
       playWhenReady = false
       currentKey = first.key
-      activate(.entry(first.key), positionMs: 0, mode: .jump, direction: .natural)
+      activate(first.key, positionMs: 0, mode: .jump, direction: .natural)
     } else {
       refreshUpcoming()
       nowPlaying.updateQueue(index: currentIndex, count: queue.count)
@@ -206,19 +181,14 @@ public final class AudioEngine {
     if removesCurrent, let position {
       let shifted = position - removing.filter { $0 < position }.count
       let replacement = queue.entry(at: shifted) ?? (repeatMode == .off ? nil : queue.entry(at: 0))
-      if isInterstitialActive {
-        // Nil when nothing follows: the queue ends after the interstitial.
-        currentKey = replacement?.key
-        resumePositionMs = 0
-        refreshUpcoming()
-      } else if let replacement {
+      if let replacement {
         currentKey = replacement.key
-        activate(.entry(replacement.key), positionMs: 0, mode: .jump, direction: .natural)
+        activate(replacement.key, positionMs: 0, mode: .jump, direction: .natural)
       } else if let last = queue.entry(at: queue.count - 1) {
         // The last entry was playing and nothing follows: stop on the new last.
         playWhenReady = false
         currentKey = last.key
-        activate(.entry(last.key), positionMs: 0, mode: .jump, direction: .natural)
+        activate(last.key, positionMs: 0, mode: .jump, direction: .natural)
       }
     } else {
       refreshUpcoming()
@@ -246,7 +216,7 @@ public final class AudioEngine {
       guard let key else { return }
       if failed { failedKeys.removeAll() }
       playWhenReady = true
-      transition(to: key, positionMs: 0, direction: .natural, allowsInterstitial: true)
+      transition(to: key, positionMs: 0, direction: .natural)
       emitState()
       return
     }
@@ -269,34 +239,32 @@ public final class AudioEngine {
     }
   }
 
-  /// Seeks the current item. Returns false while the interstitial plays or
-  /// when nothing is loaded.
+  /// Seeks the current item. Returns false when nothing is loaded.
   @discardableResult
   public func seek(toMs positionMs: Double) -> Bool {
-    guard !isInterstitialActive else { return false }
-    return seekCurrent(to: positionMs)
+    seekCurrent(to: positionMs)
   }
 
   /// Goes to the next entry (wrapping when repeat is on). Returns false at the
-  /// end of the queue with repeat off, or while the interstitial plays.
+  /// end of the queue with repeat off.
   @discardableResult
   public func next() -> Bool {
-    guard !isInterstitialActive, let key = currentKey else { return false }
+    guard let key = currentKey else { return false }
     let isPlayable = playableCheck
     guard let target = queue.neighbor(of: key, direction: .next, repeatMode: repeatMode, isPlayable: isPlayable) else {
       return false
     }
     playWhenReady = true
-    transition(to: target, positionMs: 0, direction: .next, allowsInterstitial: true)
+    transition(to: target, positionMs: 0, direction: .next)
     emitState()
     return true
   }
 
   /// Restarts the track after 3 seconds of it (or on the first entry), else
-  /// goes to the previous entry. Returns false while the interstitial plays.
+  /// goes to the previous entry.
   @discardableResult
   public func previous() -> Bool {
-    guard !isInterstitialActive, let key = currentKey else { return false }
+    guard let key = currentKey else { return false }
     let isPlayable = playableCheck
     let target = queue.neighbor(of: key, direction: .previous, repeatMode: repeatMode, isPlayable: isPlayable)
     if positionMs >= Self.previousRestartThresholdMs || target == nil {
@@ -304,20 +272,19 @@ public final class AudioEngine {
     }
     guard let target else { return false }
     playWhenReady = true
-    transition(to: target, positionMs: 0, direction: .previous, allowsInterstitial: true)
+    transition(to: target, positionMs: 0, direction: .previous)
     emitState()
     return true
   }
 
-  /// Plays the entry at `index`. Returns false for an invalid index or while
-  /// the interstitial plays.
+  /// Plays the entry at `index`. Returns false for an invalid index.
   @discardableResult
   public func skip(to index: Int) -> Bool {
-    guard !isInterstitialActive, let entry = queue.entry(at: index) else { return false }
+    guard let entry = queue.entry(at: index) else { return false }
     // An explicit choice retries an entry that failed before.
     failedKeys.remove(entry.key)
     playWhenReady = true
-    transition(to: entry.key, positionMs: 0, direction: .natural, allowsInterstitial: true)
+    transition(to: entry.key, positionMs: 0, direction: .natural)
     emitState()
     return true
   }
@@ -327,44 +294,6 @@ public final class AudioEngine {
     repeatMode = mode
     refreshUpcoming()
     emitState()
-  }
-
-  // MARK: - Interstitial
-
-  /// Configures the interstitial (nil for none). Native counts listening time
-  /// from `listenedMs` (or keeps its count when that is nil); once past
-  /// `afterListeningMs`, the next transition plays the interstitial first.
-  /// Clearing it while it plays stops it and playback continues.
-  public func configureInterstitial(_ config: InterstitialConfig?) {
-    let now = env.nowMs()
-    if let config {
-      interstitialConfig = config
-      if let listenedMs = config.listenedMs {
-        counter.reset(to: listenedMs, nowMs: now)
-      }
-    } else {
-      interstitialConfig = nil
-      counter = ListeningCounter()
-      if isInterstitialActive {
-        let position = resumePositionMs
-        endInterstitial()
-        resumeAfterInterstitial(positionMs: position, mode: .jump)
-      }
-    }
-    updateListening()
-    refreshUpcoming()
-    emitState(force: true)
-  }
-
-  public var listenedMs: Double {
-    interstitialConfig == nil ? 0 : counter.value(nowMs: env.nowMs())
-  }
-
-  var isInterstitialActive: Bool { current?.content == .interstitial }
-
-  var isInterstitialDue: Bool {
-    guard let interstitialConfig else { return false }
-    return counter.value(nowMs: env.nowMs()) >= interstitialConfig.afterListeningMs
   }
 
   // MARK: - State
@@ -377,9 +306,7 @@ public final class AudioEngine {
       positionMs: positionMs,
       durationMs: current?.durationMs ?? 0,
       repeatMode: repeatMode,
-      queueLength: queue.count,
-      interstitial: isInterstitialActive,
-      listenedMs: listenedMs
+      queueLength: queue.count
     )
   }
 
@@ -446,19 +373,15 @@ public final class AudioEngine {
     return { !failedKeys.contains($0.key) }
   }
 
-  /// Moves playback to `key`, playing the interstitial first when it is due.
-  private func transition(to key: EntryKey, positionMs: Double, direction: PlaybackQueue.Direction, allowsInterstitial: Bool) {
-    if allowsInterstitial, isInterstitialDue, !isInterstitialActive {
-      startInterstitial(before: key, positionMs: positionMs, mode: .jump)
-    } else {
-      currentKey = key
-      activate(.entry(key), positionMs: positionMs, mode: .jump, direction: direction)
-    }
+  /// Moves playback to `key`.
+  private func transition(to key: EntryKey, positionMs: Double, direction: PlaybackQueue.Direction) {
+    currentKey = key
+    activate(key, positionMs: positionMs, mode: .jump, direction: direction)
   }
 
-  /// Makes `content` the current item: the preloaded one when it matches,
-  /// else a freshly loaded one.
-  private func activate(_ content: Slot.Content, positionMs: Double, mode: ActivationMode, direction: PlaybackQueue.Direction) {
+  /// Makes `key`'s entry the current item: the preloaded one when it
+  /// matches, else a freshly loaded one.
+  private func activate(_ key: EntryKey, positionMs: Double, mode: ActivationMode, direction: PlaybackQueue.Direction) {
     let previous = current
     ended = false
     failed = false
@@ -467,7 +390,7 @@ public final class AudioEngine {
     seekingToMs = nil
     seekGeneration &+= 1
 
-    if positionMs <= 0, let upcoming, upcoming.content == content, upcoming.item.status != .failed,
+    if positionMs <= 0, let upcoming, upcoming.key == key, upcoming.item.status != .failed,
        promote(upcoming, over: previous, mode: mode) {
       self.upcoming = nil
       current = upcoming
@@ -480,8 +403,8 @@ public final class AudioEngine {
     previous?.invalidate()
     current = nil
     player.removeAllItems()
-    guard let slot = makeSlot(content) else {
-      unplayable(content, direction: direction)
+    guard let slot = makeSlot(key) else {
+      unplayable(key, direction: direction)
       return
     }
     current = slot
@@ -506,144 +429,70 @@ public final class AudioEngine {
   }
 
   private func currentChanged() {
-    guard let current else { return }
-    let inInterstitial = current.content == .interstitial
-    if inInterstitial { emit(.interstitialStart) }
-    setSkipAndSeekEnabled(!inInterstitial)
+    guard current != nil else { return }
     applyPlayIntent()
-    updateListening()
     refreshUpcoming()
     publishNowPlayingItem()
     emitState()
     emitProgress()
   }
 
-  private func startInterstitial(before key: EntryKey, positionMs: Double, mode: ActivationMode) {
-    currentKey = key
-    resumePositionMs = positionMs
-    activate(.interstitial, positionMs: 0, mode: mode, direction: .natural)
-  }
-
-  /// Resets the counter and re-enables skipping. The caller moves playback on.
-  private func endInterstitial() {
-    counter.reset(to: 0, nowMs: env.nowMs())
-    cancelDueCheck()
-    setSkipAndSeekEnabled(true)
-    emit(.interstitialEnd)
-  }
-
-  private func resumeAfterInterstitial(positionMs: Double, mode: ActivationMode) {
-    resumePositionMs = 0
-    guard let key = currentKey, queue.contains(key) else {
-      // Nothing follows: end on the last entry.
-      currentKey = queue.entry(at: queue.count - 1)?.key
-      current?.invalidate()
-      current = nil
-      player.removeAllItems()
-      finishQueue()
-      nowPlaying.clear()
-      return
-    }
-    activate(.entry(key), positionMs: positionMs, mode: mode, direction: .natural)
-  }
-
   /// The current item played to its end.
   private func itemDidEnd(_ slot: Slot) {
     guard slot === current, !ended, !failed else { return }
-    switch slot.content {
-    case .interstitial:
-      let position = resumePositionMs
-      endInterstitial()
-      resumeAfterInterstitial(positionMs: position, mode: .natural)
-    case .entry(let key):
-      let isPlayable = playableCheck
-      guard let follower = queue.neighbor(of: key, direction: .natural, repeatMode: repeatMode, isPlayable: isPlayable) else {
-        finishQueue()
-        return
-      }
-      if isInterstitialDue {
-        startInterstitial(before: follower, positionMs: 0, mode: .natural)
-      } else {
-        currentKey = follower
-        activate(.entry(follower), positionMs: 0, mode: .natural, direction: .natural)
-      }
+    let isPlayable = playableCheck
+    guard let follower = queue.neighbor(of: slot.key, direction: .natural, repeatMode: repeatMode, isPlayable: isPlayable) else {
+      finishQueue()
+      return
     }
+    currentKey = follower
+    activate(follower, positionMs: 0, mode: .natural, direction: .natural)
   }
 
   private func itemFailed(_ slot: Slot, code: PlaybackError.Code, message: String?) {
     if slot === upcoming {
       // Found while preloading: report it now and preload what comes after.
-      markUnplayable(slot.content, track: slot.track, code: code, message: message)
+      markUnplayable(slot.key, track: slot.track, code: code, message: message)
       discardUpcoming()
       refreshUpcoming()
       return
     }
     guard slot === current else { return }
-    markUnplayable(slot.content, track: slot.track, code: code, message: message)
-    unplayable(slot.content, direction: .natural)
+    markUnplayable(slot.key, track: slot.track, code: code, message: message)
+    unplayable(slot.key, direction: .natural)
   }
 
-  /// `content` can't play (already reported): move past it.
-  private func unplayable(_ content: Slot.Content, direction: PlaybackQueue.Direction) {
-    switch content {
-    case .interstitial:
-      let position = resumePositionMs
-      resumeAfterInterstitial(positionMs: position, mode: .jump)
-    case .entry(let key):
-      let isPlayable = playableCheck
-      let follower = queue.neighbor(of: key, direction: direction, repeatMode: repeatMode, isPlayable: isPlayable)
-        ?? queue.neighbor(of: key, direction: .natural, repeatMode: repeatMode, isPlayable: isPlayable)
-      if let follower {
-        currentKey = follower
-        activate(.entry(follower), positionMs: 0, mode: .jump, direction: direction)
-      } else {
-        failQueue(at: key)
-      }
+  /// `key`'s entry can't play (already reported): move past it.
+  private func unplayable(_ key: EntryKey, direction: PlaybackQueue.Direction) {
+    let isPlayable = playableCheck
+    let follower = queue.neighbor(of: key, direction: direction, repeatMode: repeatMode, isPlayable: isPlayable)
+      ?? queue.neighbor(of: key, direction: .natural, repeatMode: repeatMode, isPlayable: isPlayable)
+    if let follower {
+      currentKey = follower
+      activate(follower, positionMs: 0, mode: .jump, direction: direction)
+    } else {
+      failQueue(at: key)
     }
   }
 
   /// Records a failure and emits the error event.
-  private func markUnplayable(_ content: Slot.Content, track: Track, code: PlaybackError.Code, message: String?) {
-    switch content {
-    case .entry(let key):
-      failedKeys.insert(key)
-      emit(.error(PlaybackError(
-        code: code,
-        message: message ?? "Couldn't play \(track.title).",
-        trackId: track.id,
-        index: queue.index(of: key)
-      )))
-    case .interstitial:
-      // Count it as heard so a broken interstitial can't block playback.
-      if isInterstitialActive {
-        endInterstitial()
-      } else {
-        counter.reset(to: 0, nowMs: env.nowMs())
-      }
-      emit(.error(PlaybackError(
-        code: .interstitialFailed,
-        message: message ?? "Couldn't play the interstitial.",
-        trackId: track.id,
-        index: nil
-      )))
-    }
+  private func markUnplayable(_ key: EntryKey, track: Track, code: PlaybackError.Code, message: String?) {
+    failedKeys.insert(key)
+    emit(.error(PlaybackError(
+      code: code,
+      message: message ?? "Couldn't play \(track.title).",
+      trackId: track.id,
+      index: queue.index(of: key)
+    )))
   }
 
-  private func makeSlot(_ content: Slot.Content) -> Slot? {
-    let track: Track
-    switch content {
-    case .entry(let key):
-      guard let entry = queue.entry(for: key) else { return nil }
-      track = entry.track
-    case .interstitial:
-      guard let interstitialConfig else { return nil }
-      track = interstitialConfig.track
-    }
+  private func makeSlot(_ key: EntryKey) -> Slot? {
+    guard let track = queue.entry(for: key)?.track else { return nil }
     guard env.fileExists(track.url) else {
-      markUnplayable(content, track: track, code: .fileMissing, message: "\(track.title) is missing its file.")
+      markUnplayable(key, track: track, code: .fileMissing, message: "\(track.title) is missing its file.")
       return nil
     }
-    let slot = Slot(content: content, track: track)
+    let slot = Slot(key: key, track: track)
     slot.observe(
       status: { [weak self] slot in self?.itemStatusChanged(slot) },
       end: { [weak self] slot in self?.itemDidEnd(slot) },
@@ -664,7 +513,7 @@ public final class AudioEngine {
     // Each failed attempt marks its entry unplayable, so this terminates.
     for _ in 0...queue.count + 1 {
       let desired = desiredUpcoming(after: current)
-      if let upcoming, upcoming.content == desired, upcoming.item.status != .failed { return }
+      if let upcoming, upcoming.key == desired, upcoming.item.status != .failed { return }
       discardUpcoming()
       guard let desired else { return }
       if let slot = makeSlot(desired) {
@@ -679,18 +528,8 @@ public final class AudioEngine {
     }
   }
 
-  private func desiredUpcoming(after current: Slot) -> Slot.Content? {
-    let isPlayable = playableCheck
-    switch current.content {
-    case .interstitial:
-      guard let key = currentKey, resumePositionMs <= 0, queue.contains(key), !failedKeys.contains(key) else { return nil }
-      return .entry(key)
-    case .entry(let key):
-      guard let follower = queue.neighbor(of: key, direction: .natural, repeatMode: repeatMode, isPlayable: isPlayable) else {
-        return nil
-      }
-      return isInterstitialDue ? .interstitial : .entry(follower)
-    }
+  private func desiredUpcoming(after current: Slot) -> EntryKey? {
+    queue.neighbor(of: current.key, direction: .natural, repeatMode: repeatMode, isPlayable: playableCheck)
   }
 
   private func discardUpcoming() {
@@ -708,7 +547,6 @@ public final class AudioEngine {
     ended = true
     playWhenReady = false
     player.pause()
-    updateListening()
     if let current {
       nowPlaying.updateTiming(elapsedMs: positionMs, durationMs: current.durationMs, playing: false)
     }
@@ -724,13 +562,11 @@ public final class AudioEngine {
     currentKey = key
     failed = true
     playWhenReady = false
-    updateListening()
     nowPlaying.clear()
     emitState()
   }
 
   private func clear() {
-    let wasInInterstitial = isInterstitialActive
     discardUpcoming()
     current?.invalidate()
     current = nil
@@ -743,13 +579,6 @@ public final class AudioEngine {
     failed = false
     startPositionMs = nil
     seekingToMs = nil
-    resumePositionMs = 0
-    if wasInInterstitial {
-      // Stopped, not heard: the interstitial stays due.
-      setSkipAndSeekEnabled(true)
-      emit(.interstitialEnd)
-    }
-    updateListening()
     nowPlaying.clear()
     emitQueue()
     emitState()
@@ -765,7 +594,6 @@ public final class AudioEngine {
     playWhenReady = value
     pausedBySystem = false
     applyPlayIntent()
-    updateListening()
     if let current {
       nowPlaying.updateTiming(elapsedMs: positionMs, durationMs: current.durationMs, playing: status == .playing)
     }
@@ -794,7 +622,7 @@ public final class AudioEngine {
     if ended {
       // Reload the finished item at the requested spot, paused.
       playWhenReady = false
-      activate(current.content, positionMs: target, mode: .jump, direction: .natural)
+      activate(current.key, positionMs: target, mode: .jump, direction: .natural)
       return true
     }
     if current.item.status != .readyToPlay {
@@ -873,7 +701,6 @@ public final class AudioEngine {
       playWhenReady = false
       pausedBySystem = true
     }
-    updateListening()
     if let current, !ended {
       nowPlaying.updateTiming(elapsedMs: positionMs, durationMs: current.durationMs, playing: status == .playing)
     }
@@ -886,7 +713,6 @@ public final class AudioEngine {
   /// own observers, never here.
   private func playerItemChanged() {
     guard let current, !ended, !failed, player.currentItem === current.item else { return }
-    updateListening()
     nowPlaying.updateTiming(elapsedMs: positionMs, durationMs: current.durationMs, playing: status == .playing)
     emitState()
   }
@@ -939,7 +765,7 @@ public final class AudioEngine {
     setProgressObserved(false)
     playerObservations.forEach { $0.invalidate() }
     let position = positionMs
-    let content = current?.content
+    let key = current?.key
     discardUpcoming()
     current?.invalidate()
     current = nil
@@ -948,66 +774,10 @@ public final class AudioEngine {
     configurePlayer()
     if observed { setProgressObserved(true) }
     playWhenReady = false
-    if let content, !failed {
-      activate(content, positionMs: ended ? 0 : position, mode: .jump, direction: .natural)
+    if let key, !failed {
+      activate(key, positionMs: ended ? 0 : position, mode: .jump, direction: .natural)
     }
     emitState()
-  }
-
-  private func setSkipAndSeekEnabled(_ enabled: Bool) {
-    guard skipAndSeekEnabled != enabled else { return }
-    skipAndSeekEnabled = enabled
-    if env.installsRemoteCommands {
-      remoteCommands.setSkipAndSeekEnabled(enabled)
-    }
-  }
-
-  // MARK: - Listening counter
-
-  private func updateListening() {
-    let now = env.nowMs()
-    let counting = interstitialConfig != nil && !ended && !failed
-      && current?.isEntry == true
-      && player.currentItem === current?.item
-      && player.timeControlStatus == .playing
-    if counting {
-      counter.start(nowMs: now)
-      scheduleDueCheck()
-    } else {
-      counter.stop(nowMs: now)
-      cancelDueCheck()
-    }
-  }
-
-  private func scheduleDueCheck() {
-    cancelDueCheck()
-    guard let interstitialConfig else { return }
-    let remaining = interstitialConfig.afterListeningMs - counter.value(nowMs: env.nowMs())
-    guard remaining > 0 else {
-      // Already due: make sure the interstitial is the preloaded item.
-      refreshUpcoming()
-      return
-    }
-    let work = DispatchWorkItem { @Sendable [weak self] in
-      MainActor.assumeIsolated { self?.dueCheckFired() }
-    }
-    dueCheck = work
-    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(Int(remaining.rounded(.up)) + 1), execute: work)
-  }
-
-  private func dueCheckFired() {
-    dueCheck = nil
-    if isInterstitialDue {
-      refreshUpcoming()
-      emitState(force: true)
-    } else {
-      updateListening()
-    }
-  }
-
-  private func cancelDueCheck() {
-    dueCheck?.cancel()
-    dueCheck = nil
   }
 
   // MARK: - Events
@@ -1018,20 +788,18 @@ public final class AudioEngine {
     var trackId: String?
     var repeatMode: RepeatMode
     var queueLength: Int
-    var interstitial: Bool
   }
 
-  private func emitState(force: Bool = false) {
+  private func emitState() {
     let snapshot = snapshot()
     let key = StateKey(
       status: snapshot.status,
       index: snapshot.index,
       trackId: snapshot.trackId,
       repeatMode: snapshot.repeatMode,
-      queueLength: snapshot.queueLength,
-      interstitial: snapshot.interstitial
+      queueLength: snapshot.queueLength
     )
-    guard force || key != lastState else { return }
+    guard key != lastState else { return }
     lastState = key
     emit(.state(snapshot))
   }
@@ -1056,7 +824,7 @@ public final class AudioEngine {
       durationMs: current.durationMs,
       elapsedMs: positionMs,
       playing: status == .playing,
-      queueIndex: isInterstitialActive ? nil : currentIndex,
+      queueIndex: currentIndex,
       queueCount: queue.count
     )
   }

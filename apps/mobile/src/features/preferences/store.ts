@@ -7,7 +7,7 @@ import { applyTheme, DEFAULT_THEME, isThemeId } from "./themes";
 const STORAGE_KEY = "synq.preferences";
 
 export interface Preferences {
-  /** The accent color. Themes other than blue are a Premium feature. */
+  /** The accent color. */
   readonly theme: ThemeId;
   /** Taps and toggles give haptic feedback. */
   readonly haptics: boolean;

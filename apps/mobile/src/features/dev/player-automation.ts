@@ -1,7 +1,6 @@
 import * as Audio from "@synq/audio";
 
 import type { PlaybackSource } from "~/features/player/types";
-import { setAdThresholdForDevelopment } from "~/features/player/ad-config";
 import {
   addToQueue,
   clearUpNext,
@@ -64,14 +63,11 @@ const automation = {
   clear: clearUpNext,
   shuffle: toggleShuffle,
   repeat: cycleRepeat,
-  /** Hear the ad sooner (this run of the app only). */
-  adAfter: setAdThresholdForDevelopment,
   /** The JavaScript queue, as song ids, and where it is. */
   state() {
     const state = getPlayerState();
     return {
       current: state.current,
-      interstitial: state.interstitial,
       queue: state.queue.entries.map((entry) => entry.songId),
       repeat: state.repeat,
       shuffle: state.shuffle,

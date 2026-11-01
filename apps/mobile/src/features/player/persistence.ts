@@ -6,7 +6,6 @@ import { getLegacyImport } from "@synq/db/legacy";
 import { libraryDb } from "~/features/library/database";
 import { takeLegacySettings } from "~/features/library/legacy-settings";
 import { readJson, writeJson } from "~/lib/kv";
-import { AD_AFTER_LISTENING_MS } from "./ad";
 import { native, tracksFor } from "./native-queue";
 import { currentIndex } from "./queue-model";
 import {
@@ -21,30 +20,24 @@ import { getPlayerState, setPlayerState } from "./store";
 
 /**
  * The session in the kv store: written on every native `state` event
- * (pause, track change, the ad), when the app leaves the foreground, and
+ * (pause, track change), when the app leaves the foreground, and
  * every so often while playing; restored, paused, at launch.
  */
 const SESSION_KEY = "synq.player.session";
 
 let restoredPositionMs = 0;
-let restoredListenedMs = 0;
-/** The last state native reported, for the position and listening time. */
+/** The last state native reported, for the position. */
 let lastNative: PlaybackState | undefined;
 
 export function noteNativeState(state: PlaybackState) {
   lastNative = state;
 }
 
-/** Listening time toward the ad that the last session ended with. */
-export function restoredListening() {
-  return restoredListenedMs;
-}
-
 /** The current entry's position, as native last reported it. */
 function positionMs() {
   const { current } = getPlayerState();
   if (lastNative === undefined) return restoredPositionMs;
-  if (current === null || lastNative.interstitial) return 0;
+  if (current === null) return 0;
   return lastNative.trackId === current.key ? lastNative.positionMs : 0;
 }
 
@@ -53,7 +46,6 @@ export function persist() {
   writeJson(
     SESSION_KEY,
     encodeSession(state.queue, {
-      listenedMs: lastNative?.listenedMs ?? restoredListenedMs,
       positionMs: Math.round(positionMs()),
       repeat: state.repeat,
       shuffle: state.shuffle,
@@ -62,7 +54,7 @@ export function persist() {
   );
 }
 
-/** Asks native for the exact position and listening time, then saves. */
+/** Asks native for the exact position, then saves. */
 export function saveFromNative() {
   void Audio.getState()
     .then((state) => {
@@ -92,14 +84,12 @@ function asUnknown(value: unknown) {
 
 /**
  * The first launch of the 3.0 player takes over 2.5.2's queue, position,
- * source, Play Next count, shuffle and repeat, and ad counter (when this
- * install was 2.5.2). `restore` writes the session right away, so they're
+ * source, Play Next count, shuffle and repeat (when this install was
+ * 2.5.2). `restore` writes the session right away, so they're
  * taken once.
  */
 function takeOverLegacySession() {
   return sessionFromLegacy({
-    adThresholdMs: AD_AFTER_LISTENING_MS,
-    ads: takeLegacySettings("ads"),
     likedPlaylistId: findLikedPlaylistId(libraryDb()),
     preferences: legacyPreferences(),
     session: takeLegacySettings("session"),
@@ -113,7 +103,6 @@ export function restoreSession() {
   const songs = loadSongs(stored.songIds);
   const queue = queueFromSession(stored, (songId) => songs.has(songId));
   restoredPositionMs = restoredPosition(stored, queue);
-  restoredListenedMs = stored.listenedMs;
   setSongs(songs);
   setPlayerState({
     queue,

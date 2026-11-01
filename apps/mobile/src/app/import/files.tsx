@@ -17,7 +17,7 @@ import {
 export default function ImportFilesScreen() {
   const router = useRouter();
 
-  // eslint-disable-next-line no-restricted-syntax -- The batch lives exactly as long as this sheet, and ends (dropping the free tier's wait and locked songs) however the sheet closes.
+  // eslint-disable-next-line no-restricted-syntax -- The batch lives exactly as long as this sheet, and ends however the sheet closes.
   useEffect(() => {
     startImportSession("files");
     track("import_files");

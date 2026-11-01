@@ -2,9 +2,7 @@ import { useSyncExternalStore } from "react";
 
 import type { ImportSource, ReadSong } from "./pipeline";
 import { track } from "~/features/analytics/analytics";
-import { isPremium, subscribePremium } from "~/features/premium/premium";
 import { successFeedback } from "~/lib/haptics";
-import { IMPORT_WAIT_MS, importGate } from "./free-tier";
 import {
   clearImportStaging,
   discardSource,
@@ -17,9 +15,7 @@ import { recordFinishedImport } from "./review";
 /**
  * One import batch (a Files pick, or a Wi-Fi Transfer visit) as the import
  * sheet shows it. Files are read in order as they arrive, then imported in
- * order, one at a time, under the free tier's rules (`free-tier.ts`). The
- * work goes on if the sheet closes, except that the free tier's wait and
- * anything locked are dropped.
+ * order, one at a time. The work goes on if the sheet closes.
  */
 
 export type ImportItemStatus =
@@ -28,12 +24,8 @@ export type ImportItemStatus =
   | "reading"
   /** Read, waiting for the songs before it. */
   | "queued"
-  /** The free tier's wait. */
-  | "waiting"
   | "importing"
   | "imported"
-  /** Free tier: needs Premium. */
-  | "locked"
   | "failed";
 
 export interface ImportItem {
@@ -54,8 +46,6 @@ export interface ImportSessionState {
   readonly id: number;
   readonly kind: ImportKind | null;
   readonly items: readonly ImportItem[];
-  /** The free tier's wait, 0 to 1, while it runs. */
-  readonly wait: number | null;
 }
 
 /** Statuses of songs the batch is still working on. */
@@ -63,7 +53,6 @@ export const PENDING = new Set<ImportItemStatus>([
   "receiving",
   "reading",
   "queued",
-  "waiting",
   "importing",
 ]);
 
@@ -72,7 +61,7 @@ function sessionState(value: ImportSessionState) {
   return value;
 }
 
-const EMPTY = sessionState({ id: 0, items: [], kind: null, wait: null });
+const EMPTY = sessionState({ id: 0, items: [], kind: null });
 let batches = 0;
 
 interface Run {
@@ -81,7 +70,6 @@ interface Run {
   readonly reads: Map<string, ReadSong>;
   reading: Promise<void>;
   importing: Promise<void>;
-  freeSongUsed: boolean;
   closed: boolean;
 }
 
@@ -104,31 +92,6 @@ function update(current: Run, key: string, change: Partial<ImportItem>) {
       item.key === key ? { ...item, ...change } : item,
     ),
   });
-}
-
-function setWait(current: Run, wait: number | null) {
-  if (run === current) publish({ ...state, wait });
-}
-
-/** Read through a call: an `await` may have closed the run meanwhile. */
-function closed(current: Run) {
-  return current.closed;
-}
-
-function delay(ms: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, ms));
-}
-
-/** The free tier's wait; Premium (bought meanwhile) or closing ends it. */
-async function importWait(current: Run) {
-  const start = Date.now();
-  for (;;) {
-    const progress = (Date.now() - start) / IMPORT_WAIT_MS;
-    if (current.closed || isPremium() || progress >= 1) break;
-    setWait(current, progress);
-    await delay(200);
-  }
-  setWait(current, null);
 }
 
 async function readStep(current: Run, key: string) {
@@ -157,23 +120,6 @@ async function importStep(current: Run, key: string) {
   if (current.closed) {
     discardSource(source);
     return;
-  }
-  const gate = importGate({
-    freeSongUsed: current.freeSongUsed,
-    premium: isPremium(),
-  });
-  if (gate === "lock") {
-    update(current, key, { status: "locked" });
-    return;
-  }
-  if (gate === "wait-then-import") {
-    current.freeSongUsed = true;
-    update(current, key, { status: "waiting" });
-    await importWait(current);
-    if (closed(current)) {
-      discardSource(source);
-      return;
-    }
   }
   update(current, key, { status: "importing" });
   try {
@@ -204,7 +150,6 @@ export function startImportSession(kind: ImportKind) {
   if (!working) clearImportStaging();
   run = {
     closed: false,
-    freeSongUsed: false,
     importing: Promise.resolve(),
     kind,
     reading: Promise.resolve(),
@@ -278,9 +223,9 @@ export function receivedImport(source: ImportSource) {
 }
 
 /**
- * Ends the batch when its sheet closes: imports already running finish;
- * the wait and locked songs are dropped. Sends 2.5.2's finish or cancel
- * event, and a finished import may ask for a review.
+ * Ends the batch when its sheet closes: imports already running finish.
+ * Sends 2.5.2's finish or cancel event, and a finished import may ask for
+ * a review.
  */
 export function endImportSession() {
   const current = run;
@@ -294,12 +239,6 @@ export function endImportSession() {
   } else if (state.items.length > 0) {
     track("import_cancel");
   }
-  for (const item of state.items) {
-    if (item.status === "locked") {
-      const source = current.sources.get(item.key);
-      if (source !== undefined) discardSource(source);
-    }
-  }
   publish(EMPTY);
   working = true;
   void Promise.all([current.reading, current.importing]).then(() => {
@@ -307,20 +246,6 @@ export function endImportSession() {
     if (run === undefined) clearImportStaging();
   });
 }
-
-/** Imports the locked songs once Premium is bought from the sheet. */
-function unlockLocked() {
-  const current = run;
-  if (current === undefined || !isPremium()) return;
-  for (const item of state.items) {
-    if (item.status !== "locked") continue;
-    update(current, item.key, { status: "queued" });
-    const key = item.key;
-    current.importing = current.importing.then(() => importStep(current, key));
-  }
-}
-
-subscribePremium(unlockLocked);
 
 export function subscribeImportSession(listener: () => void) {
   listeners.add(listener);

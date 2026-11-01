@@ -25,13 +25,10 @@ export interface StoredSession {
   readonly source: PlaybackSource | null;
   readonly shuffle: boolean;
   readonly repeat: RepeatMode;
-  /** Listening time counted toward the free tier's ad. */
-  readonly listenedMs: number;
 }
 
 export const EMPTY_SESSION = storedSession({
   index: -1,
-  listenedMs: 0,
   original: null,
   positionMs: 0,
   queued: [],
@@ -123,7 +120,6 @@ export function decodeSession(stored: unknown) {
   const index = integer(field("index"), -1);
   return storedSession({
     index: songIds.length === 0 ? -1 : clamp(index, 0, songIds.length - 1),
-    listenedMs: nonNegative(field("listenedMs")),
     original: Array.isArray(field("original"))
       ? numbers(field("original")).filter((i) => i < songIds.length)
       : null,
@@ -139,32 +135,21 @@ export function decodeSession(stored: unknown) {
 /**
  * The first session after updating from 2.5.2: its queue (an ad entry is
  * already dropped by the importer), position, source, Play Next count,
- * shuffle and repeat, and the ad counter. 2.5.2's queue was already in
+ * shuffle and repeat. 2.5.2's queue was already in
  * shuffled order when shuffle was on, and it never kept the unshuffled
  * one, so turning shuffle off keeps the order.
  */
 export function sessionFromLegacy({
   session,
   preferences,
-  ads,
   likedPlaylistId,
-  adThresholdMs,
 }: {
   session: LegacyPlaybackSession | null;
   preferences: Pick<LegacySettings["preferences"], "shuffle" | "repeat"> | null;
-  ads: LegacySettings["ads"] | null;
   likedPlaylistId: number | null;
-  adThresholdMs: number;
 }) {
-  const listenedMs =
-    ads === null
-      ? 0
-      : ads.due
-        ? Math.max(ads.listenedMs, adThresholdMs)
-        : ads.listenedMs;
   const base = storedSession({
     ...EMPTY_SESSION,
-    listenedMs,
     repeat: preferences?.repeat ?? "off",
     shuffle: preferences?.shuffle ?? false,
   });

@@ -118,7 +118,6 @@ class EngineTestCase: XCTestCase {
         loadsArtwork: false,
         installsRemoteCommands: false,
         managesAudioSession: false,
-        nowMs: { ProcessInfo.processInfo.systemUptime * 1000 },
         fileExists: { FileManager.default.fileExists(atPath: $0.path) },
         configurePlayer: { player in
           player.volume = 0
@@ -176,7 +175,7 @@ class EngineTestCase: XCTestCase {
   }
 
   var upcomingIndex: Int? {
-    guard case .entry(let key)? = engine.upcoming?.content else { return nil }
+    guard let key = engine.upcoming?.key else { return nil }
     return engine.queue.index(of: key)
   }
 

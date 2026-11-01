@@ -32,8 +32,3 @@ export type EventValue = string | number | boolean | null;
 export function track(event: string, properties?: Record<string, EventValue>) {
   posthog?.capture(event, properties);
 }
-
-/** Sets properties on the person, as 2.5.2's `$set` events did. */
-export function setPersonProperties(properties: Record<string, EventValue>) {
-  posthog?.capture("$set", { $set: properties });
-}

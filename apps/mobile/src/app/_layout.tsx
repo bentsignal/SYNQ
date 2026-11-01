@@ -11,13 +11,11 @@ import { installDevAutomation } from "~/features/dev/automation";
 import { pickIntoImport } from "~/features/import/pick-files";
 import { LibraryGate } from "~/features/library/library-gate";
 import { applyStoredPreferences } from "~/features/preferences/store";
-import { startPremium } from "~/features/premium/premium";
 import { queryClient } from "~/lib/query-client";
 
 // The splash is a plain background, so the app fades in over it.
 SplashScreen.setOptions({ duration: 250, fade: true });
 applyStoredPreferences();
-startPremium();
 installDevAutomation();
 
 /** The import sheets: a title, a Done button, and the list as it imports. */
@@ -130,14 +128,6 @@ function RootStack() {
       <Stack.Screen
         name="import/wifi"
         options={{ ...IMPORT_SHEET, title: "Wi-Fi Transfer" }}
-      />
-      <Stack.Screen
-        name="premium"
-        options={{
-          presentation: "formSheet",
-          sheetAllowedDetents: [1],
-          sheetGrabberVisible: true,
-        }}
       />
     </Stack>
   );

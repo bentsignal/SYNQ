@@ -258,7 +258,7 @@ Files in the directory: `a9d1cbf71942327e98b40cf5ef38a960`, `manifest.json`
 - `albums`: Night Drive 2021 (art), Blueprints 2018 (art), Transmissions (no year),
   Glass Garden 2023 (art), Mixtape Vol. 1 2024; Mixtape order 11, 2, 17, 10.
 - `playlists`: Liked Songs (kind `liked`), Late Night (art), Road Trip ’26 🚗, Focus.
-- kv: accent `#a888ec`, haptics false, shuffle true, repeat all, premium lifetime,
-  queue `[7, 6, 3, 14, 2, 8, 20, 3, 6, 7, 1]` at index 4, position 7548 ms,
+- kv: accent `#a888ec`, haptics false, shuffle true, repeat all (the lifetime
+  premium is read and ignored: 3.0 is free), queue `[7, 6, 3, 14, 2, 8, 20, 3, 6, 7, 1]` at index 4, position 7548 ms,
   source playlist 4 (`sourceType` 1 = playlist).
 - `reviewAlreadyRequested` true, `importCount` 1.

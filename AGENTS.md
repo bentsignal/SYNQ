@@ -3,8 +3,8 @@
 ## Repository summary
 
 SYNQ is Shawn's offline music player for iOS: people import their own audio
-files and play them, with playlists, artists, albums, a queue, and a
-Premium tier. It is on the App Store as `com.directedbyshawn.synq`, live
+files and play them, with playlists, artists, albums, and a queue. 3.0 is
+free, with no ads. It is on the App Store as `com.directedbyshawn.synq`, live
 version 2.5.2. This repository is the 3.0 rewrite: an Expo app
 (`apps/mobile`), a native playback module (`packages/audio`), and the
 library database with the 2.5.2 importer (`packages/db`). The plan of
@@ -25,8 +25,8 @@ JavaScript API platform-neutral so Android can be added later.
 
 **Every 2.5.2 user's library survives the update untouched**: songs and
 their files, artwork, artists, albums, track numbers, playlists and their
-order, Liked Songs (renamed or not), theme, app icon, haptics, shuffle and
-repeat, and premium status. This is the one hard constraint on 3.0.
+order, Liked Songs (renamed or not), theme, app icon, haptics, and shuffle and
+repeat. This is the one hard constraint on 3.0.
 
 - Audio and artwork stay where 2.5.2 put them under `Documents/`, stored
   as paths relative to `Documents/`. Never move, rename, or delete them.

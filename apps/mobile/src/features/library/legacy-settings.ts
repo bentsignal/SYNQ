@@ -7,9 +7,9 @@ import { readJson, writeJson } from "~/lib/kv";
 /** The import whose settings are already applied, so they apply once. */
 const APPLIED_KEY = "synq.legacy-import-applied";
 /**
- * 2.5.2's playback session, premium cache, ad counter, and bookkeeping,
- * waiting for the features that own them (player, premium, review) to
- * take them on their first start.
+ * 2.5.2's playback session and bookkeeping, waiting for the features that
+ * own them (player, review) to take them on their first start. 2.5.2's
+ * premium status and ad counter aren't kept: 3.0 is free, with no ad.
  */
 const PENDING_KEY = "synq.legacy-settings";
 

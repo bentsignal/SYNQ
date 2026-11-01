@@ -1,4 +1,4 @@
-import { Alert, Linking, View } from "react-native";
+import { Linking, View } from "react-native";
 import * as Application from "expo-application";
 import { useRouter } from "expo-router";
 import {
@@ -16,75 +16,32 @@ import {
 } from "@expo/ui/swift-ui/modifiers";
 
 import type { ThemeId } from "~/features/preferences/themes";
-import type { PremiumStatus } from "~/features/premium/status";
 import { SymbolIcon } from "~/components/symbol-icon";
 import { track } from "~/features/analytics/analytics";
 import { APP_ICONS } from "~/features/app-icon/app-icon";
 import { setPreference, usePreference } from "~/features/preferences/store";
 import { THEMES } from "~/features/preferences/themes";
-import { usePremium, usePremiumStatus } from "~/features/premium/premium";
-import { restorePremium } from "~/features/premium/purchases";
 import { selectionTick } from "~/lib/haptics";
 import { Row, SECONDARY_LABEL } from "./form";
-import { planDetail } from "./plan-detail";
 import { useAppIcon } from "./use-app-icon";
 
 const LINKS = {
   discord: "https://discord.gg/zaSkUrDvpz",
   instagram: "https://instagram.com/synq.cc",
   review: "https://apps.apple.com/app/id6624313712?action=write-review",
-  subscriptions: "https://apps.apple.com/account/subscriptions",
   support: "https://directedbyshawn.com/synq-support",
   x: "https://x.com/SYNQMusic",
 };
-
-function useOpenPaywall() {
-  const router = useRouter();
-  return () => {
-    track("check_premium", { premium: false });
-    router.push("/premium");
-  };
-}
-
-function premiumStatus(status: PremiumStatus) {
-  return status;
-}
-
-export function PremiumSection() {
-  const status = usePremiumStatus(premiumStatus);
-  const openPaywall = useOpenPaywall();
-  return (
-    <FieldGroup.Section>
-      {status.active ? (
-        <Row
-          icon="sparkles"
-          label="SYNQ Premium"
-          detail={planDetail(status)}
-          trailing={status.plan === "lifetime" ? "none" : "external"}
-          onPress={
-            status.plan === "lifetime"
-              ? undefined
-              : () => void Linking.openURL(LINKS.subscriptions)
-          }
-        />
-      ) : (
-        <Row icon="sparkles" label="SYNQ Premium" onPress={openPaywall} />
-      )}
-    </FieldGroup.Section>
-  );
-}
 
 function Swatch({
   color,
   name,
   selected,
-  locked,
   onPress,
 }: {
   color: string;
   name: string;
   selected: boolean;
-  locked: boolean;
   onPress: () => void;
 }) {
   return (
@@ -108,16 +65,14 @@ function Swatch({
             className="size-[29px] items-center justify-center rounded-full"
             style={{ backgroundColor: color }}
           >
-            {selected ? (
+            {selected && (
               <SymbolIcon
                 name="checkmark"
                 size={12}
                 weight="bold"
                 tintColor="#141414"
               />
-            ) : locked ? (
-              <SymbolIcon name="lock.fill" size={10} tintColor="#14141499" />
-            ) : null}
+            )}
           </View>
         </View>
       </RNHostView>
@@ -127,16 +82,10 @@ function Swatch({
 
 export function AppearanceSection() {
   const router = useRouter();
-  const premium = usePremium();
   const theme = usePreference("theme");
-  const openPaywall = useOpenPaywall();
   const appIcon = useAppIcon();
   function choose(id: ThemeId, name: string) {
     if (id === theme) return;
-    if (!premium) {
-      openPaywall();
-      return;
-    }
     selectionTick();
     track("theme_change", { theme: name });
     setPreference("theme", id);
@@ -150,7 +99,6 @@ export function AppearanceSection() {
             color={option.accent}
             name={option.name}
             selected={theme === option.id}
-            locked={!premium}
             onPress={() => choose(option.id, option.name)}
           />
         ))}
@@ -206,22 +154,6 @@ function openSocial(url: string) {
   void Linking.openURL(url);
 }
 
-function restorePurchases() {
-  restorePremium().then(
-    (active) => {
-      if (active) {
-        Alert.alert("Purchases Restored", "SYNQ Premium is active.");
-      } else {
-        Alert.alert(
-          "No Purchases Found",
-          "This Apple Account hasn't bought SYNQ Premium.",
-        );
-      }
-    },
-    () => Alert.alert("Couldn't Restore Purchases", "Try again."),
-  );
-}
-
 function version() {
   const name = Application.nativeApplicationVersion ?? "";
   const build = Application.nativeBuildVersion;
@@ -260,12 +192,6 @@ export function AboutSection() {
         label="Discord"
         trailing="external"
         onPress={() => openSocial(LINKS.discord)}
-      />
-      <Row
-        icon="arrow.clockwise"
-        label="Restore Purchases"
-        trailing="none"
-        onPress={restorePurchases}
       />
       <FieldGroup.SectionFooter>
         <Text textStyle={{ color: SECONDARY_LABEL, fontSize: 13 }}>

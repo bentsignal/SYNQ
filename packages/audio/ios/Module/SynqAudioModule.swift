@@ -19,12 +19,6 @@ struct SetQueueOptions: Record {
   @Field var play: Bool?
 }
 
-struct InterstitialRecord: Record {
-  @Field var track: TrackRecord = TrackRecord()
-  @Field var afterListeningMs: Double = 0
-  @Field var listenedMs: Double?
-}
-
 final class InvalidArgumentException: GenericException<String>, @unchecked Sendable {
   override var reason: String { "Invalid argument: \(param)" }
 }
@@ -36,7 +30,7 @@ public final class SynqAudioModule: Module {
   public func definition() -> ModuleDefinition {
     Name("SynqAudio")
 
-    Events("state", "progress", "queue", "error", "interstitialStart", "interstitialEnd")
+    Events("state", "progress", "queue", "error")
 
     OnStartObserving("progress") {
       self.onMainAsync { $0.setProgressObserved(true) }
@@ -104,17 +98,6 @@ public final class SynqAudioModule: Module {
         throw InvalidArgumentException("unknown repeat mode \(mode)")
       }
       self.onMain { $0.setRepeatMode(mode) }
-    }.runOnQueue(.main)
-
-    AsyncFunction("configureInterstitial") { (config: InterstitialRecord?) in
-      let interstitial = try config.map {
-        InterstitialConfig(
-          track: try Self.track(from: $0.track),
-          afterListeningMs: $0.afterListeningMs,
-          listenedMs: $0.listenedMs
-        )
-      }
-      self.onMain { $0.configureInterstitial(interstitial) }
     }.runOnQueue(.main)
 
     AsyncFunction("getState") { () -> [String: Any?] in
@@ -215,8 +198,6 @@ public final class SynqAudioModule: Module {
       "durationMs": state.durationMs,
       "repeatMode": state.repeatMode.rawValue,
       "queueLength": state.queueLength,
-      "interstitial": state.interstitial,
-      "listenedMs": state.listenedMs,
     ]
   }
 
@@ -235,10 +216,6 @@ public final class SynqAudioModule: Module {
         "trackId": error.trackId,
         "index": error.index,
       ])
-    case .interstitialStart:
-      sendEvent("interstitialStart", [:])
-    case .interstitialEnd:
-      sendEvent("interstitialEnd", ["listenedMs": 0])
     }
   }
 }

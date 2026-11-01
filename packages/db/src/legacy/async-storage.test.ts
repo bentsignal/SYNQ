@@ -96,8 +96,6 @@ void describe("parseLegacySettings", () => {
         repeat: "off",
       },
       session: null,
-      premiumCache: null,
-      ads: { listenedMs: 0, due: false },
       bookkeeping: {
         importCount: 0,
         reviewRequested: false,
@@ -172,19 +170,27 @@ void describe("parseLegacySettings sources and cached state", () => {
     assert.equal(session("9", "1"), null);
   });
 
-  void test("parses premium cache, accent, and ad state", () => {
-    assert.deepEqual(
-      parseLegacySettings({ expiration: "2027-01-02T03:04:05.000Z" }, library)
-        .premiumCache,
+  void test("ignores 2.5.2's premium and ad keys", () => {
+    const settings = parseLegacySettings(
       {
-        kind: "until",
-        expiresAt: Date.UTC(2027, 0, 2, 3, 4, 5),
+        expiration: "never",
+        playAd: "true",
+        theme: "#A888EC",
+        timePlayed: "605",
       },
+      library,
     );
-    assert.equal(
-      parseLegacySettings({ expiration: "null" }, library).premiumCache,
-      null,
-    );
+    assert.equal(settings.preferences.accent, "#a888ec");
+    assert.deepEqual(settings.unknownKeys, []);
+    assert.deepEqual(Object.keys(settings).sort(), [
+      "bookkeeping",
+      "preferences",
+      "session",
+      "unknownKeys",
+    ]);
+  });
+
+  void test("parses the accent", () => {
     assert.equal(
       parseLegacySettings({ theme: "blue" }, library).preferences.accent,
       null,
@@ -192,10 +198,6 @@ void describe("parseLegacySettings sources and cached state", () => {
     assert.equal(
       parseLegacySettings({ theme: " #EDDD92 " }, library).preferences.accent,
       "#eddd92",
-    );
-    assert.deepEqual(
-      parseLegacySettings({ timePlayed: "605", playAd: "true" }, library).ads,
-      { listenedMs: 605_000, due: true },
     );
   });
 });

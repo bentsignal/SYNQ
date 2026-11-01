@@ -66,11 +66,11 @@ type PlaybackState = {
 
 ### Events
 
-| Event      | Payload                             | When                                                                                                                                                 |
-| ---------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `state`    | `PlaybackState`                     | status, index, track, repeat mode, or queue length changed                                                                                           |
-| `progress` | `{ positionMs, durationMs }`        | about twice a second while playing, plus seeks and track changes; **only produced while it has a listener**                                          |
-| `queue`    | `{ length, index }`                 | after any queue change (call `getQueue()` for the tracks)                                                                                            |
+| Event      | Payload                             | When                                                                                                                                                            |
+| ---------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `state`    | `PlaybackState`                     | status, index, track, repeat mode, or queue length changed                                                                                                      |
+| `progress` | `{ positionMs, durationMs }`        | about twice a second while playing, plus seeks and track changes; **only produced while it has a listener**                                                     |
+| `queue`    | `{ length, index }`                 | after any queue change (call `getQueue()` for the tracks)                                                                                                       |
 | `error`    | `{ code, message, trackId, index }` | a file is missing (`file-missing`), can't be decoded (`load-failed`), fails mid-play (`playback-failed`), or the audio session can't activate (`audio-session`) |
 
 ## Behavior

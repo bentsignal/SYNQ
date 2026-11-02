@@ -14,6 +14,7 @@ import {
   shuffled,
   shuffleQueue,
   unshuffleQueue,
+  upNextMove,
 } from "./queue-model.ts";
 
 /** A repeatable "random" sequence. */
@@ -162,6 +163,53 @@ void test("moves land at the target index", () => {
   const queue = buildQueue([1, 2, 3, 4], { shuffle: false, startIndex: 0 });
   assert.deepEqual(songs(moveEntry(queue, 1, 3)), [1, 3, 4, 2]);
   assert.deepEqual(songs(moveEntry(queue, 3, 1)), [1, 4, 2, 3]);
+});
+
+void test("an Up Next move lands where it was dropped and leaves the current song", () => {
+  const queue = buildQueue([1, 2, 3, 4, 5], { shuffle: false, startIndex: 1 });
+  function key(index: number) {
+    return queue.entries[index]?.key ?? "";
+  }
+  assert.deepEqual(upNextMove(queue, key(4), 0), { from: 4, to: 2 });
+  assert.deepEqual(upNextMove(queue, key(2), 2), { from: 2, to: 4 });
+  const moved = moveEntry(queue, 4, 2);
+  assert.deepEqual(songs(moved), [1, 2, 5, 3, 4]);
+  assert.equal(moved.currentKey, queue.currentKey);
+});
+
+void test("an Up Next move stays in Up Next", () => {
+  const queue = buildQueue([1, 2, 3, 4], { shuffle: false, startIndex: 1 });
+  function key(index: number) {
+    return queue.entries[index]?.key ?? "";
+  }
+  assert.deepEqual(upNextMove(queue, key(3), -5), { from: 3, to: 2 });
+  assert.deepEqual(upNextMove(queue, key(2), 99), { from: 2, to: 3 });
+});
+
+void test("an Up Next move does nothing when there's nothing to move", () => {
+  const queue = buildQueue([1, 2, 3], { shuffle: false, startIndex: 0 });
+  function key(index: number) {
+    return queue.entries[index]?.key ?? "";
+  }
+  assert.equal(upNextMove(queue, key(1), 0), null);
+  assert.equal(upNextMove(queue, "gone", 0), null);
+  // Native traps on a bad index, so one never gets that far.
+  assert.equal(upNextMove(queue, key(1), Number.NaN), null);
+  assert.equal(upNextMove(queue, key(1), 0.5), null);
+  // The song ended mid-drag and the dragged entry is the one playing now.
+  assert.equal(upNextMove(queue, key(0), 1), null);
+  const advanced = { ...queue, currentKey: key(1) };
+  assert.equal(upNextMove(advanced, key(1), 1), null);
+  assert.equal(upNextMove(advanced, key(0), 1), null);
+});
+
+void test("moving while shuffled keeps the unshuffled order to come back to", () => {
+  const queue = shuffleQueue(
+    buildQueue([1, 2, 3, 4, 5], { shuffle: false, startIndex: 0 }),
+  );
+  const moved = moveEntry(queue, 1, 3);
+  assert.deepEqual(moved.original, queue.original);
+  assert.deepEqual(songs(unshuffleQueue(moved)), [1, 2, 3, 4, 5]);
 });
 
 void test("forgetting deleted songs removes every entry of them", () => {

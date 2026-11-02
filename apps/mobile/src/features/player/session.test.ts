@@ -6,6 +6,7 @@ import {
   buildQueue,
   currentIndex,
   insertEntries,
+  moveEntry,
   newEntries,
   playNextIndex,
   shuffleQueue,
@@ -55,6 +56,22 @@ void test("a session survives a round trip through storage", () => {
   assert.equal(restoredPosition(stored, restored), 56_000);
   // The unshuffled order comes back too.
   assert.deepEqual(songs(unshuffleQueue(restored)), [5, 6, 9, 7, 8]);
+});
+
+void test("a reordered queue comes back in its new order, on the same song", () => {
+  let queue = buildQueue([5, 6, 7, 8], { shuffle: false, startIndex: 1 });
+  queue = insertEntries(queue, newEntries([9], true), playNextIndex(queue));
+  // Up Next is 9 (Play Next), 7, 8; 8 goes first.
+  queue = moveEntry(queue, 4, 2);
+  assert.deepEqual(songs(queue), [5, 6, 8, 9, 7]);
+  const { queue: restored, stored } = roundTrip(queue);
+  assert.deepEqual(songs(restored), [5, 6, 8, 9, 7]);
+  assert.equal(stored.index, 1);
+  assert.equal(restored.entries[1]?.songId, 6);
+  assert.equal(currentIndex(restored), 1);
+  // The Play Next flag went with its entry.
+  assert.deepEqual(stored.queued, [3]);
+  assert.equal(restoredPosition(stored, restored), 56_000);
 });
 
 void test("songs deleted since are dropped; the position resets if the current one went", () => {

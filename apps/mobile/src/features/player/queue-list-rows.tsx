@@ -14,7 +14,7 @@ import type { QueueDragValues } from "./use-queue-drag";
 import type { QueueSwipeState } from "./use-queue-swipe";
 import { SymbolIcon } from "~/components/symbol-icon";
 import { displacedSlot } from "./queue-layout";
-import { QueueRow, QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
+import { QueueHandle, QueueRow, QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
 import { artistLine } from "./tracks";
 import { SWIPE_OPEN } from "./use-queue-swipe";
 
@@ -87,7 +87,7 @@ export function UpNextRow({
 
   return (
     <Animated.View
-      className="absolute inset-x-0 top-0"
+      className="absolute inset-x-0 top-0 flex-row"
       style={[{ height: ROW }, style]}
     >
       <Pressable
@@ -100,11 +100,12 @@ export function UpNextRow({
           if (action === "moveDown") onMove(1);
           if (action === "remove") onRemove();
         }}
-        className="active:bg-fill"
+        className="active:bg-fill flex-1"
         onPress={onPress}
       >
-        <QueueRow song={song} handle />
+        <QueueRow song={song} />
       </Pressable>
+      <QueueHandle />
     </Animated.View>
   );
 }
@@ -113,14 +114,15 @@ export function UpNextRow({
 export function FloatingRow({
   song,
   entryKey,
-  values: { floatY, floating, lift },
+  values: { floatY, floating, from, lift },
 }: {
   song: SongListItem | undefined;
   entryKey: string | undefined;
   values: QueueDragValues;
 }) {
   const style = useAnimatedStyle(() => ({
-    opacity: floating.get() ? 1 : 0,
+    // A quick tap can let go before this has even mounted.
+    opacity: floating.get() && from.get() !== -1 ? 1 : 0,
     transform: [{ translateY: floatY.get() }, { scale: lift.get() }],
   }));
   return (
@@ -131,8 +133,15 @@ export function FloatingRow({
     >
       {song !== undefined && (
         // Once this has mounted, its row can hide under it.
-        <View key={entryKey} onLayout={() => floating.set(true)}>
-          <QueueRow song={song} handle />
+        <View
+          key={entryKey}
+          className="flex-row"
+          onLayout={() => floating.set(true)}
+        >
+          <View className="flex-1">
+            <QueueRow song={song} />
+          </View>
+          <QueueHandle />
         </View>
       )}
     </Animated.View>

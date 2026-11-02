@@ -17,7 +17,7 @@ const artworkFiles = new Map<string, string | undefined>();
 
 /**
  * A cover's file URL, preferring `size` and falling back to the other; for
- * native (the lock screen, SwiftUI rows), which reads files directly.
+ * native (the lock screen), which reads files directly.
  */
 export function artworkFileUri(
   artwork: ArtworkRef | null,

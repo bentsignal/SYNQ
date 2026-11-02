@@ -17,14 +17,11 @@ import { env } from "~/env";
 import { QueueDragDriver } from "~/features/dev/queue-drag-driver";
 import { moveInUpNext, playEntry, removeEntry } from "./commands";
 import { FloatingRow, SwipeBackground, UpNextRow } from "./queue-list-rows";
-import { QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
+import { QUEUE_HANDLE_WIDTH, QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
 import { useQueueDrag } from "./use-queue-drag";
 import { useQueueGeometry } from "./use-queue-geometry";
 import { SWIPE_OPEN, useQueueSwipe } from "./use-queue-swipe";
 import { useQueueWindow } from "./use-queue-window";
-
-/** The handle's side of a row: a touch here picks the row up at once. */
-const HANDLE_WIDTH = 56;
 
 /**
  * Up Next, drawn by hand so a reorder costs nothing however long the queue
@@ -175,7 +172,7 @@ function useReorderGesture({
         manager.fail();
         return;
       }
-      const onHandle = touch.x >= width.get() - HANDLE_WIDTH;
+      const onHandle = touch.x >= width.get() - QUEUE_HANDLE_WIDTH;
       if (!onHandle || offset < 0 || index >= count.get()) {
         manager.fail();
         return;

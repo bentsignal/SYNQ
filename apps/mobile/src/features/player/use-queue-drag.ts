@@ -104,6 +104,7 @@ export function useQueueDrag({
   function begin(index: number, y: number, grab: number) {
     "worklet";
     phase.set(DRAGGING);
+    floating.set(false);
     scrollYIsDriven.set(true);
     from.set(index);
     hover.set(index);

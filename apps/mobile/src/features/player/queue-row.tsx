@@ -8,20 +8,13 @@ import { artistLine } from "./tracks";
 
 /** Every queue row's height: the list places rows by it, on the UI thread. */
 export const QUEUE_ROW_HEIGHT = 60;
+export const QUEUE_HANDLE_WIDTH = 56;
 const ARTWORK = 44;
 
 /**
- * What a queue row shows: artwork, title, artist, and (in Up Next) the drag
- * handle. A drag starts on the handle's side of the row (`queue-list.tsx`);
- * the symbol only shows where.
+ * What a queue row shows: artwork, title, artist.
  */
-export function QueueRow({
-  song,
-  handle = false,
-}: {
-  song: SongListItem;
-  handle?: boolean;
-}) {
+export function QueueRow({ song }: { song: SongListItem }) {
   return (
     <View
       className="flex-row items-center gap-3 pl-4"
@@ -36,17 +29,28 @@ export function QueueRow({
           {artistLine(song)}
         </Text>
       </View>
-      {handle ? (
-        <View className="w-14 items-center">
-          <SymbolIcon
-            name="line.3.horizontal"
-            size={20}
-            tintColorClassName="accent-muted"
-          />
-        </View>
-      ) : (
-        <View className="w-1" />
-      )}
+    </View>
+  );
+}
+
+/**
+ * The drag handle beside an Up Next row. It only shows where a drag starts
+ * (`queue-list.tsx` handles the touch), and it sits outside the row's press
+ * so a tap on it can't play the song.
+ */
+export function QueueHandle() {
+  return (
+    <View
+      className="items-center justify-center"
+      style={{ width: QUEUE_HANDLE_WIDTH }}
+      pointerEvents="none"
+      accessibilityElementsHidden
+    >
+      <SymbolIcon
+        name="line.3.horizontal"
+        size={20}
+        tintColorClassName="accent-muted"
+      />
     </View>
   );
 }

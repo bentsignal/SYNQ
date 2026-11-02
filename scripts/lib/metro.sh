@@ -24,7 +24,15 @@ save_metro() {
   printf 'PORT=%s\nMETRO_PID=%s\n' "$PORT" "$METRO_PID" >"$STATE_DIR/metro"
 }
 
-port_in_use() { lsof -nP -iTCP:"$1" -sTCP:LISTEN >/dev/null 2>&1; }
+# Tailscale's own proxies listen on the tailnet address in a process lsof
+# can't see, and Expo refuses a port one of them holds, so ask that address too.
+port_in_use() {
+  lsof -nP -iTCP:"$1" -sTCP:LISTEN >/dev/null 2>&1 && return 0
+  command -v tailscale >/dev/null || return 1
+  local address
+  address="$(tailscale ip -4 2>/dev/null | head -1)"
+  [ -n "$address" ] && nc -z -G1 "$address" "$1" >/dev/null 2>&1
+}
 
 metro_running() {
   [ -n "$METRO_PID" ] && kill -0 "$METRO_PID" 2>/dev/null &&

@@ -146,6 +146,12 @@ ensure_built() {
   mkdir -p "$dir.partial"
   # Under the heavy-work lock SYNQ and Vera share, so builds never overlap.
   (cd "$MOBILE" && "$ROOT/scripts/bench/with-lock.sh" "$ROOT/scripts/sim.sh" "$command" "$dir.partial/$(basename "$artifact")")
+  # A failed build must not leave an empty cache entry that looks finished.
+  if [ ! -e "$dir.partial/$(basename "$artifact")" ]; then
+    echo "the $what build failed; see the output above" >&2
+    rm -rf "$dir.partial"
+    exit 1
+  fi
   mv "$dir.partial" "$dir"
   rmdir "$lock"
   trap - EXIT
@@ -361,6 +367,9 @@ up() {
   "$ROOT/scripts/phone.sh" sweep || true
   queue acquire "$PLATFORM"
   ensure_ios_device
+  # Saved before anything else can fail, so the next `up` reuses this device
+  # and `down` can reach it.
+  save
   install_client
   ensure_metro
   save

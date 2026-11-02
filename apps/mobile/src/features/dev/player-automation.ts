@@ -18,7 +18,7 @@ import {
 } from "~/features/player/commands";
 import { getPlayerState } from "~/features/player/store";
 import { seedPlayer } from "./player-seed";
-import { driveQueueDrag } from "./queue-drag-driver";
+import { driveQueueDrag } from "./queue-drag-control";
 
 /**
  * `synqDev.player` (development builds): drive playback from

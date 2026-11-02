@@ -9,6 +9,8 @@ import {
 } from "react-native-reanimated";
 import { scheduleOnUI } from "react-native-worklets";
 
+import { setQueueDrive } from "./queue-drag-control";
+
 /**
  * Development only: `synqDev.player.drag(index, toY, ms, holdMs)` runs a real
  * queue drag from the UI thread. Touches injected into a simulator stall
@@ -20,22 +22,6 @@ export interface QueueDragControls {
   readonly begin: (index: number) => number;
   readonly move: (y: number) => void;
   readonly end: () => void;
-}
-
-type Drive = (index: number, toY: number, ms: number, holdMs: number) => void;
-const driver = { drive: asDrive(null) };
-
-function asDrive(drive: Drive | null) {
-  return drive;
-}
-
-export function driveQueueDrag(
-  index: number,
-  toY: number,
-  ms: number,
-  holdMs = 0,
-) {
-  driver.drive?.(index, toY, ms, holdMs);
 }
 
 export function QueueDragDriver({ begin, move, end }: QueueDragControls) {
@@ -51,7 +37,7 @@ export function QueueDragDriver({ begin, move, end }: QueueDragControls) {
 
   // eslint-disable-next-line no-restricted-syntax -- development only: hands a module-level automation hook this mounted list's controls, for as long as it's mounted.
   useEffect(() => {
-    driver.drive = (index, toY, ms, holdMs) => {
+    setQueueDrive((index, toY, ms, holdMs) => {
       scheduleOnUI(() => {
         "worklet";
         const start = begin(index);
@@ -71,10 +57,8 @@ export function QueueDragDriver({ begin, move, end }: QueueDragControls) {
           ),
         );
       });
-    };
-    return () => {
-      driver.drive = null;
-    };
+    });
+    return () => setQueueDrive(null);
   }, [begin, driving, end, y]);
 
   return null;

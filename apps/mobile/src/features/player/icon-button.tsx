@@ -1,9 +1,11 @@
 import type { SymbolViewProps } from "expo-symbols";
 import type { Insets } from "react-native";
 import { Pressable } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
+  withSequence,
   withTiming,
 } from "react-native-reanimated";
 
@@ -19,8 +21,10 @@ const PRESS_OUT = { duration: 220 };
 
 /**
  * A player control: an SF Symbol in a round hit area, which answers a press on
- * the symbol itself, with a soft haptic tap. The animation runs on the UI
- * thread, and a press re-renders nothing.
+ * the symbol itself, with a soft haptic tap. A gesture that only watches the
+ * touches runs the animation on the UI thread, so it answers even while
+ * JavaScript is busy, and a press re-renders nothing. It never activates, so
+ * the `Pressable` still handles the press, its hit slop, and VoiceOver.
  */
 export function IconButton({
   label,
@@ -53,29 +57,45 @@ export function IconButton({
       transform: [{ scale: 1 - amount * (1 - PRESSED_SCALE) }],
     };
   });
+  const touches = Gesture.Manual()
+    .enabled(!disabled)
+    .onTouchesDown(() => {
+      pressed.set(withTiming(1, PRESS_IN));
+    })
+    .onTouchesUp((_event, manager) => {
+      // All the way in first, so even the quickest tap shows.
+      pressed.set(
+        withSequence(withTiming(1, PRESS_IN), withTiming(0, PRESS_OUT)),
+      );
+      manager.fail();
+    })
+    .onTouchesCancelled((_event, manager) => {
+      pressed.set(withTiming(0, PRESS_OUT));
+      manager.fail();
+    });
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled, selected }}
-      disabled={disabled}
-      hitSlop={hitSlop}
-      className={cn("items-center justify-center", className)}
-      style={{ height: size * 1.8, width: size * 1.8 }}
-      onPressIn={() => pressed.set(withTiming(1, PRESS_IN))}
-      onPressOut={() => pressed.set(withTiming(0, PRESS_OUT))}
-      onPress={() => {
-        lightImpact();
-        onPress();
-      }}
-    >
-      <Animated.View style={symbolStyle}>
-        <SymbolIcon
-          name={symbol}
-          size={size}
-          tintColorClassName={disabled ? "accent-subtle" : tint}
-        />
-      </Animated.View>
-    </Pressable>
+    <GestureDetector gesture={touches}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        accessibilityState={{ disabled, selected }}
+        disabled={disabled}
+        hitSlop={hitSlop}
+        className={cn("items-center justify-center", className)}
+        style={{ height: size * 1.8, width: size * 1.8 }}
+        onPress={() => {
+          lightImpact();
+          onPress();
+        }}
+      >
+        <Animated.View style={symbolStyle}>
+          <SymbolIcon
+            name={symbol}
+            size={size}
+            tintColorClassName={disabled ? "accent-subtle" : tint}
+          />
+        </Animated.View>
+      </Pressable>
+    </GestureDetector>
   );
 }

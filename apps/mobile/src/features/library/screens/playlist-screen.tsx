@@ -80,6 +80,7 @@ function Playlist({ playlist }: { playlist: PlaylistListItem }) {
   const liked = playlist.kind === "liked";
   const placeholder = liked ? "liked" : "playlist";
   const header = useHeaderTitle(playlist.name, placeholder);
+  const bare = songs.length === 0 && playlist.artwork === null;
   const source = liked
     ? ({ kind: "liked" } as const)
     : ({ id: playlist.id, kind: "playlist" } as const);
@@ -88,7 +89,7 @@ function Playlist({ playlist }: { playlist: PlaylistListItem }) {
   }
   return (
     <>
-      <DetailTitle title={header.title} />
+      <DetailTitle title={bare ? playlist.name : header.title} />
       <PlaylistMenu playlist={playlist} />
       <ScreenList
         data={songs}
@@ -98,29 +99,31 @@ function Playlist({ playlist }: { playlist: PlaylistListItem }) {
         scrollEventThrottle={32}
         onScroll={header.onScroll}
         ListHeaderComponent={
-          <CollectionHeader
-            artwork={playlist.artwork}
-            placeholder={placeholder}
-            name={playlist.name}
-            lines={
-              // An empty playlist says so below, in its empty state.
-              playlist.songCount > 0 && (
-                <HeaderLine>
-                  {collectionSummary(playlist.songCount, playlist.durationMs)}
-                </HeaderLine>
-              )
-            }
-          >
-            {songs.length > 0 && (
-              <PlayShuffleButtons songIds={ids} source={source} />
-            )}
-          </CollectionHeader>
+          bare ? null : (
+            <CollectionHeader
+              artwork={playlist.artwork}
+              placeholder={placeholder}
+              name={playlist.name}
+              lines={
+                // An empty playlist says so below, in its empty state.
+                playlist.songCount > 0 && (
+                  <HeaderLine>
+                    {collectionSummary(playlist.songCount, playlist.durationMs)}
+                  </HeaderLine>
+                )
+              }
+            >
+              {songs.length > 0 && (
+                <PlayShuffleButtons songIds={ids} source={source} />
+              )}
+            </CollectionHeader>
+          )
         }
         ListEmptyComponent={
           <EmptyState
-            className="pt-12"
+            compact={!bare}
             icon={liked ? "heart" : "music.note.list"}
-            title="No Songs Yet"
+            title={liked ? "No Liked Songs" : "No Songs Yet"}
             actions={[
               {
                 label: "Browse Songs",

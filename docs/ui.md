@@ -62,8 +62,13 @@ numbers.
   (`src/components/swiftui-row.tsx`). The separator is a React Native
   hairline. Share sends the file as imported until export writes tags into
   a copy.
-- **Empty states**: centered `ContentUnavailableView`-style symbol, title,
-  and one action where there is one (e.g. "No Music Yet" + Import Music).
+- **Empty states** (`EmptyState`, one component for every empty page and
+  every "no results"): a small `subtle` symbol (26 pt), a short `muted` title,
+  and only the actions that help, as quiet capsules on `fill`, sitting in the
+  upper part of the page. A page that's empty and has no artwork drops its
+  collection header, so there's no large placeholder: its name moves to the
+  bar and the state stands alone (Liked Songs: "No Liked Songs" + Browse
+  Songs).
 - **Errors**: `Alert.alert("Couldn't <Verb> <Noun>", "Try again.")`.
 
 ## Tabs
@@ -74,14 +79,17 @@ numbers.
 
 ### Library
 
-- Large title "Library". Toolbar right: `plus` menu: Import from Files,
-  Wi-Fi Transfer, divider, New Playlist.
+- "Library" sits on the bar's own row (`RootTabTitle`, as on Settings),
+  left-aligned opposite the `plus` menu: Import from Files, Wi-Fi Transfer,
+  divider, New Playlist. A large title would leave that row's left half
+  empty, with the title alone on the row below; pushed screens keep large
+  titles, since their top left is Back.
 - Rows (accent symbol, label, chevron): Liked Songs (`heart`), Playlists
   (`music.note.list`), Artists (`music.microphone`), Albums
   (`square.stack`), Songs (`music.note`).
 - "Recently Added": a two-column grid of the newest songs' artwork with
   title and artist below; tap plays.
-- Empty library: the empty state with Import Music and Wi-Fi Transfer.
+- Empty library: "No Music Yet" with Import from Files and Wi-Fi Transfer.
 
 ### Songs, Albums, Artists, Playlists
 
@@ -159,8 +167,8 @@ Artists, Playlists), songs playable in place, the others navigating.
 
 A native form (`FieldGroup`):
 - **Appearance**: Theme (a row of the seven accent swatches, selected one
-  ringed), App Icon (opens the icon
-  picker: the seven icons in a grid, current one checked).
+  ringed), App Icon (opens the icon picker: the seven icons in a grid,
+  current one checked; the row itself doesn't repeat the current icon).
 - **Playback**: Haptics toggle.
 - **Library**: Backup & Restore (Back Up Library shares a zip; Restore
   from Backup picks one, including 2.5.2 backups; Erase Library,
@@ -171,15 +179,33 @@ A native form (`FieldGroup`):
 
 ## Import
 
-- **Files**: the document picker (audio types, multiple), then a form
-  sheet listing each file as it's read (artwork, title, artist) and
-  imported, with a progress line; Done closes it. Every file imports
-  right away.
-- **Wi-Fi Transfer**: a screen showing the address to open on a computer
-  (large, selectable) while a local server runs only while this screen is
-  open; received files list in as they arrive, then import like Files. (The
-  network's name would need location permission and the Wi-Fi Information
-  entitlement, so it isn't shown.)
+Everything imports through one background queue
+(`src/features/import/session.ts`), one file at a time. Screens don't own
+it, so the app stays fully usable, and a second import just joins the line.
+The library refreshes at most once a second during an import. Files that
+fail don't interrupt anything: one alert names them when the queue is done.
+
+- **Files**: Import from Files opens the document picker (audio types,
+  multiple) directly, with no sheet. Songs appear in the library as they
+  finish, with a small glass capsule above the mini player ("Importing 3 of
+  12") on every tab, then "12 Songs Imported" for a moment.
+- **Wi-Fi Transfer**: a short sheet showing the address to open on a computer
+  (selectable) while a local server runs only while the sheet is open; once
+  files arrive, a progress view under it. No song list. The sheet closes
+  itself when the transfer is complete. (The network's name would need
+  location permission and the Wi-Fi Information entitlement, so it isn't
+  shown.)
+
+  **Complete** (`completionDelay` in `features/import/progress.ts`) means:
+  something arrived, no upload is in flight, every received file has
+  imported, and the page has nothing left to send. The browser uploads one
+  file at a time, and each upload's `Content-Type` carries how many follow
+  (`synq-remaining`), so the phone knows a gap between files isn't the end.
+  After the last file the sheet stays 1.8 s (so a second drop can still catch
+  it). If the page said more would come and nothing starts for 45 s, the
+  browser went away and the sheet closes. A page that says nothing gets 6 s.
+  If nothing imported at all, the sheet stays open with its address after the
+  alert, to try again.
 - **Export / Share**: tags written into a copy, then the share sheet.
 
 ## Updating from 2.5.2

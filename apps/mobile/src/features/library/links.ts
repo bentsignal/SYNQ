@@ -2,6 +2,8 @@ import type { Href } from "expo-router";
 import type { SFSymbol } from "expo-symbols";
 import { router } from "expo-router";
 
+import { importFromFiles } from "~/features/import/pick-files";
+
 /** The tabs whose stacks show library screens. */
 export type LibraryTab = "library" | "search";
 
@@ -46,8 +48,15 @@ export function openLibraryScreen(target: LibraryScreen) {
 
 /** Opens an import flow (docs/ui.md → Import): the Files picker or Wi-Fi Transfer. */
 export function openImport(kind: "files" | "wifi") {
-  router.push(kind === "files" ? "/import/files" : "/import/wifi");
+  if (kind === "files") importFromFiles();
+  else router.push("/import/wifi");
 }
+
+/** What an empty page offers to get music in. */
+export const IMPORT_ACTIONS = [
+  { label: "Import from Files", onPress: () => openImport("files") },
+  { label: "Wi-Fi Transfer", onPress: () => openImport("wifi") },
+];
 
 /** Opens the New Playlist sheet. */
 export function openNewPlaylist() {

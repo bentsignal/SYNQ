@@ -4,6 +4,7 @@ import { router, Stack } from "expo-router";
 import type { AlbumListItem, AlbumTrack } from "@synq/db";
 import { getAlbum, listAlbumTracks } from "@synq/db";
 
+import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
 import { exportAlbum } from "~/features/export/export";
 import { playSongs } from "~/features/player/actions";
@@ -74,13 +75,14 @@ function Album({ album }: { album: AlbumListItem }) {
     select: (items) => items,
   });
   const header = useHeaderTitle(album.name, "album");
+  const bare = tracks.length === 0 && album.artwork === null;
   const source = { id: album.id, kind: "album" } as const;
   function ids() {
     return tracks.map((song) => song.id);
   }
   return (
     <>
-      <DetailTitle title={header.title} />
+      <DetailTitle title={bare ? album.name : header.title} />
       <AlbumMenu album={album} />
       <ScreenList
         data={tracks}
@@ -90,26 +92,37 @@ function Album({ album }: { album: AlbumListItem }) {
         scrollEventThrottle={32}
         onScroll={header.onScroll}
         ListHeaderComponent={
-          <CollectionHeader
-            artwork={album.artwork}
-            placeholder="album"
-            name={album.name}
-            lines={
-              <>
-                <ArtistLinks artists={album.artists} />
-                <HeaderLine>{dotted("Album", album.year)}</HeaderLine>
-              </>
-            }
-          >
-            {tracks.length > 0 && (
-              <PlayShuffleButtons songIds={ids} source={source} />
-            )}
-          </CollectionHeader>
+          bare ? null : (
+            <CollectionHeader
+              artwork={album.artwork}
+              placeholder="album"
+              name={album.name}
+              lines={
+                <>
+                  <ArtistLinks artists={album.artists} />
+                  <HeaderLine>{dotted("Album", album.year)}</HeaderLine>
+                </>
+              }
+            >
+              {tracks.length > 0 && (
+                <PlayShuffleButtons songIds={ids} source={source} />
+              )}
+            </CollectionHeader>
+          )
+        }
+        ListEmptyComponent={
+          <EmptyState
+            compact={!bare}
+            icon="square.stack"
+            title="No Songs Yet"
+          />
         }
         ListFooterComponent={
-          <Text className="text-footnote text-muted px-4 pt-4 pb-8 tabular-nums">
-            {collectionSummary(album.songCount, album.durationMs)}
-          </Text>
+          tracks.length > 0 ? (
+            <Text className="text-footnote text-muted px-4 pt-4 pb-8 tabular-nums">
+              {collectionSummary(album.songCount, album.durationMs)}
+            </Text>
+          ) : null
         }
         renderItem={({ item, index }) => (
           <SongRow

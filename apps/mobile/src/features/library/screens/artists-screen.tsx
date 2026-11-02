@@ -18,9 +18,7 @@ import { SortToolbar } from "../sort-toolbar";
 
 function Empty({ query }: { query: string }) {
   if (query !== "") return <NoResults query={query} />;
-  return (
-    <EmptyState className="pt-24" icon="music.microphone" title="No Artists" />
-  );
+  return <EmptyState icon="music.microphone" title="No Artists" />;
 }
 
 export default function ArtistsScreen() {

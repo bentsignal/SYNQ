@@ -47,14 +47,16 @@ const STYLE = `
 `;
 
 /** Uploads one file at a time as the request body, with its progress. */
-const SCRIPT = `
+export const TRANSFER_SCRIPT = `
 (() => {
   const allowed = ${JSON.stringify(TRANSFER_EXTENSIONS)};
   const drop = document.getElementById("drop");
   const input = document.getElementById("files");
   const list = document.getElementById("list");
+  const note = document.getElementById("note");
   const queue = [];
   let busy = false;
+  let sent = 0;
 
   function row(file) {
     const li = document.createElement("li");
@@ -88,13 +90,22 @@ const SCRIPT = `
   }
 
   function next() {
-    if (busy || queue.length === 0) return;
+    if (busy) return;
+    if (queue.length === 0) {
+      if (sent > 0) note.textContent = "All sent. You can close this page.";
+      return;
+    }
     busy = true;
     const { file, view } = queue.shift();
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/upload");
     xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.name));
-    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+    // Tells the phone how many files follow this one, so it knows the
+    // transfer isn't over between files.
+    xhr.setRequestHeader(
+      "Content-Type",
+      (file.type || "application/octet-stream") + "; synq-remaining=" + queue.length,
+    );
     xhr.upload.onprogress = (event) => {
       if (!event.lengthComputable) return;
       const fraction = event.loaded / event.total;
@@ -109,7 +120,10 @@ const SCRIPT = `
       next();
     };
     xhr.onload = () => {
-      if (xhr.status === 200) return finish(true, "Sent");
+      if (xhr.status === 200) {
+        sent += 1;
+        return finish(true, "Sent");
+      }
       let message = "Couldn't send";
       try { message = JSON.parse(xhr.responseText).error || message; } catch (e) {}
       finish(false, message);
@@ -167,9 +181,9 @@ export function transferPage({
     <input id="files" type="file" multiple accept="${accept},audio/*" hidden>
   </label>
   <ul id="list"></ul>
-  <p class="note">Files go straight to your iPhone over your Wi-Fi, never the internet.</p>
+  <p class="note" id="note">Files go straight to your iPhone over your Wi-Fi, never the internet.</p>
 </main>
-<script>${SCRIPT}</script>
+<script>${TRANSFER_SCRIPT}</script>
 </body>
 </html>`;
 }

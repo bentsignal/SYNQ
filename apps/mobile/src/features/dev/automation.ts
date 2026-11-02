@@ -4,6 +4,7 @@ import { router } from "expo-router";
 
 import { env } from "~/env";
 import { frameReport, startFrames, stopFrames } from "./frames";
+import { importSample } from "./import-sample";
 import { playerAutomation } from "./player-automation";
 import { seed } from "./seed";
 
@@ -31,6 +32,8 @@ export function installDevAutomation() {
       seed,
       /** `scripts/sim.sh frames start` and `stop`: see frames.ts. */
       frames: { report: frameReport, start: startFrames, stop: stopFrames },
+      /** A large import without the Files picker: see import-sample.ts. */
+      importSample,
       /** Playback: see player-automation.ts. */
       player: playerAutomation,
     },

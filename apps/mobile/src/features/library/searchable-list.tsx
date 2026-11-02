@@ -68,10 +68,6 @@ export function LibrarySearchBar({
 /** What a filtered list shows when nothing matches. */
 export function NoResults({ query }: { query: string }) {
   return (
-    <EmptyState
-      className="pt-24"
-      icon="magnifyingglass"
-      title={`No Results for “${query}”`}
-    />
+    <EmptyState icon="magnifyingglass" title={`No Results for “${query}”`} />
   );
 }

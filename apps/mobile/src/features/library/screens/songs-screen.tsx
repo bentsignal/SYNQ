@@ -4,7 +4,7 @@ import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
 import { TabTitle } from "~/components/tab-title";
 import { playSongs } from "~/features/player/actions";
-import { openImport } from "../links";
+import { IMPORT_ACTIONS } from "../links";
 import { PlayShuffleButtons } from "../play-shuffle-buttons";
 import {
   LibrarySearchBar,
@@ -20,12 +20,7 @@ const SOURCE = { kind: "library" } as const;
 function Empty({ query }: { query: string }) {
   if (query !== "") return <NoResults query={query} />;
   return (
-    <EmptyState
-      className="pt-24"
-      icon="music.note"
-      title="No Songs"
-      actions={[{ label: "Import Music", onPress: () => openImport("files") }]}
-    />
+    <EmptyState icon="music.note" title="No Songs" actions={IMPORT_ACTIONS} />
   );
 }
 

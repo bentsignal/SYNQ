@@ -18,7 +18,6 @@ import {
 import type { ThemeId } from "~/features/preferences/themes";
 import { SymbolIcon } from "~/components/symbol-icon";
 import { track } from "~/features/analytics/analytics";
-import { APP_ICONS } from "~/features/app-icon/app-icon";
 import { setPreference, usePreference } from "~/features/preferences/store";
 import { THEMES } from "~/features/preferences/themes";
 import { selectionTick } from "~/lib/haptics";
@@ -107,10 +106,6 @@ export function AppearanceSection() {
         <Row
           icon="app.badge"
           label="App Icon"
-          detail={
-            APP_ICONS.find((icon) => icon.name === appIcon.current)?.label ??
-            undefined
-          }
           onPress={() => router.push("/settings/app-icon")}
         />
       )}

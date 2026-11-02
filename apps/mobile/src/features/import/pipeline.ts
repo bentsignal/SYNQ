@@ -9,15 +9,14 @@ import { libraryDb } from "~/features/library/database";
 import { readFlacTags } from "~/features/media/flac";
 import { readFlacBlocks } from "~/features/media/heads";
 import { synqMedia } from "~/features/media/native";
-import { queryClient } from "~/lib/query-client";
 import { audioExtension, audioMimeType, cleanTags } from "./clean-tags";
 
-/** Where imports stage their work; cleared when an import session ends. */
+/** Where imports stage their work; cleared whenever the queue is idle. */
 export const IMPORT_DIRECTORY = new Directory(Paths.cache, "import");
 
 /** A file to import: picked in Files, or received over Wi-Fi. */
 export interface ImportSource {
-  /** Unique within the session. */
+  /** Unique among the files being imported. */
   key: string;
   /** The file's name as it will be stored. */
   name: string;
@@ -110,29 +109,17 @@ export async function readSource(source: ImportSource) {
   } satisfies ReadSong;
 }
 
-/** The small cover rendered for an item, for the import list. */
-export function stagedCoverUri(read: ReadSong) {
-  return read.covers === null
-    ? null
-    : new File(read.covers, "cover_small.jpg").uri;
-}
-
 async function moveInto(file: File, destination: File) {
   if (destination.exists) destination.delete();
   await file.move(destination);
 }
 
-async function copyInto(file: File, destination: File) {
-  if (destination.exists) destination.delete();
-  await file.copy(destination);
-}
-
 /**
  * Adds a read song to the library: the row (finding or creating its
  * artists and album), then its audio and covers moved into its folders.
- * Library screens refresh only once the files are in place, so a new song
- * never shows without its artwork. If the audio can't be moved, the row is
- * removed again. Returns the song's id.
+ * The caller refreshes library screens afterwards, once the files are in
+ * place, so a new song never shows without its artwork. If the audio can't
+ * be moved, the row is removed again. Returns the song's id.
  */
 export async function importSong(source: ImportSource, read: ReadSong) {
   const db = libraryDb();
@@ -165,11 +152,10 @@ export async function importSong(source: ImportSource, read: ReadSong) {
     try {
       const folder = new Directory(Paths.document, ...target.dir.split("/"));
       folder.create({ idempotent: true, intermediates: true });
-      // Copied: the staged covers stay as the import list's thumbnails.
       const covers = read.covers;
       await Promise.all(
         ["cover_full.jpg", "cover_small.jpg"].map((name) =>
-          copyInto(new File(covers, name), new File(folder, name)),
+          moveInto(new File(covers, name), new File(folder, name)),
         ),
       );
     } catch {
@@ -177,7 +163,6 @@ export async function importSong(source: ImportSource, read: ReadSong) {
       setArtwork(db, { id: target.id, kind: target.kind, present: false });
     }
   }
-  void queryClient.invalidateQueries({ queryKey: ["library"] });
   return added.id;
 }
 

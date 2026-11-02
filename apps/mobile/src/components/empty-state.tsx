@@ -1,7 +1,6 @@
 import type { SFSymbol } from "expo-symbols";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, useWindowDimensions, View } from "react-native";
 
-import { cn } from "~/lib/cn";
 import { SymbolIcon } from "./symbol-icon";
 
 export interface EmptyStateAction {
@@ -9,44 +8,46 @@ export interface EmptyStateAction {
   onPress: () => void;
 }
 
+/** Where the state sits on a full page: above center, like a dialog. */
+const TOP_FRACTION = 0.2;
+
 /**
- * `ContentUnavailableView`'s look: a large muted symbol, a title, an
- * optional line, and the actions there are (docs/ui.md → Empty states).
+ * Every empty page and "nothing found" (docs/ui.md → Empty states): a small
+ * muted symbol, a short title, and the actions there are, centered in the
+ * upper part of the page. `compact` drops that offset, for a state below
+ * other content or inside a sheet.
  */
 export function EmptyState({
   icon,
   title,
-  message,
   actions = [],
-  className,
+  compact = false,
 }: {
   icon: SFSymbol;
   title: string;
-  message?: string;
   actions?: readonly EmptyStateAction[];
-  className?: string;
+  compact?: boolean;
 }) {
+  const { height } = useWindowDimensions();
   return (
-    <View className={cn("items-center justify-center gap-4 px-10", className)}>
-      <SymbolIcon name={icon} size={48} tintColorClassName="accent-subtle" />
-      <View className="items-center gap-1">
-        <Text className="text-title text-foreground text-center font-bold">
-          {title}
-        </Text>
-        {message !== undefined && (
-          <Text className="text-body text-muted text-center">{message}</Text>
-        )}
-      </View>
+    <View
+      className="items-center gap-2.5 px-10"
+      style={{ paddingTop: compact ? 24 : Math.round(height * TOP_FRACTION) }}
+    >
+      <SymbolIcon name={icon} size={26} tintColorClassName="accent-subtle" />
+      <Text className="text-subhead text-muted text-center font-medium">
+        {title}
+      </Text>
       {actions.length > 0 && (
-        <View className="items-center gap-3 pt-1">
+        <View className="items-stretch gap-2 pt-3">
           {actions.map((action) => (
             <Pressable
               key={action.label}
               accessibilityRole="button"
-              className="bg-fill min-w-48 items-center rounded-full px-6 py-3 active:opacity-70"
+              className="bg-fill h-10 items-center justify-center rounded-full px-6 active:opacity-70"
               onPress={action.onPress}
             >
-              <Text className="text-body text-accent font-semibold">
+              <Text className="text-subhead text-foreground font-medium">
                 {action.label}
               </Text>
             </Pressable>

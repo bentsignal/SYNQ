@@ -4,6 +4,7 @@ import { router, Stack } from "expo-router";
 import type { ArtistDetail, ArtistListItem } from "@synq/db";
 import { getArtistDetail } from "@synq/db";
 
+import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
 import { exportArtist } from "~/features/export/export";
 import { playSongs } from "~/features/player/actions";
@@ -101,13 +102,15 @@ function ArtistHeader({
 function Artist({ detail }: { detail: ArtistDetail }) {
   const { artist, songs } = detail;
   const header = useHeaderTitle(artist.name, "artist");
+  const empty = songs.length === 0 && detail.albums.length === 0;
+  const bare = empty && artist.artwork === null;
   const source = { id: artist.id, kind: "artist" } as const;
   function ids() {
     return songs.map((song) => song.id);
   }
   return (
     <>
-      <DetailTitle title={header.title} />
+      <DetailTitle title={bare ? artist.name : header.title} />
       <ArtistMenu artist={artist} />
       <ScreenList
         data={songs}
@@ -116,7 +119,18 @@ function Artist({ detail }: { detail: ArtistDetail }) {
         estimatedItemSize={SONG_ROW_HEIGHT}
         scrollEventThrottle={32}
         onScroll={header.onScroll}
-        ListHeaderComponent={<ArtistHeader detail={detail} songIds={ids} />}
+        ListHeaderComponent={
+          bare ? null : <ArtistHeader detail={detail} songIds={ids} />
+        }
+        ListEmptyComponent={
+          empty ? (
+            <EmptyState
+              compact={!bare}
+              icon="music.microphone"
+              title="No Songs Yet"
+            />
+          ) : null
+        }
         ListFooterComponent={<View className="h-6" />}
         renderItem={({ item, index }) => (
           <SongRow

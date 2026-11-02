@@ -12,8 +12,8 @@ Call `track(event, properties)` from anywhere.
 | --- | --- | --- |
 | `import_files` | | Import from Files opens |
 | `import_wifi` | | Wi-Fi Transfer opens |
-| `import_finish` | `numberOfSongs` | An import sheet closes after importing songs |
-| `import_cancel` | | An import sheet closes with files but none imported |
+| `import_finish` | `numberOfSongs` | An import batch ends with songs imported |
+| `import_cancel` | | An import batch ends with files but none imported |
 | `theme_change` | `theme` | A theme is chosen |
 | `app_icon_change` | `icon` | An app icon is chosen |
 | `social_press` | `url` | Contact Support, X, Instagram, Discord |

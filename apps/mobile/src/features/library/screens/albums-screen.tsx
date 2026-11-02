@@ -44,7 +44,7 @@ function readAlbums(db: LibraryDb, sort: Sort<AlbumSortKey>, search?: string) {
 
 function Empty({ query }: { query: string }) {
   if (query !== "") return <NoResults query={query} />;
-  return <EmptyState className="pt-24" icon="square.stack" title="No Albums" />;
+  return <EmptyState icon="square.stack" title="No Albums" />;
 }
 
 export default function AlbumsScreen() {

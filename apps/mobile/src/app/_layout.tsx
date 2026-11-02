@@ -1,6 +1,5 @@
 import "~/global.css";
 
-import type { NativeStackNavigationOptions } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -8,7 +7,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { useCSSVariable } from "uniwind";
 
 import { installDevAutomation } from "~/features/dev/automation";
-import { pickIntoImport } from "~/features/import/pick-files";
+import { ImportActivity } from "~/features/import/import-activity";
 import { LibraryGate } from "~/features/library/library-gate";
 import { applyStoredPreferences } from "~/features/preferences/store";
 import { queryClient } from "~/lib/query-client";
@@ -17,15 +16,6 @@ import { queryClient } from "~/lib/query-client";
 SplashScreen.setOptions({ duration: 250, fade: true });
 applyStoredPreferences();
 installDevAutomation();
-
-/** The import sheets: a title, a Done button, and the list as it imports. */
-const IMPORT_SHEET = {
-  headerShown: true,
-  headerTransparent: true,
-  presentation: "formSheet" as const,
-  sheetAllowedDetents: [0.6, 1],
-  sheetGrabberVisible: true,
-} satisfies NativeStackNavigationOptions;
 
 function color<Fallback>(
   value: string | number | undefined,
@@ -116,18 +106,15 @@ function RootStack() {
         }}
       />
       <Stack.Screen
-        name="import/files"
-        options={{ ...IMPORT_SHEET, title: "Import" }}
-        listeners={{
-          // The Files picker can only present once the sheet has.
-          transitionEnd: (event) => {
-            if (!event.data.closing) pickIntoImport();
-          },
-        }}
-      />
-      <Stack.Screen
         name="import/wifi"
-        options={{ ...IMPORT_SHEET, title: "Wi-Fi Transfer" }}
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          presentation: "formSheet",
+          sheetAllowedDetents: [0.42],
+          sheetGrabberVisible: true,
+          title: "Wi-Fi Transfer",
+        }}
       />
     </Stack>
   );
@@ -140,6 +127,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <LibraryGate>
             <RootStack />
+            <ImportActivity />
           </LibraryGate>
         </QueryClientProvider>
       </ThemeProvider>

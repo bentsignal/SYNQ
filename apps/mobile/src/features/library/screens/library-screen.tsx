@@ -7,11 +7,12 @@ import { findLikedPlaylistId, listSongs } from "@synq/db";
 import { Artwork } from "~/components/artwork";
 import { EmptyState } from "~/components/empty-state";
 import { ScreenScroll } from "~/components/screen-scroll";
-import { TabTitle } from "~/components/tab-title";
+import { RootTabTitle } from "~/components/tab-title";
 import { playSongs } from "~/features/player/actions";
 import { names, UNKNOWN_ARTIST } from "../format";
 import { LibraryLinkRow } from "../library-link-row";
 import {
+  IMPORT_ACTIONS,
   LIBRARY_ROWS,
   openImport,
   openLibraryScreen,
@@ -149,18 +150,14 @@ export default function LibraryScreen() {
   });
   return (
     <>
-      <TabTitle title="Library" />
+      <RootTabTitle title="Library" />
       <LibraryToolbar />
       <ScreenScroll>
         {recent.length === 0 ? (
           <EmptyState
-            className="pt-32"
             icon="music.note.house"
             title="No Music Yet"
-            actions={[
-              { label: "Import Music", onPress: () => openImport("files") },
-              { label: "Wi-Fi Transfer", onPress: () => openImport("wifi") },
-            ]}
+            actions={IMPORT_ACTIONS}
           />
         ) : (
           <View className="pb-8">

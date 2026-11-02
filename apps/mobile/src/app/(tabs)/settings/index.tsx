@@ -1,4 +1,4 @@
-import { TabTitle } from "~/components/tab-title";
+import { RootTabTitle } from "~/components/tab-title";
 import { Form } from "~/features/settings/form";
 import {
   AboutSection,
@@ -10,7 +10,7 @@ import {
 export default function SettingsScreen() {
   return (
     <>
-      <TabTitle title="Settings" />
+      <RootTabTitle title="Settings" />
       <Form>
         <AppearanceSection />
         <PlaybackSection />

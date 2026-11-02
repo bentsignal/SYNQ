@@ -73,8 +73,8 @@ numbers.
   only Edit and Delete. Liked Songs has no Delete. Collection rows and
   Recently Added's and an artist's cards are `NativeRow`s without the
   `ellipsis` button or a separator, so a long press lifts them natively and
-  lists cost what song rows cost. The queue's rows (a SwiftUI `List`) and
-  the import list's are the only song lists without a menu.
+  lists cost what song rows cost. The queue's rows have no menu either; they
+  drag and swipe instead.
 - **Song picker** (`src/features/editing/song-picker.tsx`): add several
   songs from the library at once, from Edit Songs and New Playlist / Album.
   The Songs list's sort in a Legend List of plain React Native rows (no

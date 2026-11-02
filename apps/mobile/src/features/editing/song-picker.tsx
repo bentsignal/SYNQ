@@ -158,7 +158,7 @@ function PickerToolbar({
 
 function Empty({ query }: { query: string }) {
   if (query !== "") return <NoResults query={query} />;
-  return <EmptyState className="pt-24" icon="music.note" title="No Songs" />;
+  return <EmptyState icon="music.note" title="No Songs" />;
 }
 
 /**

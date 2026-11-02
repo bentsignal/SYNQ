@@ -95,6 +95,38 @@ final class QueueEditTests: EngineTestCase {
     XCTAssertEqual(engine.status, .playing)
   }
 
+  func testMovingAnEntryNextHandsOffToItWithoutAGap() {
+    engine.setQueue([Tracks.a, Tracks.b, Tracks.c], play: true)
+    waitForStatus(.playing)
+    let item = engine.current!.item
+    let position = engine.positionMs
+    XCTAssertEqual(engine.upcoming?.track.id, "b")
+
+    engine.move(from: 2, to: 1)
+    XCTAssertTrue(engine.current?.item === item, "the song playing isn't touched")
+    XCTAssertGreaterThanOrEqual(engine.positionMs, position)
+    XCTAssertEqual(engine.upcoming?.track.id, "c")
+    assertPlayerItemsMatchSlots()
+    let preloaded = engine.upcoming!.item
+
+    waitUntil("advance to c") { engine.current?.track.id == "c" && engine.status == .playing }
+    XCTAssertTrue(engine.current?.item === preloaded, "the preloaded item plays, nothing reloads")
+    XCTAssertEqual(engine.tracks.map(\.id), ["a", "c", "b"])
+    XCTAssertEqual(engine.upcoming?.track.id, "b")
+    let statuses = recorder.states.map(\.status)
+    let firstPlaying = statuses.firstIndex(of: .playing)!
+    XCTAssertFalse(statuses[firstPlaying...].contains(.paused), "no pause between tracks: \(statuses)")
+  }
+
+  func testMovingEntriesBehindThePreloadKeepsIt() {
+    _ = playLong([Tracks.long, Tracks.a, Tracks.b, Tracks.c])
+    let preloaded = engine.upcoming!.item
+    engine.move(from: 3, to: 2)
+    XCTAssertEqual(engine.tracks.map(\.id), ["long", "a", "c", "b"])
+    XCTAssertTrue(engine.upcoming?.item === preloaded, "what's next didn't change, so it isn't reloaded")
+    assertPlayerItemsMatchSlots()
+  }
+
   func testReplacingTheQueueKeepsTheSameTrackPlayingSeamlessly() {
     let item = playLong([Tracks.a, Tracks.long, Tracks.b, Tracks.c])
     engine.skip(to: 1)

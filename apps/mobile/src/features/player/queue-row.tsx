@@ -1,78 +1,56 @@
-import type { ModifierConfig } from "@expo/ui/swift-ui/modifiers";
-import { Button, HStack, Image, Spacer, Text, VStack } from "@expo/ui/swift-ui";
-import {
-  aspectRatio,
-  background,
-  clipShape,
-  font,
-  foregroundStyle,
-  frame,
-  lineLimit,
-  resizable,
-} from "@expo/ui/swift-ui/modifiers";
+import { Text, View } from "react-native";
 
 import type { SongListItem } from "@synq/db";
 
-import { artistLine, artworkFileUri } from "./tracks";
+import { Artwork } from "~/components/artwork";
+import { SymbolIcon } from "~/components/symbol-icon";
+import { artistLine } from "./tracks";
 
+/** Every queue row's height: the list places rows by it, on the UI thread. */
+export const QUEUE_ROW_HEIGHT = 60;
+export const QUEUE_HANDLE_WIDTH = 56;
 const ARTWORK = 44;
-const artworkFrame = [frame({ height: ARTWORK, width: ARTWORK })];
-const title = [
-  font({ textStyle: "body" }),
-  lineLimit(1),
-  foregroundStyle("primary"),
-];
-const subtitle = [
-  font({ textStyle: "subheadline" }),
-  lineLimit(1),
-  foregroundStyle({ style: "secondary", type: "hierarchical" }),
-];
 
 /**
- * A song in the queue's SwiftUI list: artwork, title, artist. A tap plays
- * it; the list adds drag to reorder and swipe to remove.
+ * What a queue row shows: artwork, title, artist.
  */
-export function QueueRow({
-  song,
-  modifiers,
-  onPress,
-}: {
-  song: SongListItem;
-  modifiers?: ModifierConfig[];
-  onPress?: () => void;
-}) {
-  const artwork = artworkFileUri(song.artwork, "small");
+export function QueueRow({ song }: { song: SongListItem }) {
   return (
-    <Button modifiers={modifiers} onPress={onPress}>
-      <HStack spacing={12}>
-        {artwork === undefined ? (
-          <Image
-            systemName="music.note"
-            size={18}
-            color="rgba(235, 235, 245, 0.3)"
-            modifiers={[
-              ...artworkFrame,
-              background("rgba(118, 118, 128, 0.24)"),
-              clipShape("roundedRectangle", 6),
-            ]}
-          />
-        ) : (
-          <Image
-            uiImage={artwork}
-            modifiers={[
-              resizable(),
-              aspectRatio({ contentMode: "fill" }),
-              ...artworkFrame,
-              clipShape("roundedRectangle", 6),
-            ]}
-          />
-        )}
-        <VStack alignment="leading" spacing={2}>
-          <Text modifiers={title}>{song.title}</Text>
-          <Text modifiers={subtitle}>{artistLine(song)}</Text>
-        </VStack>
-        <Spacer />
-      </HStack>
-    </Button>
+    <View
+      className="flex-row items-center gap-3 pl-4"
+      style={{ height: QUEUE_ROW_HEIGHT }}
+    >
+      <Artwork artwork={song.artwork} placeholder="song" size={ARTWORK} />
+      <View className="flex-1">
+        <Text numberOfLines={1} className="text-body text-foreground">
+          {song.title}
+        </Text>
+        <Text numberOfLines={1} className="text-subhead text-muted">
+          {artistLine(song)}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+/**
+ * The drag handle beside an Up Next row. It only shows where a drag starts
+ * (`queue-list.tsx` handles the touch), and it sits outside the row's press
+ * so a tap on it can't play the song.
+ */
+export function QueueHandle() {
+  return (
+    <View
+      className="items-center justify-center"
+      style={{ width: QUEUE_HANDLE_WIDTH }}
+      pointerEvents="none"
+      accessibilityElementsHidden
+    >
+      <SymbolIcon
+        name="line.3.horizontal"
+        size={20}
+        tintColorClassName="accent-muted"
+      />
+    </View>
   );
 }

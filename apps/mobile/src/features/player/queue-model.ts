@@ -182,6 +182,25 @@ export function moveEntry(queue: Queue, from: number, to: number) {
   return { ...queue, entries };
 }
 
+/**
+ * The move that puts `key` at `upNextIndex` of Up Next (the entries after the
+ * current one), as queue indices, or null when there's nothing to do: the
+ * entry is gone or playing (a song can end mid-drag), or it's already there.
+ * Taking a key rather than an index keeps a drag right if the song changed
+ * while it was in the air.
+ */
+export function upNextMove(queue: Queue, key: string, upNextIndex: number) {
+  const current = currentIndex(queue);
+  const from = queue.entries.findIndex((entry) => entry.key === key);
+  // Native can't take a bad index: it would bring the app down, not fail.
+  if (from === -1 || from <= current || !Number.isInteger(upNextIndex)) {
+    return null;
+  }
+  const last = queue.entries.length - 1;
+  const to = Math.min(Math.max(current + 1 + upNextIndex, current + 1), last);
+  return from === to ? null : { from, to };
+}
+
 /** Drops every entry of these songs (they were deleted from the library). */
 export function forgetSongIds(
   queue: Queue,

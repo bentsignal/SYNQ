@@ -163,10 +163,10 @@ hold, so they're page sheets, and Done saves everything the sheet changed
 ## Player
 
 - **Mini player** (bottom accessory): 32 pt artwork, title over artist
-  (`text-footnote` semibold / `text-caption muted`), `play.fill` /
-  `pause.fill` and `forward.fill`. Tap opens the player. In the inline
-  placement (tab bar minimized) it drops the artist line. "Not Playing"
-  when the queue is empty.
+  (`text-footnote` semibold / `text-caption muted`), `backward.fill`,
+  `play.fill` / `pause.fill`, and `forward.fill`. Tap opens the player. In
+  the inline placement (tab bar minimized) it drops the artist line and
+  `backward.fill`. "Not Playing" when the queue is empty.
 - **Full player** (modal sheet, swipe down to close): behind everything,
   soft pools of the artwork's own colors drifting slowly, never brighter
   than white text can read over (`modules/synq-backdrop`, and the
@@ -182,9 +182,14 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   `pause.fill`, `forward.fill`; bottom row `shuffle`, `repeat` /
   `repeat.1` (accent when on), AirPlay route picker, `list.bullet` (queue).
 - **Queue** (form sheet, detents medium and large): "Playing from
-  <source>", the current song, then "Up Next" as a native SwiftUI `List`
-  with drag reordering and swipe to remove; toolbar Shuffle / Repeat
-  toggles and Clear.
+  <source>", the current song, then "Up Next"; toolbar Shuffle / Repeat
+  toggles and Clear. Every Up Next row has a `line.3.horizontal` handle: a
+  touch on it picks the row up at once, with no edit mode, and dragging near
+  the edges scrolls. Swipe left to delete; tap to play. It's React Native
+  rather than a SwiftUI `List`, which mounted a native view tree for every
+  song and took about 15 seconds to open 3,000 of them, and which only
+  reorders after a long press unless the whole list is in edit mode
+  (`src/features/player/README.md`).
 
 ## Search
 

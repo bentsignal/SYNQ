@@ -61,12 +61,50 @@ library is open) or a play action.
 ## UI
 
 - `mini-player.tsx`: the tab bar's bottom accessory (both placements).
+- `marquee-text.tsx`: one line that scrolls to show the rest when it doesn't
+  fit, on the UI thread, in the player and the mini player.
 - `player-screen.tsx` (route `/player`, a modal sheet): backdrop, artwork
   (eases to 85% when paused), title, like and
   menu, `scrubber.tsx`, `player-controls.tsx` (transport, shuffle, repeat,
   AirPlay via `RoutePickerButton`, queue).
-- `queue-screen.tsx` (route `/queue`, a form sheet): a SwiftUI `List`, with
-  drag to reorder and swipe to remove in Up Next.
+- `queue-screen.tsx` (route `/queue`, a form sheet) and `queue-list.tsx`.
+
+## Reordering the queue
+
+Up Next is drawn by hand, because the queue can be every song in the library.
+A SwiftUI `List` builds a view tree for every row it's given (about 15 seconds
+to open 3,000 songs), and it only offers a drag after a long press unless the
+whole list is in edit mode.
+
+- **A small pool of rows** stays mounted around the screen. `assignSlots`
+  (`queue-layout.ts`) keeps a key in its row and gives keys scrolling in the
+  rows of keys that left, so a reorder rebuilds nothing.
+- **The UI thread places rows.** Each row reads its index from the `positions`
+  shared value and moves with a transform. While dragging, rows only run when
+  the hovered slot changes, and nothing runs in JavaScript per frame. Rows hold
+  no position of their own, only the rest of a slide, so a recycled row can't
+  end up in the wrong slot.
+- **The dragged row is a floating copy** above the list, so it survives its
+  own row being recycled when the list auto-scrolls far away.
+- **A drop can't flicker.** JavaScript commits the move, then one UI-thread
+  call swaps in the new `positions` as it clears the drag. Row content never
+  depends on an index, so no frame shows the old order.
+- **A drop goes by key** (`moveInUpNext`), so a song ending mid-drag can't
+  move the wrong entry. If the dragged entry started playing, the drag ends
+  and nothing moves.
+- **Native gets the same move.** `Audio.move` keeps the current item playing
+  and preloads again only if what's next changed, which keeps the handoff
+  gapless; `persist()` saves the new order.
+- **Auto-scroll tops out at 30 rows a second** (`MAX_AUTOSCROLL`). Remounting
+  rows faster than that drops frames, in native mounting rather than JavaScript.
+
+One pan on the list handles every row: a touch on the handle's side picks up
+the row at once, and a swipe left anywhere else opens or deletes it. The
+screen-reader actions on each row are Move Up, Move Down, and Remove.
+
+`synqDev.player.drag(index, toY, ms, holdMs)` runs a drag from the UI thread
+for `scripts/sim.sh frames`. Touches injected into a simulator stall frames on
+their own (a plain scroll drops about as many), so they can't measure the list.
 
 ## Backdrop
 

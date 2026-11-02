@@ -16,6 +16,7 @@ import {
   removeEntries,
   shuffleQueue,
   unshuffleQueue,
+  upNextMove,
 } from "./queue-model";
 import { addSongs, cachedSongs, loadSongs, setSongs } from "./songs";
 import { ensureStarted, getPlayerState, setPlayerState } from "./store";
@@ -115,6 +116,33 @@ export function moveInQueue(from: number, to: number) {
   setPlayerState({ queue: moveEntry(getPlayerState().queue, from, to) });
   native(Audio.move(from, to));
   persist();
+}
+
+/**
+ * Puts the entry `key` at `upNextIndex` of Up Next (a drop in the queue).
+ * Returns false when nothing moved.
+ */
+export function moveInUpNext(key: string, upNextIndex: number) {
+  const move = upNextMove(getPlayerState().queue, key, upNextIndex);
+  if (move === null) return false;
+  moveInQueue(move.from, move.to);
+  return true;
+}
+
+/** Removes the entry `key` (a swipe in the queue). */
+export function removeEntry(key: string) {
+  const index = entryIndex(key);
+  if (index !== -1) removeFromQueue([index]);
+}
+
+/** Plays the entry `key` (a tap in the queue). */
+export function playEntry(key: string) {
+  const index = entryIndex(key);
+  if (index !== -1) playQueueIndex(index);
+}
+
+function entryIndex(key: string) {
+  return getPlayerState().queue.entries.findIndex((entry) => entry.key === key);
 }
 
 export function togglePlayback() {

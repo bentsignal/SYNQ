@@ -320,8 +320,7 @@ Native first, then SYNQ's tone on top:
   state that invites it).
 - Native stacks, large titles, `Stack.Toolbar` buttons and menus,
   `Stack.SearchBar`, form sheets with detents, SwiftUI context menus on
-  rows, SwiftUI `List` with native drag reordering for the queue and
-  playlist editing, `@expo/ui` forms for settings.
+  rows, SwiftUI `List` with native drag reordering for playlist editing, `@expo/ui` forms for settings.
 - Full player: large artwork over a blurred artwork backdrop, native-feeling
   scrubber and controls with SF Symbols, AirPlay route button, queue
   sheet.

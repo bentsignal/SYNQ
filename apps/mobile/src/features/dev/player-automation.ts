@@ -18,6 +18,7 @@ import {
 } from "~/features/player/commands";
 import { getPlayerState } from "~/features/player/store";
 import { seedPlayer } from "./player-seed";
+import { driveQueueDrag } from "./queue-drag-control";
 
 /**
  * `synqDev.player` (development builds): drive playback from
@@ -59,6 +60,8 @@ const automation = {
   },
   skipTo: playQueueIndex,
   move: moveInQueue,
+  /** With the queue open: a drag of the row at `index` (see queue-drag-driver). */
+  drag: driveQueueDrag,
   remove: removeFromQueue,
   clear: clearUpNext,
   shuffle: toggleShuffle,

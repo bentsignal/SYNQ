@@ -159,6 +159,7 @@ jest.mock("expo-file-system", () => {
   };
 });
 jest.mock("expo-image-manipulator", () => ({}));
+jest.mock("expo-document-picker", () => ({}));
 jest.mock("expo-sharing", () => ({}));
 
 // Saving and restoring the player's session reads and writes the library

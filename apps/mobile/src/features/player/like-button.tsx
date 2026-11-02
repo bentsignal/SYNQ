@@ -11,7 +11,11 @@ function likedKey(songId: number) {
   return ["player", "liked", songId] as const;
 }
 
-/** The player's heart: adds the song to Liked Songs, or takes it out. */
+/**
+ * The player's heart: adds the song to Liked Songs, or takes it out. White
+ * either way, filled when liked, since the theme's accent can clash with the
+ * song's own colors around it.
+ */
 export function LikeButton({ songId }: { songId: number }) {
   const liked = useLibraryQuery({
     key: likedKey(songId),
@@ -36,8 +40,8 @@ export function LikeButton({ songId }: { songId: number }) {
       symbol={liked ? "heart.fill" : "heart"}
       size={16}
       box={PLAYER_CIRCLE}
-      circle
-      tint={liked ? "accent-accent" : "accent-foreground"}
+      circle={PLAYER_CIRCLE}
+      tint="accent-foreground"
       selected={liked}
       onPress={toggle}
     />

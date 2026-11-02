@@ -117,9 +117,12 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
 
   override func layoutSubviews() {
     super.layoutSubviews()
-    content.frame = bounds
+    // By bounds and center, since a frame would undo a swipe's transform.
+    content.bounds = CGRect(origin: .zero, size: bounds.size)
+    content.center = CGPoint(x: bounds.midX, y: bounds.midY)
     let width = CGFloat(max(buttonWidth, 0))
-    button.frame = CGRect(x: bounds.width - width, y: 0, width: width, height: bounds.height)
+    button.bounds = CGRect(x: 0, y: 0, width: width, height: bounds.height)
+    button.center = CGPoint(x: bounds.width - width / 2, y: bounds.midY)
   }
 
   // MARK: - Tap

@@ -62,7 +62,7 @@ export function wantsServer({
 export const PAGE_GONE_MS = 2500;
 
 /** Wi-Fi Transfer's sheet, in points, which holds its form on any phone. */
-const SHEET_HEIGHT = 336;
+const SHEET_HEIGHT = 322;
 
 /** The sheet's detent: a share of the window, so the same height everywhere. */
 export function wifiSheetDetent(windowHeight: number) {

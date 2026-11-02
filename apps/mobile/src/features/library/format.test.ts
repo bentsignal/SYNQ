@@ -6,6 +6,7 @@ import {
   dotted,
   songCount,
   totalDuration,
+  trackNumbers,
   trackTime,
 } from "./format.ts";
 
@@ -37,4 +38,16 @@ void test("writes track times with padded seconds", () => {
 void test("joins the parts that are there", () => {
   assert.equal(dotted("Kestrel", null, "", 2021), "Kestrel · 2021");
   assert.equal(dotted(), "");
+});
+
+void test("every album track shows a number, without changing a real one", () => {
+  function tracks(...numbers: (number | null)[]) {
+    return numbers.map((track) => ({ track }));
+  }
+  assert.deepEqual(trackNumbers(tracks(null)), [1]);
+  assert.deepEqual(trackNumbers(tracks(1, 2, 3)), [1, 2, 3]);
+  assert.deepEqual(trackNumbers(tracks(null, null)), [1, 2]);
+  assert.deepEqual(trackNumbers(tracks(5, 6, null)), [5, 6, 7]);
+  // A second disc starts over.
+  assert.deepEqual(trackNumbers(tracks(1, 2, 1, 2)), [1, 2, 1, 2]);
 });

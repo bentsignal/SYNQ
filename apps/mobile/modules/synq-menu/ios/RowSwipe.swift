@@ -29,6 +29,8 @@ final class RowSwipe: NSObject, UIGestureRecognizerDelegate {
   private var attached = false
   private var icon: UIImageView?
   private var ready = false
+  /// Which edge the symbol is showing at.
+  private var showingRight: Bool?
 
   init(row: MenuRowView, content: [UIView]) {
     self.row = row
@@ -76,12 +78,13 @@ final class RowSwipe: NSObject, UIGestureRecognizerDelegate {
     case .began:
       row.swipeBegan()
       ready = false
-      show(right: x > 0)
-      move(x)
+      showingRight = nil
+      // The first report can have no distance in it, but it has a direction.
+      move(x == 0 ? recognizer.velocity(in: row).x / 1000 : x)
     case .changed:
       move(x)
     case .ended where ready:
-      let right = x > 0
+      let right = showingRight ?? (x > 0)
       springBack()
       row.swipeFinished(right: right)
     default:
@@ -108,8 +111,15 @@ final class RowSwipe: NSObject, UIGestureRecognizerDelegate {
     icon.transform = .identity
   }
 
-  private func move(_ x: CGFloat) {
+  private func move(_ rawX: CGFloat) {
     guard let row else { return }
+    // Back past where it started, toward a side with no action, it stays put.
+    let right = rawX > 0
+    let x = (right ? rightSymbol : leftSymbol) == nil ? 0 : rawX
+    if x != 0, right != showingRight {
+      showingRight = right
+      show(right: right)
+    }
     let distance = abs(x)
     let followed =
       distance <= Self.threshold

@@ -5,10 +5,6 @@ public class SynqHeaderGlassModule: Module {
   public func definition() -> ModuleDefinition {
     Name("SynqHeaderGlass")
 
-    View(HeaderGlassView.self) {
-      Prop("glass") { (view: HeaderGlassView, glass: Bool) in
-        view.drawsGlass = glass
-      }
-    }
+    View(HeaderGlassView.self) {}
   }
 }

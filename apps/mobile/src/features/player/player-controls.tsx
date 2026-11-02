@@ -15,6 +15,7 @@ import { usePlayer } from "./hooks";
 import { IconButton } from "./icon-button";
 import {
   OPTION_BOX,
+  OPTION_CIRCLE,
   OPTION_SIZE,
   PLAY_SIZE,
   QUEUE_PLAY_SIZE,
@@ -80,11 +81,18 @@ const REPEAT_LABEL = {
   one: "Repeat One",
 } as const;
 
-/** Shuffle, repeat (accent when on), AirPlay, and the queue. */
+/**
+ * Shuffle, repeat, AirPlay, and the queue. On, they're white in a quiet circle:
+ * nothing in the player wears the theme's accent, which can clash with the
+ * song's own colors around it.
+ */
 export function PlayerOptions() {
   const shuffle = usePlayer((state) => state.shuffle);
   const repeat = usePlayer((state) => state.repeat);
-  const [accent, muted] = useCSSVariable(["--color-accent", "--color-muted"]);
+  const [foreground, muted] = useCSSVariable([
+    "--color-foreground",
+    "--color-muted",
+  ]);
   return (
     <View className="flex-row items-center justify-between">
       <IconButton
@@ -93,7 +101,8 @@ export function PlayerOptions() {
         size={OPTION_SIZE}
         box={OPTION_BOX}
         selected={shuffle}
-        tint={shuffle ? "accent-accent" : "accent-muted"}
+        circle={shuffle ? OPTION_CIRCLE : undefined}
+        tint={shuffle ? "accent-foreground" : "accent-muted"}
         onPress={toggleShuffle}
       />
       <IconButton
@@ -102,13 +111,14 @@ export function PlayerOptions() {
         size={OPTION_SIZE}
         box={OPTION_BOX}
         selected={repeat !== "off"}
-        tint={repeat === "off" ? "accent-muted" : "accent-accent"}
+        circle={repeat === "off" ? undefined : OPTION_CIRCLE}
+        tint={repeat === "off" ? "accent-muted" : "accent-foreground"}
         onPress={cycleRepeat}
       />
       <RoutePickerButton
         accessibilityLabel="AirPlay"
         color={typeof muted === "string" ? muted : undefined}
-        activeColor={typeof accent === "string" ? accent : undefined}
+        activeColor={typeof foreground === "string" ? foreground : undefined}
         style={{ height: OPTION_BOX, width: OPTION_BOX }}
       />
       <IconButton

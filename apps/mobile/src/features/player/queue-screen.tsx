@@ -56,6 +56,9 @@ export function QueueScreen() {
   );
 }
 
+/** Over the player, the theme's accent can clash with the song's colors. */
+const TOOLBAR_TINT = "rgba(255, 255, 255, 0.75)";
+
 function SectionTitle({ title }: { title: string }) {
   return (
     <Text className="text-subhead text-muted px-4 pt-4 pb-1 font-semibold">
@@ -74,12 +77,14 @@ function QueueToolbar({ canClear }: { canClear: boolean }) {
           icon="shuffle"
           accessibilityLabel="Shuffle"
           selected={shuffle}
+          tintColor={TOOLBAR_TINT}
           onPress={toggleShuffle}
         />
         <Stack.Toolbar.Button
           icon={repeat === "one" ? "repeat.1" : "repeat"}
           accessibilityLabel="Repeat"
           selected={repeat !== "off"}
+          tintColor={TOOLBAR_TINT}
           onPress={cycleRepeat}
         />
       </Stack.Toolbar>

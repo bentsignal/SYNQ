@@ -1,22 +1,13 @@
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, PixelRatio, View } from "react-native";
+import { ActivityIndicator, Pressable, Switch, Text, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { Button, FieldGroup, ListItem, Switch } from "@expo/ui";
-import { Image, Text } from "@expo/ui/swift-ui";
-import {
-  accessibilityLabel,
-  font,
-  foregroundStyle,
-  monospacedDigit,
-  padding,
-  scrollContentBackground,
-  scrollDisabled,
-  textSelection,
-} from "@expo/ui/swift-ui/modifiers";
+import { Toggle } from "@expo/ui/swift-ui";
+import { labelsHidden } from "@expo/ui/swift-ui/modifiers";
 
 import type { WifiTransferState } from "~/features/import/wifi-transfer";
 import { EmptyState } from "~/components/empty-state";
-import { HeaderGlass } from "~/components/header-glass";
+import { SymbolIcon } from "~/components/symbol-icon";
 import { track } from "~/features/analytics/analytics";
 import { onTransferStart } from "~/features/import/session";
 import { displayAddress } from "~/features/import/transfer-link";
@@ -29,15 +20,15 @@ import {
   setTransfersOn,
   useWifiTransfer,
 } from "~/features/import/wifi-transfer";
-import { usePreference } from "~/features/preferences/store";
-import { themeAccent } from "~/features/preferences/themes";
-import { FormHost, SECONDARY_LABEL } from "~/features/settings/form";
+import { FormHost } from "~/features/settings/form";
+import { cn } from "~/lib/cn";
 import { selectionTick } from "~/lib/haptics";
 
 /** How long Copy shows its checkmark. */
 const COPIED_MS = 1500;
-const MAX_FIXED_FONT_SCALE = 1.2;
-const FORM_TOP_TRIM = 18;
+/** From the sheet's top, past its bar, to the first row. */
+const CONTENT_TOP = 84;
+const ROW_HEIGHT = 50;
 
 function serverOf({ server }: WifiTransferState) {
   return server;
@@ -53,12 +44,13 @@ function connectedOf({ connected }: WifiTransferState) {
 
 function CopyButton({ address }: { address: string }) {
   const [copied, setCopied] = useState(false);
-  const accent = themeAccent(usePreference("theme"));
   if (!canCopyAddress()) return null;
   return (
-    <Button
-      variant="text"
-      modifiers={[accessibilityLabel(copied ? "Copied" : "Copy Address")]}
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={copied ? "Copied" : "Copy Address"}
+      hitSlop={12}
+      className="active:opacity-60"
       onPress={() => {
         copyAddress(address);
         selectionTick();
@@ -66,12 +58,12 @@ function CopyButton({ address }: { address: string }) {
         setTimeout(() => setCopied(false), COPIED_MS);
       }}
     >
-      <Image
-        systemName={copied ? "checkmark" : "doc.on.doc"}
-        size={17}
-        color={accent}
+      <SymbolIcon
+        name={copied ? "checkmark" : "doc.on.doc"}
+        size={18}
+        tintColorClassName="accent-accent"
       />
-    </Button>
+    </Pressable>
   );
 }
 
@@ -79,21 +71,40 @@ function ComputerRow() {
   const connected = useWifiTransfer(connectedOf);
   if (!canShowConnected()) return null;
   return (
-    <ListItem
-      trailing={
+    <>
+      <RowLine />
+      <SheetRow>
+        <Text className="text-body text-foreground">Computer</Text>
         <Text
-          modifiers={[
-            font({ size: 17 }),
-            foregroundStyle(connected ? "#ffffff" : SECONDARY_LABEL),
-          ]}
+          className={cn(
+            "text-body",
+            connected ? "text-foreground" : "text-muted",
+          )}
         >
           {connected ? "Connected" : "Not Connected"}
         </Text>
-      }
-    >
-      <Text>Computer</Text>
-    </ListItem>
+      </SheetRow>
+    </>
   );
+}
+
+function SheetRow({ children }: { children: ReactNode }) {
+  return (
+    <View
+      className="flex-row items-center justify-between px-4"
+      style={{ minHeight: ROW_HEIGHT }}
+    >
+      {children}
+    </View>
+  );
+}
+
+function RowLine() {
+  return <View className="ml-4 bg-white/15" style={{ height: 1 }} />;
+}
+
+function Card({ children }: { children: ReactNode }) {
+  return <View className="rounded-[25px] bg-white/10">{children}</View>;
 }
 
 /**
@@ -141,56 +152,49 @@ export default function ImportWifiScreen() {
           />
         </View>
       ) : (
-        <>
-          <FormHost style={{ flex: 1 }}>
-            <FieldGroup
-              modifiers={[
-                scrollContentBackground("hidden"),
-                // It all fits, unless the text is very large.
-                scrollDisabled(
-                  PixelRatio.getFontScale() <= MAX_FIXED_FONT_SCALE,
-                ),
-                // Most of SwiftUI's gap above a form's first section. Negative,
-                // so the form grows upward rather than leaving its bottom behind.
-                padding({ top: -FORM_TOP_TRIM }),
-              ]}
-            >
-              <FieldGroup.Section>
-                <Switch
+        // Plain views rather than a form: nothing here scrolls, so iOS has no
+        // reason to draw its band under the bar.
+        <View className="flex-1 px-4" style={{ paddingTop: CONTENT_TOP }}>
+          <Card>
+            <SheetRow>
+              <Text className="text-body text-foreground">Allow Transfers</Text>
+              <FormHost matchContents>
+                <Toggle
                   label="Allow Transfers"
-                  value={on}
-                  onValueChange={setTransfersOn}
+                  isOn={on}
+                  modifiers={[labelsHidden()]}
+                  onIsOnChange={setTransfersOn}
                 />
-              </FieldGroup.Section>
-              {/* An older binary's server runs only while transfers are on. */}
-              {server.state === "idle" && !canShowConnected() ? null : (
-                <FieldGroup.Section title="Open in a browser on the same Wi-Fi">
+              </FormHost>
+            </SheetRow>
+          </Card>
+          {/* An older binary's server runs only while transfers are on. */}
+          {server.state === "idle" && !canShowConnected() ? null : (
+            <>
+              <Text className="text-subhead text-muted mx-4 mt-5 mb-2 font-semibold">
+                Open in a browser on the same Wi-Fi
+              </Text>
+              <Card>
+                <SheetRow>
                   {server.state === "ready" ? (
-                    <ListItem
-                      trailing={<CopyButton address={fullAddress(server)} />}
-                    >
+                    <>
                       <Text
-                        modifiers={[
-                          font({ size: 17, weight: "medium" }),
-                          monospacedDigit(),
-                          textSelection(true),
-                        ]}
+                        selectable
+                        className="text-body text-foreground font-medium tabular-nums"
                       >
                         {fullAddress(server)}
                       </Text>
-                    </ListItem>
+                      <CopyButton address={fullAddress(server)} />
+                    </>
                   ) : (
-                    <ListItem>
-                      <ActivityIndicator />
-                    </ListItem>
+                    <ActivityIndicator />
                   )}
-                  <ComputerRow />
-                </FieldGroup.Section>
-              )}
-            </FieldGroup>
-          </FormHost>
-          <HeaderGlass glass={false} />
-        </>
+                </SheetRow>
+                <ComputerRow />
+              </Card>
+            </>
+          )}
+        </View>
       )}
     </>
   );

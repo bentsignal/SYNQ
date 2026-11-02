@@ -8,6 +8,8 @@ export const TRANSPORT_GAP = 14;
 export const OPTION_SIZE = 24;
 /** Each bottom button's square; the row is this tall. */
 export const OPTION_BOX = 44;
+/** Around shuffle and repeat while they're on. */
+export const OPTION_CIRCLE = 38;
 /** The queue's smaller transport. */
 export const QUEUE_SKIP_SIZE = 26;
 export const QUEUE_PLAY_SIZE = 32;

@@ -35,7 +35,7 @@ export function IconButton({
   selected,
   hitSlop = 8,
   box,
-  circle = false,
+  circle,
   className,
   onPress,
 }: {
@@ -50,8 +50,8 @@ export function IconButton({
   hitSlop?: number | Insets;
   /** The button's width and height; touches reach `hitSlop` beyond it. */
   box?: number;
-  /** Sits in a quiet filled circle, which presses with the symbol. */
-  circle?: boolean;
+  /** Sits in a quiet filled circle this wide, which presses with the symbol. */
+  circle?: number;
   className?: string;
   onPress: () => void;
 }) {
@@ -97,10 +97,13 @@ export function IconButton({
       >
         <Animated.View
           className={cn(
-            "h-full w-full items-center justify-center",
-            circle && "rounded-full bg-white/10",
+            "items-center justify-center rounded-full",
+            circle !== undefined && "bg-white/10",
           )}
-          style={symbolStyle}
+          style={[
+            { height: circle ?? side, width: circle ?? side },
+            symbolStyle,
+          ]}
         >
           <SymbolIcon
             name={symbol}

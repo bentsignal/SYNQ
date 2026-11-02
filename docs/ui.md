@@ -211,9 +211,12 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   `backward.fill`, large `play.fill` / `pause.fill`, `forward.fill`, centered
   between the timeline and the volume bar; the system volume (the same bar,
   between quiet `speaker.fill` and `speaker.wave.3.fill`); bottom row `shuffle`,
-  `repeat` / `repeat.1` (accent when on), AirPlay route picker, `list.bullet`
+  `repeat` / `repeat.1` (white in a quiet circle when on), AirPlay route picker, `list.bullet`
   (queue). The artwork takes about the top half, and everything under it shares
   what's left in proportions measured off Apple Music (`player-layout.ts`).
+- **Player colors**: nothing in the player wears the theme's accent, which can
+  clash with the song's colors. On is white and off is translucent white, which
+  takes on the backdrop behind it.
 - **Player controls**: pressing one shrinks and dims the symbol itself, with
   nothing drawn around it beyond the heart's own circle (`icon-button.tsx`), in
   the player and the mini player.
@@ -293,8 +296,9 @@ has started by then; the next clean batch asks instead.
 
 - **Files**: Import from Files opens the document picker (audio types,
   multiple) directly, with no sheet.
-- **Wi-Fi Transfer**: a short glass sheet: an Allow Transfers switch, the
-  address to open on a computer (selectable, with a copy button), and whether a
+- **Wi-Fi Transfer**: a short glass sheet of plain views rather than a form:
+  nothing scrolls, so iOS draws no band under its bar. An Allow Transfers switch,
+  the address to open on a computer (selectable, with a copy button), and whether a
   computer is connected. No song list, no progress. Closing it stops nothing:
   someone can turn transfers on, close the sheet, and go on using the app while
   they send files. The sheet closes itself when a batch's first file starts

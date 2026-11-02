@@ -22,8 +22,6 @@ final class HeaderGlassView: ExpoView {
   private var observation: NSKeyValueObservation?
   private var searchTimer: Timer?
   private var scrolled = false
-  /// Off, this only takes away iOS's own band under the bar.
-  var drawsGlass = true
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -74,7 +72,6 @@ final class HeaderGlassView: ExpoView {
     if #available(iOS 26.0, *) {
       found.topEdgeEffect.isHidden = true
     }
-    guard drawsGlass else { return }
     observation = found.observe(\.contentOffset, options: [.initial, .new]) {
       [weak self] scrollView, _ in
       MainActor.assumeIsolated { self?.update(scrollView) }

@@ -48,8 +48,8 @@ void describe("the address", () => {
 
 void describe("wifiSheetDetent", () => {
   void test("is the same height on every window", () => {
-    assert.equal(Math.round(wifiSheetDetent(667) * 667), 336);
-    assert.equal(Math.round(wifiSheetDetent(956) * 956), 336);
+    assert.equal(Math.round(wifiSheetDetent(667) * 667), 322);
+    assert.equal(Math.round(wifiSheetDetent(956) * 956), 322);
   });
 });
 

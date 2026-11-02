@@ -152,7 +152,7 @@ export function songMenu(song: SongListItem, place: SongMenuPlace) {
       : {
           icon: "heart",
           key: "like",
-          label: "Love",
+          label: "Add to Liked",
           onPress: () => setLiked(song.id, true),
         },
   ] satisfies MenuItem[];

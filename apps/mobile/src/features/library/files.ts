@@ -37,7 +37,7 @@ export function deleteLibraryFolders(paths: readonly string[]) {
 /** 2.5.2's sizes: `cover_full.jpg` up to 1500 px, `cover_small.jpg` up to 200 px. */
 const COVER_SIZES = { full: 1500, small: 200 } as const;
 
-/** Square-crops and scales an image, then saves it as JPEG at `target`. */
+/** Scales a square image, then saves it as JPEG at `target`. */
 async function saveCover(
   source: string,
   side: number,
@@ -59,7 +59,7 @@ async function saveCover(
 }
 
 /**
- * Writes a picked photo (already cropped square by the picker) as the
+ * Writes a picked photo (already square, from Move and Scale) as the
  * entity's cover in both sizes, then records it, so the new artwork shows
  * everywhere at once (`artwork_version` changes).
  */
@@ -73,7 +73,7 @@ export async function writeArtwork({
   id: number;
   /** The picked image's URI. */
   uri: string;
-  /** Its width in pixels (the picker's crop is square). */
+  /** Its width in pixels; its height is the same. */
   width: number;
 }) {
   const folder = documentDirectory(artworkDir(kind, id));

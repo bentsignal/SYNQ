@@ -43,7 +43,7 @@ numbers.
   equal capsules on `fill`, accent symbol and label (`play.fill` Play,
   `shuffle` Shuffle).
 - **Song menu** (the ellipsis and the context menu, one data definition):
-  Play Next, Add to Queue, Add to Playlist…, Love / Remove from Liked,
+  Play Next, Add to Queue, Add to Playlist…, Add to Liked / Remove from Liked,
   Go to Album, Go to Artist, Edit Info, Share (export with tags), Remove
   from Playlist (inside a user playlist), Delete from Library (destructive,
   confirmed with an alert: cancel first, destructive second). Run list
@@ -165,8 +165,9 @@ are form sheets; the edit and create sheets push lists (Edit Songs, Add
 Songs, Artists, Albums) inside their own stack, which a form sheet can't
 hold, so they're page sheets, and Done saves everything the sheet changed
 (`src/features/editing/draft.ts`):
-- **Playlist**: artwork (tap to choose a photo, which fills its square from the middle; a crop
-  editor makes iOS's picker take about five seconds to open), name,
+- **Playlist**: artwork (tap to choose a photo: the system's picker, then Move and Scale over
+  it, ours, since the system's own editor comes only with its old picker, which
+  takes about five seconds to open), name,
   and Edit Songs (a SwiftUI `List` in edit mode: an Add Songs row on top
   opening the song picker, drag to reorder, swipe to remove).
 - **Album**: artwork, name, year, artists (toggle list), Edit Songs (same

@@ -49,8 +49,9 @@ export function tryWrite<Value>(
 
 export function setLiked(songId: number, liked: boolean) {
   selectionTick();
-  tryWrite(liked ? "Couldn't Love Song" : "Couldn't Remove from Liked", (db) =>
-    setSongLiked(db, songId, liked),
+  tryWrite(
+    liked ? "Couldn't Add to Liked" : "Couldn't Remove from Liked",
+    (db) => setSongLiked(db, songId, liked),
   );
 }
 

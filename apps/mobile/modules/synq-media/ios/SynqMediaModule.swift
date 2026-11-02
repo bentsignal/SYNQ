@@ -73,6 +73,12 @@ public class SynqMediaModule: Module {
       UIPasteboard.general.string = text
     }
 
+    AsyncFunction("pickSquarePhoto") { (promise: Promise) in
+      MainActor.assumeIsolated {
+        SquarePhotoPicker.show { promise.resolve($0) }
+      }
+    }.runOnQueue(.main)
+
     AsyncFunction("confirmTyped") {
       (title: String, message: String, phrase: String, confirmTitle: String, promise: Promise) in
       MainActor.assumeIsolated {

@@ -1,9 +1,5 @@
 import { View } from "react-native";
 import { Image } from "expo-image";
-import {
-  launchImageLibraryAsync,
-  UIImagePickerPreferredAssetRepresentationMode,
-} from "expo-image-picker";
 import { Button, Menu, RNHostView, VStack } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
@@ -17,28 +13,22 @@ import type { ArtworkChange } from "./artwork-change";
 import type { ArtworkPlaceholder } from "~/components/artwork";
 import { Artwork } from "~/components/artwork";
 import { failed } from "~/features/library/actions";
+import { synqMedia, synqMediaAvailable } from "~/features/media/native";
 
 const SIZE = 160;
 
 /**
- * Picks a photo, which fills its square from the middle wherever it's shown.
- * No crop editor: on iOS it makes the picker use the old
- * `UIImagePickerController`, which loads the whole library first, about five
- * seconds. Without it, the system's picker opens at once (Vera found this too).
+ * Picks a photo and crops it square, natively (`SquarePhotoPicker.swift`): the
+ * system's picker, then Move and Scale over it.
  */
 async function pickPhoto() {
-  const result = await launchImageLibraryAsync({
-    mediaTypes: ["images"],
-    preferredAssetRepresentationMode:
-      UIImagePickerPreferredAssetRepresentationMode.Current,
-    quality: 1,
-  });
-  const [asset] = result.canceled ? [] : result.assets;
-  if (asset === undefined) return null;
+  if (!synqMediaAvailable()) return null;
+  const photo = await synqMedia().pickSquarePhoto?.();
+  if (photo === undefined || photo === null) return null;
   return {
     kind: "picked",
-    uri: asset.uri,
-    width: Math.min(asset.width, asset.height),
+    uri: photo.uri,
+    width: photo.width,
   } satisfies ArtworkChange;
 }
 
@@ -72,7 +62,7 @@ function Preview({
 
 /**
  * The artwork at the top of an edit form: the cover as it will be saved,
- * and Choose Photo (the photo library, cropped square), with Remove Photo
+ * and Choose Photo (the photo library, then Move and Scale), with Remove Photo
  * when there's one to remove. Goes first in a `FieldGroup`.
  */
 export function ArtworkField({

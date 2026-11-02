@@ -81,6 +81,8 @@ interface SynqMediaModule {
   /** Whether the server's listener still answers. */
   checkTransferServer?: () => Promise<boolean>;
   copyText?: (text: string) => void;
+  /** The photo picker, then Move and Scale; null when nothing was chosen. */
+  pickSquarePhoto?: () => Promise<{ uri: string; width: number } | null>;
   /** A native alert whose button stays off until `phrase` is typed. */
   confirmTyped?: (
     title: string,

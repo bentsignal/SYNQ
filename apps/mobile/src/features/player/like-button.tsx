@@ -36,7 +36,7 @@ export function LikeButton({ songId }: { songId: number }) {
 
   return (
     <IconButton
-      label={liked ? "Remove from Liked Songs" : "Love"}
+      label={liked ? "Remove from Liked" : "Add to Liked"}
       symbol={liked ? "heart.fill" : "heart"}
       size={16}
       box={PLAYER_CIRCLE}

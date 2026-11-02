@@ -10,7 +10,7 @@ import type {
 } from "~/components/menu";
 import { exportFailed, exportSongs } from "~/features/export/export";
 import { addToQueue, playNext } from "~/features/player/actions";
-import { showQueueToast } from "~/features/player/queue-toast";
+import { showQueueToast } from "~/features/player/queue-toast-store";
 import {
   confirmDeleteSongs,
   removeFromAlbum,

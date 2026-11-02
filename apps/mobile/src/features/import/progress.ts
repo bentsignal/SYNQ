@@ -3,6 +3,7 @@
  * words the app shows for them, and when a batch counts as done. No React or
  * native code, so it runs in plain unit tests.
  */
+import type { ImportState } from "./queue.ts";
 
 /** The files of the current batch, counted as they finish. */
 export interface BatchCounts {
@@ -189,4 +190,17 @@ export function failureReport(names: readonly string[]) {
         ? "Couldn't Import 1 File"
         : `Couldn't Import ${String(names.length)} Files`,
   };
+}
+
+/** The line to show, or null while there's nothing to say. */
+export function activityLine({
+  batch,
+  finished,
+  shown,
+  transfer,
+}: ImportState) {
+  if (finished) return finishedLine(batch.imported);
+  if (!isBatchActive(batch, transfer)) return null;
+  // Nothing to count yet, as when an upload broke off with none arrived.
+  return shown.total === 0 ? null : capsuleLine(shown);
 }

@@ -12,21 +12,8 @@ import {
 import type { ImportState } from "./queue";
 import { FloatingCapsule } from "~/components/floating-capsule";
 import { SECONDARY_LABEL } from "~/features/settings/form";
-import { capsuleLine, finishedLine, isBatchActive } from "./progress";
+import { activityLine } from "./progress";
 import { useImportState } from "./session";
-
-/** The line to show, or null while there's nothing to say. */
-export function activityLine({
-  batch,
-  finished,
-  shown,
-  transfer,
-}: ImportState) {
-  if (finished) return finishedLine(batch.imported);
-  if (!isBatchActive(batch, transfer)) return null;
-  // Nothing to count yet, as when an upload broke off with none arrived.
-  return shown.total === 0 ? null : capsuleLine(shown);
-}
 
 function isFinished({ finished }: ImportState) {
   return finished;

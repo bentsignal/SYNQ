@@ -22,7 +22,7 @@ import {
   exportPlaylist,
 } from "~/features/export/export";
 import { addToQueue, playNext, playSongs } from "~/features/player/actions";
-import { showQueueToast } from "~/features/player/queue-toast";
+import { showQueueToast } from "~/features/player/queue-toast-store";
 import {
   confirmDeleteAlbum,
   confirmDeleteArtist,

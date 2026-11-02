@@ -8,7 +8,7 @@ import {
   songArtists,
   songs,
 } from "../schema.ts";
-import { listAlbumTracks } from "./albums.ts";
+import { listAlbumTracks, listEmptyAlbums } from "./albums.ts";
 import { changesOf, written } from "./changes.ts";
 import { LibraryError } from "./errors.ts";
 import { uniqueIds } from "./find-or-create.ts";
@@ -27,7 +27,8 @@ import { chunked } from "./text.ts";
  * An album with no artists takes the added songs' artists (as an import
  * credits them), so one built from existing songs isn't left unattributed;
  * an album that has artists keeps its credits. Albums a song leaves are kept
- * even when emptied, as `deleteSongs` keeps them, with their covers.
+ * even when emptied, as `deleteSongs` keeps them, with their covers; `emptied`
+ * names the ones this left with no songs, so the app can offer to delete them.
  */
 export function addSongsToAlbum(
   db: LibraryDb,
@@ -58,7 +59,7 @@ export function addSongsToAlbum(
     );
     const added = wanted.filter((id) => existing.has(id) && !present.has(id));
     const skipped = wanted.filter((id) => !existing.has(id) || present.has(id));
-    if (added.length === 0) return { added, skipped };
+    if (added.length === 0) return { added, emptied: [], skipped };
 
     const numbered = tracks.every((track) => track.track !== null);
     if (!numbered) {
@@ -77,10 +78,10 @@ export function addSongsToAlbum(
     const last = numbered
       ? Math.max(0, ...tracks.map((track) => track.track ?? 0))
       : tracks.length;
-    moveToAlbum(tx, albumId, added, last + 1);
+    const left = moveToAlbum(tx, albumId, added, last + 1);
     creditArtistsIfNone(tx, albumId, added);
     markModified(tx, added);
-    return { added, skipped };
+    return { added, emptied: listEmptyAlbums(tx, left), skipped };
   });
   return written(
     result,
@@ -120,14 +121,15 @@ export function removeSongsFromAlbum(
  * Makes an album hold exactly these songs in this order (an edit sheet's
  * Done). Tracks only renumber 1..n if the order the numbers already give
  * differs, so saving a sheet that didn't reorder leaves the album's own
- * numbers alone.
+ * numbers alone. `emptied` names the other albums the added songs left with
+ * no songs.
  */
 export function setAlbumTracks(
   db: LibraryDb,
   albumId: number,
   songIds: readonly number[],
 ) {
-  db.transaction((tx) => {
+  const emptied = db.transaction((tx) => {
     const wanted = uniqueIds(songIds);
     const wantedSet = new Set(wanted);
     const current = listAlbumTracks(tx, albumId).map((track) => track.id);
@@ -137,7 +139,7 @@ export function setAlbumTracks(
       albumId,
       current.filter((id) => !wantedSet.has(id)),
     );
-    addSongsToAlbum(
+    const added = addSongsToAlbum(
       tx,
       albumId,
       wanted.filter((id) => !currentSet.has(id)),
@@ -146,13 +148,15 @@ export function setAlbumTracks(
     if (order.some((id, index) => id !== wanted[index])) {
       reorderAlbumTracks(tx, albumId, wanted);
     }
+    return added.value.emptied;
   });
-  return written(undefined, ["album_songs", "album_artists", "songs"]);
+  return written({ emptied }, ["album_songs", "album_artists", "songs"]);
 }
 
 /**
  * Replaces each song's primary album with this one, keeping its place in the
- * song's album order so any other album stays secondary.
+ * song's album order so any other album stays secondary. Returns the albums
+ * they left.
  */
 function moveToAlbum(
   tx: LibraryDb,
@@ -201,6 +205,7 @@ function moveToAlbum(
     track: firstTrack + index,
   }));
   for (const chunk of chunked(rows)) tx.insert(albumSongs).values(chunk).run();
+  return [...leaving.keys()];
 }
 
 function creditArtistsIfNone(

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { router, Stack } from "expo-router";
+import { router, Stack, useFocusEffect } from "expo-router";
 import { FieldGroup } from "@expo/ui";
 
 import type { AlbumListItem } from "@synq/db";
@@ -15,7 +15,7 @@ import {
 
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
-import { tryWrite } from "~/features/library/actions";
+import { offerToDeleteEmptyAlbums, tryWrite } from "~/features/library/actions";
 import { copyCoverToAlbum } from "~/features/library/files";
 import { names, songCount } from "~/features/library/format";
 import { openLibraryScreen } from "~/features/library/links";
@@ -51,14 +51,19 @@ function saveEdits(album: AlbumListItem, saved: ReadonlySet<string>) {
         name: edits.name,
         year: parseYear(edits.year),
       });
-      setAlbumTracks(tx, album.id, trackIds(edits));
-      return written(result.value, ["albums", "album_songs", "songs"]);
+      const { emptied } = setAlbumTracks(tx, album.id, trackIds(edits)).value;
+      return written({ emptied, id: result.value.id }, [
+        "albums",
+        "album_songs",
+        "songs",
+      ]);
     }),
   );
   if (updated === undefined) return;
   if (cover !== null) copyCoverToAlbum(album.id, cover);
   router.back();
   saveArtworkChange(edits.artwork, "album", album.id);
+  offerToDeleteEmptyAlbums(updated.emptied);
 }
 
 /** Creates the album with its songs, then covers. False keeps the sheet up. */
@@ -72,8 +77,12 @@ function saveNew() {
         name: edits.name,
         year: parseYear(edits.year),
       }).value;
-      setAlbumTracks(tx, album.id, trackIds(edits));
-      return written(album, ["albums", "album_songs", "album_artists"]);
+      const { emptied } = setAlbumTracks(tx, album.id, trackIds(edits)).value;
+      return written({ emptied, id: album.id }, [
+        "albums",
+        "album_songs",
+        "album_artists",
+      ]);
     }),
   );
   if (created === undefined) return false;
@@ -81,6 +90,7 @@ function saveNew() {
   router.back();
   openLibraryScreen({ id: created.id, screen: "album" });
   saveArtworkChange(edits.artwork, "album", created.id);
+  offerToDeleteEmptyAlbums(created.emptied);
   return true;
 }
 
@@ -161,6 +171,18 @@ function EditForm({ album }: { album: AlbumListItem }) {
     }),
   );
   const edits = draft.useValue();
+  // Back from Edit Songs with the last song gone. Nothing is saved yet, so
+  // Delete closes the sheet and Keep carries on with the form. An album that
+  // opened empty never asks.
+  const asked = useRef(false);
+  useFocusEffect(() => {
+    if (edits.tracks.length > 0) {
+      asked.current = false;
+    } else if (saved.size > 0 && !asked.current) {
+      asked.current = true;
+      offerToDeleteEmptyAlbums([album], () => router.back());
+    }
+  });
   return (
     <>
       <SheetToolbar
@@ -182,8 +204,11 @@ export function EditAlbumScreen() {
     read: (db) => getAlbum(db, id),
     select: (found) => found,
   });
-  if (album === null) return null;
-  return <EditForm album={album} />;
+  // Deleting from this sheet closes it; the form stays up as it slides away.
+  const [opened] = useState(album);
+  const shown = album ?? opened;
+  if (shown === null) return null;
+  return <EditForm album={shown} />;
 }
 
 /** New Album: the same form as Edit Album, so it can start with songs. */

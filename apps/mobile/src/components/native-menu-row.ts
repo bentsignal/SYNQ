@@ -9,8 +9,10 @@ export interface MenuRowViewProps extends ViewProps {
   /** The trailing `ellipsis` button's width; 0 hides it. */
   buttonWidth: number;
   buttonColor: ProcessedColorValue | ColorValue | null | undefined;
-  rowColor: ProcessedColorValue | ColorValue | null | undefined;
-  highlightColor: ProcessedColorValue | ColorValue | null | undefined;
+  /** What a tap flashes behind the row; none when left out. */
+  highlightColor?: ProcessedColorValue | ColorValue | null;
+  /** The corners of the shape a long press lifts. */
+  previewRadius: number;
   onRowPress: () => void;
   onRowMenuAction: (event: { nativeEvent: { id: string } }) => void;
 }

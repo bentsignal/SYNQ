@@ -159,8 +159,8 @@ export function albumMenu(
       icon: "trash",
       key: "delete",
       label: "Delete Album",
-      onPress: () =>
-        confirmDeleteAlbum(album, place.onPage === true ? back : undefined),
+      // Its own page goes back by itself once the album is gone.
+      onPress: () => confirmDeleteAlbum(album),
     },
     share: () => {
       exportAlbum(album.id).catch(exportFailed("Couldn't Export Album"));

@@ -1,5 +1,5 @@
 import type { SQL } from "drizzle-orm";
-import { asc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, ne, notExists, sql } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import type { ArtworkRef } from "./artwork.ts";
@@ -16,7 +16,7 @@ import { changesOf, nowFrom, written } from "./changes.ts";
 import { LibraryError } from "./errors.ts";
 import { requireName, uniqueIds } from "./find-or-create.ts";
 import { loadSongItems, songSearchFields } from "./song-items.ts";
-import { matchesSearch, sortBy } from "./text.ts";
+import { chunked, matchesSearch, sortBy } from "./text.ts";
 
 export interface AlbumListItem {
   id: number;
@@ -263,6 +263,27 @@ export function updateAlbum(
     }
   });
   return written(requireAlbum(db, id), changed);
+}
+
+/** Of these albums, the ones with no songs: a write's way to report what it emptied. */
+export function listEmptyAlbums(db: LibraryDb, ids: readonly number[]) {
+  return chunked(uniqueIds(ids)).flatMap((chunk) =>
+    db
+      .select({ id: albums.id, name: albums.name })
+      .from(albums)
+      .where(
+        and(
+          inArray(albums.id, chunk),
+          notExists(
+            db
+              .select({ albumId: albumSongs.albumId })
+              .from(albumSongs)
+              .where(eq(albumSongs.albumId, albums.id)),
+          ),
+        ),
+      )
+      .all(),
+  );
 }
 
 /** Deletes an album and its song and artist credits; its songs stay in the library. */

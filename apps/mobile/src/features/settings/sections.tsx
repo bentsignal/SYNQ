@@ -135,11 +135,6 @@ export function LibrarySection() {
         label="Backup & Restore"
         onPress={() => router.push("/settings/backup")}
       />
-      <Row
-        icon="questionmark.circle"
-        label="How to Import"
-        onPress={() => router.push("/settings/how-to-import")}
-      />
     </FieldGroup.Section>
   );
 }

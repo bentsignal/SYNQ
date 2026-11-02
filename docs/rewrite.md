@@ -189,7 +189,10 @@ it untouched, and no audio or artwork file moves or is deleted.
   artists keeps them, and a track by someone else shows them under its
   title.
 - The album it leaves stays, even when emptied, with its cover: albums left
-  without songs are kept, as `deleteSongs` keeps them and as 2.5.2 did.
+  without songs are kept, as `deleteSongs` keeps them and as 2.5.2 did. The
+  write reports the albums it emptied, and the app offers to delete them once
+  (docs/ui.md → Editing); only a confirmed Delete removes one, and its songs
+  stay. Nothing asks about an album a 2.5.2 library already had empty.
 
 ### Migrating a 2.5.2 install
 

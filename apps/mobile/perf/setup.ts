@@ -161,6 +161,7 @@ jest.mock("expo-file-system", () => {
 jest.mock("expo-image-manipulator", () => ({}));
 jest.mock("expo-document-picker", () => ({}));
 jest.mock("expo-sharing", () => ({}));
+jest.mock("expo-store-review", () => ({}));
 
 // Saving and restoring the player's session reads and writes the library
 // database and the preferences file; the scenarios start from an empty

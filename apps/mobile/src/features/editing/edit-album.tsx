@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { router, Stack } from "expo-router";
+import { router, Stack, useNavigation } from "expo-router";
 import { FieldGroup } from "@expo/ui";
 
 import type { AlbumListItem } from "@synq/db";
@@ -13,6 +13,7 @@ import {
   written,
 } from "@synq/db";
 
+import { afterMenuCloses } from "~/components/menu";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
 import { offerToDeleteEmptyAlbums, tryWrite } from "~/features/library/actions";
@@ -261,6 +262,7 @@ export function EditAlbumArtistsScreen() {
  * (as 2.5.2 did).
  */
 export function EditAlbumTracksScreen() {
+  const navigation = useNavigation();
   const edits = draft.useValue();
   const id = useIdParam();
   const album = useLibraryQuery({
@@ -279,7 +281,11 @@ export function EditAlbumTracksScreen() {
    */
   function offerIfEmptied(remaining: number) {
     if (remaining > 0 || !hadSongs || album === null) return;
-    offerToDeleteEmptyAlbums([album], () => router.dismiss(2));
+    // The sheet's own navigator closes it, past the form, once the alert is
+    // gone: iOS won't close a sheet while an alert is closing.
+    offerToDeleteEmptyAlbums([album], () =>
+      afterMenuCloses(() => navigation.getParent()?.goBack()),
+    );
   }
   return (
     <>

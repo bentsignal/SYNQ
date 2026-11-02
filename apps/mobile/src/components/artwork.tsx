@@ -29,28 +29,37 @@ const PLACEHOLDER_SYMBOL = {
  * Library artwork from the entity's folder (`cover_small.jpg` at row sizes,
  * `cover_full.jpg` above `SMALL_MAX`), keyed by its version so an edit
  * shows at once, or a placeholder symbol on `fill`. Artists are circles.
- * A hairline edge keeps dark covers off the dark background.
+ * A hairline edge, drawn over the art, keeps dark covers off the dark
+ * background. Nothing sits behind the art or around it, so a cover with
+ * clear corners shows only what's behind the whole component.
  */
 export function Artwork({
   artwork,
   placeholder,
   size,
+  radius,
+  zoom = 1,
   className,
 }: {
   artwork: ArtworkRef | null;
   placeholder: ArtworkPlaceholder;
   size: number;
+  /** Overrides the size's usual corner radius. */
+  radius?: number;
+  /** Scales the art inside its corners, for covers with their own. */
+  zoom?: number;
   className?: string;
 }) {
   const round = placeholder === "artist";
-  const radius = round ? size / 2 : size >= 120 ? 10 : 6;
+  const corner = radius ?? (round ? size / 2 : size >= 120 ? 10 : 6);
   return (
     <View
       className={cn(
-        "bg-fill border-hairline items-center justify-center overflow-hidden border-white/10",
+        "items-center justify-center overflow-hidden",
+        artwork === null && "bg-fill",
         className,
       )}
-      style={{ borderRadius: radius, height: size, width: size }}
+      style={{ borderRadius: corner, height: size, width: size }}
     >
       {artwork === null ? (
         <SymbolIcon
@@ -70,13 +79,18 @@ export function Artwork({
             uri: artworkUri(Paths.document.uri, artwork, otherSize(size)),
           }}
           placeholderContentFit="cover"
-          style={{ height: size, width: size }}
+          style={{ height: size, transform: [{ scale: zoom }], width: size }}
           contentFit="cover"
           transition={120}
           recyclingKey={`${artwork.kind}-${artwork.id}`}
           accessibilityIgnoresInvertColors
         />
       )}
+      <View
+        className="border-hairline absolute inset-0 border-white/10"
+        pointerEvents="none"
+        style={{ borderRadius: corner }}
+      />
     </View>
   );
 }

@@ -47,7 +47,9 @@ enum Covers {
     guard let decoded = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
     else { throw CoverError.unreadable }
 
-    let side = min(decoded.width, decoded.height)
+    let shortest = min(decoded.width, decoded.height)
+    let inset = transparentCornerInset(of: decoded, side: shortest)
+    let side = shortest - inset * 2
     let crop = CGRect(
       x: (decoded.width - side) / 2, y: (decoded.height - side) / 2, width: side, height: side)
     guard let square = decoded.cropping(to: crop),
@@ -58,6 +60,49 @@ enum Covers {
     try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
     try writeJPEG(full, to: directoryURL.appendingPathComponent("cover_full.jpg"), quality: 0.9)
     try writeJPEG(small, to: directoryURL.appendingPathComponent("cover_small.jpg"), quality: 0.85)
+  }
+
+  /// How many pixels to crop from each side of art with its own transparent
+  /// rounded corners, which JPEG would flatten into black wedges around the
+  /// art. A rounded shape's corners are its only clear pixels near the sides,
+  /// so cropping past them loses a sliver. 0 for anything else, such as a logo
+  /// on a transparent field, which keeps the black behind it.
+  private static func transparentCornerInset(of image: CGImage, side: Int) -> Int {
+    switch image.alphaInfo {
+    case .none, .noneSkipFirst, .noneSkipLast: return 0
+    default: break
+    }
+    let probe = 128
+    var alpha = [UInt8](repeating: 0, count: probe * probe)
+    let drawn: Bool = alpha.withUnsafeMutableBytes { buffer in
+      guard
+        let context = CGContext(
+          data: buffer.baseAddress, width: probe, height: probe, bitsPerComponent: 8,
+          bytesPerRow: probe, space: CGColorSpaceCreateDeviceGray(),
+          bitmapInfo: CGImageAlphaInfo.alphaOnly.rawValue)
+      else { return false }
+      let dx = (image.width - side) / 2
+      let dy = (image.height - side) / 2
+      guard let square = image.cropping(to: CGRect(x: dx, y: dy, width: side, height: side))
+      else { return false }
+      context.draw(square, in: CGRect(x: 0, y: 0, width: probe, height: probe))
+      return true
+    }
+    guard drawn else { return 0 }
+    func opaque(_ x: Int, _ y: Int) -> Bool { alpha[y * probe + x] >= 250 }
+
+    let last = probe - 1
+    let middle = probe / 2
+    guard opaque(middle, 0), opaque(middle, last), opaque(0, middle), opaque(last, middle)
+    else { return 0 }
+    var reach = 0
+    for (x, y, stepX, stepY) in [(0, 0, 1, 1), (last, 0, -1, 1), (0, last, 1, -1), (last, last, -1, -1)] {
+      var step = 0
+      while step < 18, !opaque(x + step * stepX, y + step * stepY) { step += 1 }
+      if step == 18 { return 0 }
+      reach = max(reach, step)
+    }
+    return reach == 0 ? 0 : (reach + 1) * side / probe
   }
 
   /// Draws `image` into an opaque sRGB square (JPEG has no alpha; transparent

@@ -4,14 +4,22 @@ import { describe, test } from "node:test";
 import type { BatchCounts, Transfer } from "./progress.ts";
 import {
   ABANDONED_MS,
-  batchLine,
+  CAPSULE_MIN_MS,
+  capsuleHold,
+  capsuleLine,
+  capsuleTarget,
   completionDelay,
   failureReport,
+  finishedLine,
+  isBatchActive,
   NEW_TRANSFER,
+  NO_COUNT,
   parseUploadType,
   SETTLED_MS,
-  transferView,
+  startsTransfer,
+  stepCapsule,
   UNANNOUNCED_MS,
+  withNothingAnnounced,
 } from "./progress.ts";
 
 function batch(total: number, imported: number, failed = 0) {
@@ -22,11 +30,26 @@ function transfer(change: Partial<Transfer>) {
   return { ...NEW_TRANSFER, ...change } satisfies Transfer;
 }
 
-const uploading = { a: { fraction: 0.5, name: "a.mp3" } };
+const uploading = { a: { name: "a.mp3" } };
 
 void describe("completionDelay", () => {
   void test("never completes before anything has arrived", () => {
     assert.equal(completionDelay(NEW_TRANSFER, batch(0, 0)), null);
+  });
+
+  void test("a picked batch completes with its last file", () => {
+    assert.equal(completionDelay(NEW_TRANSFER, batch(3, 2)), null);
+    assert.equal(completionDelay(NEW_TRANSFER, batch(3, 3)), 0);
+    assert.equal(completionDelay(NEW_TRANSFER, batch(3, 2, 1)), 0);
+  });
+
+  void test("turning transfers off ends the wait for what the page queued", () => {
+    const waiting = transfer({ announced: 4, received: 1 });
+    assert.equal(completionDelay(waiting, batch(1, 1)), ABANDONED_MS);
+    assert.equal(
+      completionDelay(withNothingAnnounced(waiting), batch(1, 1)),
+      SETTLED_MS,
+    );
   });
 
   void test("never completes while a file is on its way", () => {
@@ -99,75 +122,79 @@ void describe("parseUploadType", () => {
   });
 });
 
-void describe("batchLine", () => {
-  void test("counts the song being imported", () => {
-    assert.equal(batchLine(batch(12, 0)), "Importing 1 of 12");
-    assert.equal(batchLine(batch(12, 2)), "Importing 3 of 12");
-  });
-
-  void test("leaves failed files out of the count", () => {
-    assert.equal(batchLine(batch(12, 2, 2)), "Importing 3 of 10");
-  });
-
-  void test("says what was imported when done", () => {
-    assert.equal(batchLine(batch(12, 12)), "12 Songs Imported");
-    assert.equal(batchLine(batch(1, 1)), "1 Song Imported");
+void describe("isBatchActive", () => {
+  void test("is on while anything is importing or on its way", () => {
+    assert.equal(isBatchActive(batch(0, 0), NEW_TRANSFER), false);
+    assert.equal(isBatchActive(batch(1, 0), NEW_TRANSFER), true);
+    assert.equal(
+      isBatchActive(batch(0, 0), transfer({ uploads: uploading })),
+      true,
+    );
   });
 });
 
-void describe("transferView", () => {
-  void test("is null before anything has arrived", () => {
-    assert.equal(transferView(NEW_TRANSFER, batch(0, 0)), null);
+void describe("startsTransfer", () => {
+  void test("only the first upload of a batch starts one", () => {
+    assert.equal(startsTransfer(NEW_TRANSFER), true);
+    assert.equal(startsTransfer(transfer({ uploads: uploading })), false);
+    assert.equal(startsTransfer(transfer({ received: 1 })), false);
   });
+});
 
-  void test("shows the first file alone until the page says how many follow", () => {
+void describe("the capsule's count", () => {
+  void test("counts what's known, including what's on its way", () => {
     assert.deepEqual(
-      transferView(transfer({ uploads: uploading }), batch(0, 0)),
-      {
-        done: false,
-        fraction: 0.5,
-        line: "Receiving",
-        name: "a.mp3",
-      },
-    );
-  });
-
-  void test("measures the whole transfer once it knows the total", () => {
-    assert.deepEqual(
-      transferView(
-        transfer({ announced: 2, received: 1, uploads: uploading }),
-        batch(1, 1),
+      capsuleTarget(
+        batch(3, 1, 1),
+        transfer({ announced: 4, uploads: uploading }),
       ),
-      {
-        done: false,
-        fraction: 1.5 / 4,
-        line: "Receiving 2 of 4",
-        name: "a.mp3",
-      },
+      { done: 2, total: 8 },
     );
   });
 
-  void test("stays on receiving in the gap between files", () => {
+  void test("rises gradually when files fly through", () => {
+    const steps = [NO_COUNT];
+    const target = { done: 100, total: 100 };
+    for (let tick = 0; tick < 4; tick += 1) {
+      const last = steps.at(-1) ?? NO_COUNT;
+      steps.push(stepCapsule(last, target));
+    }
     assert.deepEqual(
-      transferView(transfer({ announced: 2, received: 1 }), batch(1, 1)),
-      { done: false, fraction: 1 / 3, line: "Receiving 2 of 3", name: null },
+      steps.map(({ done }) => done),
+      [0, 25, 44, 58, 69],
     );
   });
 
-  void test("moves to importing, then done", () => {
-    const received = transfer({ announced: 0, received: 3 });
-    assert.deepEqual(transferView(received, batch(3, 1)), {
-      done: false,
-      fraction: 1,
-      line: "Importing 2 of 3",
-      name: null,
-    });
-    assert.deepEqual(transferView(received, batch(3, 3)), {
-      done: true,
-      fraction: 1,
-      line: "3 Songs Imported",
-      name: null,
-    });
+  void test("catches up one at a time at the end", () => {
+    assert.equal(
+      stepCapsule({ done: 11, total: 12 }, { done: 12, total: 12 }).done,
+      12,
+    );
+    assert.equal(
+      stepCapsule({ done: 12, total: 12 }, { done: 12, total: 12 }).done,
+      12,
+    );
+  });
+
+  void test("never reads a smaller total during a batch", () => {
+    assert.equal(
+      stepCapsule({ done: 2, total: 12 }, { done: 2, total: 9 }).total,
+      12,
+    );
+  });
+
+  void test("stays up a minimum time", () => {
+    assert.equal(capsuleHold(1000, 1000), CAPSULE_MIN_MS);
+    assert.equal(capsuleHold(1000, 1000 + CAPSULE_MIN_MS + 5), 0);
+  });
+
+  void test("says what's happening, then the result", () => {
+    assert.equal(capsuleLine({ done: 0, total: 12 }), "Importing 1 of 12");
+    assert.equal(capsuleLine({ done: 2, total: 12 }), "Importing 3 of 12");
+    assert.equal(capsuleLine({ done: 12, total: 12 }), "Importing 12 of 12");
+    assert.equal(capsuleLine({ done: 0, total: 1 }), "Importing 1 Song");
+    assert.equal(finishedLine(12), "12 Songs Imported");
+    assert.equal(finishedLine(1), "1 Song Imported");
   });
 });
 

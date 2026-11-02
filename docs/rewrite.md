@@ -87,8 +87,9 @@ fields need it.
   into export copies, remuxes the M4A files TypeScript can't tag (passthrough
   export),
   hard-links the library for backups, and runs Wi-Fi Transfer's HTTP server
-  (Network.framework; uploads stream to disk). No file passes through
-  JavaScript as base64. 2.5.2's JavaScript metadata reader
+  (Network.framework; uploads stream to disk, and a Server-Sent Events stream
+  gives the page a live link to the phone; docs/ui.md → Import). No file passes
+  through JavaScript as base64. 2.5.2's JavaScript metadata reader
   (`@missingcore/audio-metadata`) needs the legacy expo-file-system API, and
   its server (`react-native-http-bridge-refurbished`) is an old-architecture
   module that sent files as base64 JSON.

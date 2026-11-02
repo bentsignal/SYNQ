@@ -1,7 +1,7 @@
 /**
  * What an import batch and a Wi-Fi transfer are doing, as plain data: the
- * words the app shows for them, and when a transfer counts as complete.
- * No React or native code, so it runs in plain unit tests.
+ * words the app shows for them, and when a batch counts as done. No React or
+ * native code, so it runs in plain unit tests.
  */
 
 /** The files of the current batch, counted as they finish. */
@@ -12,15 +12,13 @@ export interface BatchCounts {
   readonly failed: number;
 }
 
-/** One Wi-Fi Transfer visit, as the phone sees the browser's uploads. */
+/** The browser's uploads during a batch, as the phone sees them. */
 export interface Transfer {
-  /** Uploads on their way, by id, with how much has arrived (0 to 1). */
-  readonly uploads: Readonly<
-    Record<string, { name: string; fraction: number }>
-  >;
+  /** Uploads on their way, by id. */
+  readonly uploads: Readonly<Record<string, { name: string }>>;
   /** Files that arrived in full. */
   readonly received: number;
-  /** Uploads that broke off. */
+  /** Uploads that broke off. The page retries them or says so itself. */
   readonly lost: number;
   /**
    * How many more files the page says will follow, or null when it hasn't
@@ -43,10 +41,10 @@ export const NEW_TRANSFER = {
 } satisfies Transfer;
 
 /**
- * Once everything has arrived and imported, how long the sheet stays. Long
- * enough to read the result, and for a second drop of files to catch it.
+ * After a transfer's last file imports, how long before the songs appear:
+ * a second drop of files this soon joins the same batch.
  */
-export const SETTLED_MS = 1800;
+export const SETTLED_MS = 1500;
 /**
  * The page didn't say whether more is coming. Browsers start the next file
  * as soon as the last one's response lands, so this gap is generous.
@@ -54,30 +52,56 @@ export const SETTLED_MS = 1800;
 export const UNANNOUNCED_MS = 6000;
 /**
  * The page said more is coming, but nothing has started for this long: the
- * browser went away, so waiting longer would keep the server up for nothing.
+ * browser went away or the files were cancelled. If it comes back, its files
+ * are simply the next batch.
  */
-export const ABANDONED_MS = 45_000;
+export const ABANDONED_MS = 8000;
 
 export function pendingCount({ failed, imported, total }: BatchCounts) {
   return total - imported - failed;
 }
 
-function uploadsOf(transfer: Transfer) {
-  return Object.values(transfer.uploads);
+function uploadCount(transfer: Transfer) {
+  return Object.keys(transfer.uploads).length;
+}
+
+/** Whether a batch is under way: something is importing or on its way. */
+export function isBatchActive(batch: BatchCounts, transfer: Transfer) {
+  return (
+    batch.total > 0 ||
+    uploadCount(transfer) > 0 ||
+    transfer.received + transfer.lost > 0
+  );
 }
 
 /**
- * How long until a transfer counts as complete, or null while it can't be:
- * nothing has arrived yet, a file is on its way, or a received file is
- * still importing. Each new upload clears the wait, so the server never
- * stops between the files of one transfer.
+ * How long until a batch counts as done and its songs appear together, or
+ * null while it can't be: a file is on its way, or one is still importing.
+ * A picked batch is done as soon as its last file is. A transfer waits a
+ * little, since the browser sends its files one at a time and the phone
+ * must not call it done between two of them.
  */
 export function completionDelay(transfer: Transfer, batch: BatchCounts) {
-  if (uploadsOf(transfer).length > 0) return null;
-  if (transfer.received + transfer.lost === 0) return null;
+  if (uploadCount(transfer) > 0) return null;
   if (pendingCount(batch) > 0) return null;
+  if (transfer.received + transfer.lost === 0) {
+    return batch.total > 0 ? 0 : null;
+  }
   if (transfer.announced === null) return UNANNOUNCED_MS;
   return transfer.announced > 0 ? ABANDONED_MS : SETTLED_MS;
+}
+
+/** Transfers went off: nothing more is coming, whatever the page has queued. */
+export function withNothingAnnounced(transfer: Transfer) {
+  return { ...transfer, announced: 0 } satisfies Transfer;
+}
+
+/**
+ * This upload begins a batch's transfer, so Wi-Fi Transfer's sheet gives way
+ * to the capsule.
+ */
+export function startsTransfer(transfer: Transfer) {
+  return uploadCount(transfer) === 0 && transfer.received + transfer.lost === 0;
 }
 
 /** The page's count of files still to come, carried on an upload's type. */
@@ -93,69 +117,60 @@ export function parseUploadType(contentType: string) {
   };
 }
 
+/** What the capsule says, smoothed from the real counts. */
+export interface CapsuleCount {
+  /** Files done so far, as shown. */
+  readonly done: number;
+  /** Files in the batch so far, as shown. It never shrinks during a batch. */
+  readonly total: number;
+}
+
+export const NO_COUNT = { done: 0, total: 0 } satisfies CapsuleCount;
+
+/** The capsule's words change at most this often, however fast files go. */
+export const CAPSULE_TICK_MS = 350;
+/** A capsule that came up stays up at least this long before its result. */
+export const CAPSULE_MIN_MS = 900;
+
+/** The real counts the capsule moves toward. */
+export function capsuleTarget(batch: BatchCounts, transfer: Transfer) {
+  return {
+    done: batch.imported + batch.failed,
+    total: batch.total + uploadCount(transfer) + (transfer.announced ?? 0),
+  } satisfies CapsuleCount;
+}
+
+/**
+ * One tick toward the real counts. It covers a quarter of the distance, at
+ * least one file, so a fast import reads as a count rising rather than
+ * numbers flying past, and it can't fall far behind a long one.
+ */
+export function stepCapsule(shown: CapsuleCount, target: CapsuleCount) {
+  const gap = target.done - shown.done;
+  return {
+    done: gap <= 0 ? shown.done : shown.done + Math.max(1, Math.ceil(gap / 4)),
+    total: Math.max(shown.total, target.total),
+  } satisfies CapsuleCount;
+}
+
+/** How much longer a capsule must stay before its result. */
+export function capsuleHold(startedAt: number, now: number) {
+  return Math.max(0, startedAt + CAPSULE_MIN_MS - now);
+}
+
 function songs(n: number) {
   return `${String(n)} ${n === 1 ? "Song" : "Songs"}`;
 }
 
-/** The batch in words: "Importing 3 of 12", then "12 Songs Imported". */
-export function batchLine(batch: BatchCounts) {
-  const { failed, imported, total } = batch;
-  if (pendingCount(batch) > 0) {
-    const importable = total - failed;
-    return `Importing ${String(Math.min(imported + 1, importable))} of ${String(importable)}`;
-  }
+/** The capsule's line while a batch runs: "Importing 3 of 12". */
+export function capsuleLine({ done, total }: CapsuleCount) {
+  if (total <= 1) return `Importing ${songs(1)}`;
+  return `Importing ${String(Math.min(done + 1, total))} of ${String(total)}`;
+}
+
+/** The capsule's one completion line: "12 Songs Imported". */
+export function finishedLine(imported: number) {
   return `${songs(imported)} Imported`;
-}
-
-/** A transfer in progress, for its sheet. */
-export interface TransferView {
-  readonly line: string;
-  /** The file arriving, when there is one. */
-  readonly name: string | null;
-  /** The whole transfer, 0 to 1. */
-  readonly fraction: number;
-  readonly done: boolean;
-}
-
-/** The files of the whole transfer that are known so far, and how far along. */
-function transferSpan(transfer: Transfer) {
-  const uploads = uploadsOf(transfer);
-  const finished = transfer.received + transfer.lost;
-  const total = finished + uploads.length + (transfer.announced ?? 0);
-  const arriving = uploads.reduce((sum, upload) => sum + upload.fraction, 0);
-  return {
-    finished,
-    fraction: total === 0 ? 1 : (finished + arriving) / total,
-    total,
-  };
-}
-
-function receivingLine(finished: number, total: number) {
-  return total > 1
-    ? `Receiving ${String(Math.min(finished + 1, total))} of ${String(total)}`
-    : "Receiving";
-}
-
-/** The transfer in words, or null before anything has arrived. */
-export function transferView(transfer: Transfer, batch: BatchCounts) {
-  const uploads = uploadsOf(transfer);
-  const { finished, fraction, total } = transferSpan(transfer);
-  if (uploads.length === 0 && finished === 0) return null;
-  const name = uploads[0]?.name ?? null;
-  if (uploads.length > 0 || (transfer.announced ?? 0) > 0) {
-    return {
-      done: false,
-      fraction,
-      line: receivingLine(finished, total),
-      name,
-    } satisfies TransferView;
-  }
-  return {
-    done: pendingCount(batch) === 0,
-    fraction,
-    line: batchLine(batch),
-    name,
-  } satisfies TransferView;
 }
 
 /** How many failed files an alert names before it just counts the rest. */

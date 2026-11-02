@@ -50,6 +50,9 @@ jobs:
 
       - name: Fingerprint the base
         run: |
+          # Back to the merge result afterward: Setup's post step needs its
+          # action, which a base from before the 3.0 app doesn't have.
+          trap 'git checkout --quiet "$GITHUB_SHA"' EXIT
           git checkout --quiet "${{ github.event.pull_request.base.sha }}"
           if [ ! -f apps/mobile/app.config.ts ]; then
             # Bases from before the 3.0 app have no runtime to compare.

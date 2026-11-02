@@ -1,5 +1,5 @@
 import type { SQL } from "drizzle-orm";
-import { and, asc, eq, inArray, ne, notExists, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, notExists, sql } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import type { ArtworkRef } from "./artwork.ts";

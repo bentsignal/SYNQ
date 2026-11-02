@@ -25,7 +25,6 @@
   "devDependencies": {
     "@synq/eslint-config": "workspace:*",
     "@synq/prettier-config": "workspace:*",
-    "@synq/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
     "drizzle-kit": "0.31.11",

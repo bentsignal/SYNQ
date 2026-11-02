@@ -23,7 +23,9 @@ import {
 
 const READ = {
   album: null,
+  albumArtists: null,
   artists: null,
+  compilation: false,
   covers: null,
   durationMs: 1000,
   mimeType: null,

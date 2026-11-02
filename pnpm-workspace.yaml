@@ -2,8 +2,6 @@ packages:
   - apps/*
   - packages/*
   - tooling/*
-  # Retired with rewrite-2 (docs/rewrite.md); packages/audio replaces it.
-  - "!packages/native-audio"
 
 catalog:
   "@eslint/js": ^9.38.0

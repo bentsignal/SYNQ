@@ -27,7 +27,6 @@
   "devDependencies": {
     "@synq/eslint-config": "workspace:*",
     "@synq/prettier-config": "workspace:*",
-    "@synq/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "~19.2.17",
     "@typescript/native-preview": "catalog:",

@@ -29,7 +29,8 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
 
   const { theme, changeTheme } = useThemeContext();
   const posthog = usePostHog();
-  const [premium, setPremium] = useState<boolean>(false);
+  // Upgrade test build: everything's unlocked, and nothing asks RevenueCat.
+  const [premium, setPremium] = useState<boolean>(true);
 
   useEffect(() => {
     posthog.capture('$set', {
@@ -109,9 +110,6 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
     }
   }
 
-  useEffect(() => {
-    checkPurchases();
-  }, []);
 
   return (
     <PremiumContext.Provider value={{ premium, setPremium }}>

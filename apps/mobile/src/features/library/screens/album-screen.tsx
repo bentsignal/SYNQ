@@ -50,7 +50,7 @@ function Album({ album }: { album: AlbumListItem }) {
     select: (items) => items,
   });
   const numbers = trackNumbers(tracks);
-  const header = useHeaderTitle(album.name, "album");
+  const header = useHeaderTitle("album");
   const bare = tracks.length === 0 && album.artwork === null;
   const source = { id: album.id, kind: "album" } as const;
   function ids() {
@@ -58,7 +58,10 @@ function Album({ album }: { album: AlbumListItem }) {
   }
   return (
     <>
-      <DetailTitle title={bare ? album.name : header.title} />
+      <DetailTitle
+        title={album.name}
+        opacity={bare ? undefined : header.opacity}
+      />
       <AlbumMenu album={album} />
       <ScreenList
         data={tracks}

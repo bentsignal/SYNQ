@@ -50,7 +50,7 @@ function Playlist({ playlist }: { playlist: PlaylistListItem }) {
   });
   const liked = playlist.kind === "liked";
   const placeholder = liked ? "liked" : "playlist";
-  const header = useHeaderTitle(playlist.name, placeholder);
+  const header = useHeaderTitle(placeholder);
   const bare = songs.length === 0 && playlist.artwork === null;
   const source = liked
     ? ({ kind: "liked" } as const)
@@ -60,7 +60,10 @@ function Playlist({ playlist }: { playlist: PlaylistListItem }) {
   }
   return (
     <>
-      <DetailTitle title={bare ? playlist.name : header.title} />
+      <DetailTitle
+        title={playlist.name}
+        opacity={bare ? undefined : header.opacity}
+      />
       <PlaylistMenu playlist={playlist} />
       <ScreenList
         data={songs}

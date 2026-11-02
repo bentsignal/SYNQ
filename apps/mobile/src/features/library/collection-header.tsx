@@ -1,7 +1,13 @@
 import type { ReactNode } from "react";
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-import { useState } from "react";
+import type { SharedValue } from "react-native-reanimated";
+import { useRef } from "react";
 import { Pressable, Text, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { Stack } from "expo-router";
 import { HStack, Image, Menu, Text as SwiftUIText } from "@expo/ui/swift-ui";
 import {
@@ -30,6 +36,9 @@ import { openLibraryScreen } from "./links";
 const ARTWORK_SIZE = 240;
 const ARTIST_ARTWORK_SIZE = 180;
 const TOP_PADDING = 12;
+const TITLE_FADE = { duration: 220 };
+/** Leaves the bar's buttons their room, however long the name. */
+const TITLE_MAX_WIDTH = 220;
 
 /**
  * The scroll offset (below the bars) at which a header's name has gone
@@ -45,28 +54,67 @@ function nameOffset(placeholder: ArtworkPlaceholder) {
 }
 
 /**
- * The bar's title for a page whose header shows the name: empty while the
- * name is on screen, the name once it scrolls under the bar, as in Apple
- * Music. Pass `onScroll` to the list; the screen re-renders only when the
- * title comes or goes.
+ * The bar's title for a page whose header shows the name: clear while the name
+ * is on screen, fading in once it scrolls under the bar, as in Apple Music.
+ * Pass `onScroll` to the list and `opacity` to `DetailTitle`. Nothing
+ * re-renders: the fade runs on the UI thread.
  */
-export function useHeaderTitle(name: string, placeholder: ArtworkPlaceholder) {
-  const [titled, setTitled] = useState(false);
+export function useHeaderTitle(placeholder: ArtworkPlaceholder) {
+  const opacity = useSharedValue(0);
+  const titled = useRef(false);
   return {
     onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const { contentInset, contentOffset } = event.nativeEvent;
       const past = contentOffset.y + contentInset.top > nameOffset(placeholder);
-      if (past !== titled) setTitled(past);
+      if (past === titled.current) return;
+      titled.current = past;
+      opacity.set(withTiming(past ? 1 : 0, TITLE_FADE));
     },
-    title: titled ? name : "",
+    opacity,
   };
 }
 
-/** A detail page's bar: no large title (the header has the name). */
-export function DetailTitle({ title }: { title: string }) {
+function FadingName({
+  name,
+  opacity,
+}: {
+  name: string;
+  opacity: SharedValue<number>;
+}) {
+  const style = useAnimatedStyle(() => ({ opacity: opacity.get() }));
+  return (
+    <Animated.Text
+      numberOfLines={1}
+      className="text-headline text-foreground font-semibold"
+      style={[{ maxWidth: TITLE_MAX_WIDTH }, style]}
+    >
+      {name}
+    </Animated.Text>
+  );
+}
+
+/**
+ * A detail page's bar: no large title (the header has the name). With `opacity`,
+ * the title fades with the scroll (`useHeaderTitle`); without it, it's the
+ * system's title, for a page with no header to scroll past.
+ */
+export function DetailTitle({
+  title,
+  opacity,
+}: {
+  title: string;
+  opacity?: SharedValue<number>;
+}) {
   return (
     <Stack.Screen
-      options={{ headerLargeTitleEnabled: false, headerTitle: title, title }}
+      options={{
+        headerLargeTitleEnabled: false,
+        headerTitle:
+          opacity === undefined
+            ? title
+            : () => <FadingName name={title} opacity={opacity} />,
+        title,
+      }}
     />
   );
 }

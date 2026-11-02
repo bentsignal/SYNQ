@@ -222,11 +222,13 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
   }
 
   /// The content itself lifted. Clear, or iOS fills the shape with its own gray.
+  /// No shadow: on a clear shape it shows through as a dark box around the content.
   private func preview() -> UITargetedPreview? {
     guard window != nil else { return nil }
     let parameters = UIPreviewParameters()
     parameters.backgroundColor = .clear
     parameters.visiblePath = UIBezierPath(roundedRect: bounds, cornerRadius: previewRadius)
+    parameters.shadowPath = UIBezierPath()
     return UITargetedPreview(view: self, parameters: parameters)
   }
 }

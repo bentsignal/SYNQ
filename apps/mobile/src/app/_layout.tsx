@@ -13,6 +13,7 @@ import { ImportActivity } from "~/features/import/import-activity";
 import { wifiSheetDetent } from "~/features/import/transfer-link";
 import { installWifiTransfer } from "~/features/import/wifi-transfer";
 import { LibraryGate } from "~/features/library/library-gate";
+import { QueueToast } from "~/features/player/queue-toast";
 import { applyStoredPreferences } from "~/features/preferences/store";
 import { queryClient } from "~/lib/query-client";
 
@@ -130,6 +131,7 @@ export default function RootLayout() {
           <LibraryGate>
             <RootStack />
             <ImportActivity />
+            <QueueToast />
             <ExportBanner />
           </LibraryGate>
         </QueryClientProvider>

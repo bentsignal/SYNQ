@@ -56,14 +56,18 @@ numbers.
   press: the highlight waits for the finger to lift, since a touch that's still
   down may become a long press, and the lifted preview has a clear background,
   so only the content rises, in a shape with rounded corners (12 pt on a row,
-  10 pt on a card, its artwork's). Behind it the app blurs and dims for as long
+  10 pt on a card, its artwork's), and with no system shadow, which shows through
+  a clear shape as a dark box around the content. Behind it the app blurs and dims for as long
   as the menu is open (`FocusBackdrop.swift`), as Vera's message menu does, so
   the lifted row stands out from whatever was under it. A menu from the
   `ellipsis` lifts nothing and doesn't blur.
 - **Swipe** (song rows, `RowSwipe.swift`): dragging a row right adds it to the
   queue, and left opens Add to Playlist. The row follows the finger over a symbol
   at the edge it left, which turns the accent with a tick at 72 pt, where letting
-  go would do it. A drag from the left edge stays iOS's Back. The menu goes to native as
+  go would do it. A drag from the left edge stays iOS's Back. Adding to the queue
+  from a swipe or a menu shows "Added to Queue" in a capsule above the mini player
+  for 4 s (`queue-toast.tsx`), and a tap on it opens the queue. The import capsule
+  comes first when both have something to say. The menu goes to native as
   JSON and is only built when a menu opens, so a recycled row costs a
   string compare. This replaced a SwiftUI `Host` per row (`ContextMenu`
   around a `Button`, plus a `Menu`): with 3,000 songs and six identical
@@ -161,7 +165,8 @@ are form sheets; the edit and create sheets push lists (Edit Songs, Add
 Songs, Artists, Albums) inside their own stack, which a form sheet can't
 hold, so they're page sheets, and Done saves everything the sheet changed
 (`src/features/editing/draft.ts`):
-- **Playlist**: artwork (tap to choose a photo, cropped square), name,
+- **Playlist**: artwork (tap to choose a photo, which fills its square from the middle; a crop
+  editor makes iOS's picker take about five seconds to open), name,
   and Edit Songs (a SwiftUI `List` in edit mode: an Add Songs row on top
   opening the song picker, drag to reorder, swipe to remove).
 - **Album**: artwork, name, year, artists (toggle list), Edit Songs (same
@@ -258,8 +263,10 @@ A native form (`FieldGroup`):
   current one checked; the row itself doesn't repeat the current icon).
 - **Playback**: Haptics toggle.
 - **Library**: Backup & Restore (Back Up Library shares a zip; Restore
-  from Backup picks one, including 2.5.2 backups; Erase Library,
-  destructive with confirmation).
+  from Backup picks one, including 2.5.2 backups; Erase Library, whose native
+  alert's button stays off until "I want to erase my library" is typed). A task
+  that finishes within 0.5 s shows nothing, so a small library doesn't flicker;
+  a longer one shows its progress.
 - **SYNQ**: Rate SYNQ, Contact Support, X, Instagram, Discord, and the
   version in the section footer.
 

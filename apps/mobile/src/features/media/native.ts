@@ -81,6 +81,13 @@ interface SynqMediaModule {
   /** Whether the server's listener still answers. */
   checkTransferServer?: () => Promise<boolean>;
   copyText?: (text: string) => void;
+  /** A native alert whose button stays off until `phrase` is typed. */
+  confirmTyped?: (
+    title: string,
+    message: string,
+    phrase: string,
+    confirmTitle: string,
+  ) => Promise<boolean>;
   wifiAddress: () => string | null;
   addListener: <Name extends keyof TransferEvents>(
     name: Name,

@@ -73,6 +73,13 @@ public class SynqMediaModule: Module {
       UIPasteboard.general.string = text
     }
 
+    AsyncFunction("confirmTyped") {
+      (title: String, message: String, phrase: String, confirmTitle: String, promise: Promise) in
+      TypedConfirm.show(title: title, message: message, phrase: phrase, confirmTitle: confirmTitle) {
+        promise.resolve($0)
+      }
+    }.runOnQueue(.main)
+
     Function("wifiAddress") { () -> String? in
       NetworkAddress.wifiIPv4()
     }

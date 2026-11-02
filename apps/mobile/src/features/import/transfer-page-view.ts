@@ -58,13 +58,21 @@ export const TRANSFER_VIEW = `
     else delete root.dataset[key];
   }
 
-  /** The tab's icon: the same arrows in the same accent. */
+  /** The tab's icon: the page's icon, with its corners and its gradients. */
   function drawFavicon(accent) {
+    // The page's lighter middle: the accent 45% of the way to white.
+    const light = "#" + [1, 3, 5].map((at) => {
+      const value = parseInt(accent.slice(at, at + 2), 16);
+      return Math.round(value + (255 - value) * 0.45).toString(16).padStart(2, "0");
+    }).join("");
     el("favicon").href = "data:image/svg+xml," + encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">' +
-      '<defs><mask id="m"><image width="96" height="96" href="${TRANSFER_LOGO_MASK}"/></mask></defs>' +
-      '<rect width="96" height="96" rx="21" fill="#222"/>' +
-      '<rect width="96" height="96" fill="' + accent + '" mask="url(#m)"/></svg>',
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs>' +
+      '<mask id="m"><image width="96" height="96" href="${TRANSFER_LOGO_MASK}"/></mask>' +
+      '<linearGradient id="b" x2="0" y2="1"><stop stop-color="#303030"/><stop offset="1" stop-color="#161616"/></linearGradient>' +
+      '<linearGradient id="a" x2="0" y2="1"><stop offset=".22" stop-color="' + accent + '"/>' +
+      '<stop offset=".52" stop-color="' + light + '"/><stop offset=".78" stop-color="' + accent + '"/></linearGradient>' +
+      '</defs><rect width="96" height="96" rx="21.5" fill="url(#b)"/>' +
+      '<rect width="96" height="96" fill="url(#a)" mask="url(#m)"/></svg>',
     );
   }
 

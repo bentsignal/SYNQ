@@ -22,6 +22,7 @@ import {
   exportPlaylist,
 } from "~/features/export/export";
 import { addToQueue, playNext, playSongs } from "~/features/player/actions";
+import { showQueueToast } from "~/features/player/queue-toast";
 import {
   confirmDeleteAlbum,
   confirmDeleteArtist,
@@ -95,13 +96,19 @@ function collectionMenu({
       icon: "text.line.first.and.arrowtriangle.forward",
       key: "next",
       label: "Play Next",
-      onPress: () => playNext(songIds()),
+      onPress: () => {
+        playNext(songIds());
+        showQueueToast("Playing Next");
+      },
     },
     {
       icon: "text.line.last.and.arrowtriangle.forward",
       key: "queue",
       label: "Add to Queue",
-      onPress: () => addToQueue(songIds()),
+      onPress: () => {
+        addToQueue(songIds());
+        showQueueToast("Added to Queue");
+      },
     },
   ] satisfies MenuItem[];
   const keep = [

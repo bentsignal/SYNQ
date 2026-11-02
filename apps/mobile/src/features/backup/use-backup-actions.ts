@@ -4,6 +4,7 @@ import * as DocumentPicker from "expo-document-picker";
 
 import type { MergeSummary } from "@synq/db/merge";
 
+import { synqMedia, synqMediaAvailable } from "~/features/media/native";
 import { errorFeedback, successFeedback } from "~/lib/haptics";
 import { backUpLibrary, eraseLibrary, inspectBackup } from "./backup";
 import { RestoreError, restoreLibrary } from "./restore";
@@ -11,10 +12,20 @@ import { restoreSummary } from "./restore-summary";
 
 const SUPPORT_URL = "https://directedbyshawn.com/synq-support";
 
+/** A task that finishes sooner shows nothing, so it can't flicker. */
+const SHOW_AFTER_MS = 500;
+
+/** What someone types to erase their library. */
+const ERASE_PHRASE = "I want to erase my library";
+
 interface Task {
   label: string;
   /** 0 to 1, or null while there's no measure. */
   progress: number | null;
+}
+
+function noMeasure(): number | null {
+  return null;
 }
 
 function failed(
@@ -69,8 +80,34 @@ async function pickBackup() {
 }
 
 /**
+ * Asks before erasing. The alert's button stays off until the phrase is typed,
+ * so no one erases by accident.
+ */
+function confirmErase(erase: () => void) {
+  const title = "Erase Your Library?";
+  const warning =
+    "Every song, album, artist, and playlist is deleted from this iPhone. This can't be undone.";
+  const typed = synqMediaAvailable() ? synqMedia().confirmTyped : undefined;
+  if (typed === undefined) {
+    Alert.alert(title, warning, [
+      { style: "cancel", text: "Cancel" },
+      { onPress: erase, style: "destructive", text: "Erase" },
+    ]);
+    return;
+  }
+  void typed(
+    title,
+    `${warning} To confirm, type “${ERASE_PHRASE}”.`,
+    ERASE_PHRASE,
+    "Erase",
+  ).then((confirmed) => {
+    if (confirmed) erase();
+  });
+}
+
+/**
  * Back Up Library, Restore from Backup, and Erase Library, one at a time,
- * with the running one's progress.
+ * with the running one's progress once it's been going a moment.
  */
 export function useBackupActions() {
   const [task, setTask] = useState<Task | null>(null);
@@ -83,24 +120,33 @@ export function useBackupActions() {
   ) {
     if (running.current) return Promise.resolve(false);
     running.current = true;
-    setTask({ label, progress: null });
+    let progress = noMeasure();
+    let visible = false;
+    const showTimer = setTimeout(() => {
+      visible = true;
+      setTask({ label, progress });
+    }, SHOW_AFTER_MS);
     // Only when the percentage changes: a restore reports every file.
     let shown = -1;
     function report(value: number) {
+      progress = value;
       const percent = Math.round(value * 100);
       if (percent === shown) return;
       shown = percent;
-      setTask({ label, progress: value });
+      if (visible) setTask({ label, progress: value });
+    }
+    function finish() {
+      clearTimeout(showTimer);
+      running.current = false;
+      setTask(null);
     }
     return work(report).then(
       () => {
-        running.current = false;
-        setTask(null);
+        finish();
         return true;
       },
       (error: unknown) => {
-        running.current = false;
-        setTask(null);
+        finish();
         throw error;
       },
     );
@@ -145,25 +191,14 @@ export function useBackupActions() {
   }
 
   function erase() {
-    Alert.alert(
-      "Erase Your Library?",
-      "Every song, album, artist, and playlist is deleted from this iPhone. This can't be undone.",
-      [
-        { style: "cancel", text: "Cancel" },
-        {
-          onPress: () => {
-            run("Erasing", eraseLibrary).then(
-              (done) => {
-                if (done) successFeedback();
-              },
-              () => failed("Couldn't Erase Library"),
-            );
-          },
-          style: "destructive",
-          text: "Erase",
+    confirmErase(() => {
+      run("Erasing", eraseLibrary).then(
+        (done) => {
+          if (done) successFeedback();
         },
-      ],
-    );
+        () => failed("Couldn't Erase Library"),
+      );
+    });
   }
 
   return { backUp, erase, restore, task };

@@ -74,7 +74,7 @@ function ArtistHeader({
 
 function Artist({ detail }: { detail: ArtistDetail }) {
   const { artist, songs } = detail;
-  const header = useHeaderTitle(artist.name, "artist");
+  const header = useHeaderTitle("artist");
   const empty = songs.length === 0 && detail.albums.length === 0;
   const bare = empty && artist.artwork === null;
   const source = { id: artist.id, kind: "artist" } as const;
@@ -83,7 +83,10 @@ function Artist({ detail }: { detail: ArtistDetail }) {
   }
   return (
     <>
-      <DetailTitle title={bare ? artist.name : header.title} />
+      <DetailTitle
+        title={artist.name}
+        opacity={bare ? undefined : header.opacity}
+      />
       <ArtistMenu artist={artist} />
       <ScreenList
         data={songs}

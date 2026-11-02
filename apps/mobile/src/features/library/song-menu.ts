@@ -10,6 +10,7 @@ import type {
 } from "~/components/menu";
 import { exportFailed, exportSongs } from "~/features/export/export";
 import { addToQueue, playNext } from "~/features/player/actions";
+import { showQueueToast } from "~/features/player/queue-toast";
 import {
   confirmDeleteSongs,
   removeFromAlbum,
@@ -115,13 +116,19 @@ export function songMenu(song: SongListItem, place: SongMenuPlace) {
       icon: "text.line.first.and.arrowtriangle.forward",
       key: "next",
       label: "Play Next",
-      onPress: () => playNext([song.id]),
+      onPress: () => {
+        playNext([song.id]);
+        showQueueToast("Playing Next");
+      },
     },
     {
       icon: "text.line.last.and.arrowtriangle.forward",
       key: "queue",
       label: "Add to Queue",
-      onPress: () => addToQueue([song.id]),
+      onPress: () => {
+        addToQueue([song.id]);
+        showQueueToast("Added to Queue");
+      },
     },
   ] satisfies MenuItem[];
   const keep = [

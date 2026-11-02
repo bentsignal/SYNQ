@@ -1,6 +1,9 @@
 import { View } from "react-native";
 import { Image } from "expo-image";
-import { launchImageLibraryAsync } from "expo-image-picker";
+import {
+  launchImageLibraryAsync,
+  UIImagePickerPreferredAssetRepresentationMode,
+} from "expo-image-picker";
 import { Button, Menu, RNHostView, VStack } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
@@ -17,12 +20,17 @@ import { failed } from "~/features/library/actions";
 
 const SIZE = 160;
 
-/** Picks a photo, cropped square by the system's editor. */
+/**
+ * Picks a photo, which fills its square from the middle wherever it's shown.
+ * No crop editor: on iOS it makes the picker use the old
+ * `UIImagePickerController`, which loads the whole library first, about five
+ * seconds. Without it, the system's picker opens at once (Vera found this too).
+ */
 async function pickPhoto() {
   const result = await launchImageLibraryAsync({
-    allowsEditing: true,
-    aspect: [1, 1],
     mediaTypes: ["images"],
+    preferredAssetRepresentationMode:
+      UIImagePickerPreferredAssetRepresentationMode.Current,
     quality: 1,
   });
   const [asset] = result.canceled ? [] : result.assets;

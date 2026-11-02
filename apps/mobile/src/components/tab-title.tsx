@@ -21,8 +21,8 @@ export function TabTitle({ title }: { title: string }) {
  * no bar to see. Content scrolling under it goes through iOS's `hard` scroll
  * edge effect: dark glass ending in a hairline, which keeps the title readable
  * over bright artwork (docs/ui.md → Library). A SwiftUI form asks for the same
- * effect itself (`Form`'s `glassBar`). Pushed screens keep `TabTitle`: their
- * top left is Back.
+ * effect itself (`RootTabForm`). Pushed screens keep `TabTitle`: their top left
+ * is Back.
  */
 export function RootTabTitle({ title }: { title: string }) {
   return (

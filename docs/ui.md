@@ -112,9 +112,10 @@ numbers.
 - The bar is transparent, so at the top of the page there's no bar to see.
   Content scrolling under it goes through iOS's `hard` scroll edge effect:
   dark glass ending in a very faint hairline, which keeps the title readable
-  over bright artwork. A SwiftUI form asks for the same effect itself (`Form`'s
-  `glassBar`), since the screen's option only reaches a React Native scroll
-  view. The `soft` effect left the title colliding with what's under it, and a
+  over bright artwork. Settings' SwiftUI form asks for the same effect itself
+  (`RootTabForm`), since the screen's option only reaches a React Native scroll
+  view. SwiftUI's `hard` draws even with nothing under the bar, so that bar wears
+  the page's color until the form has scrolled. The `soft` effect left the title colliding with what's under it, and a
   `UIBlurEffect` bar showed at the top of the page and lost the glass.
 - Rows (accent symbol, label, chevron): Liked Songs (`heart`), Playlists
   (`music.note.list`), Artists (`music.microphone`), Albums

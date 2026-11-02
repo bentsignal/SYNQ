@@ -55,14 +55,14 @@ final class BackdropView: ExpoView {
     addSubview(metal)
     let center = NotificationCenter.default
     center.addObserver(
-      self, selector: #selector(update),
+      self, selector: #selector(reduceMotionChanged),
       name: UIAccessibility.reduceMotionStatusDidChangeNotification, object: nil)
-    for name in [
-      UIApplication.didBecomeActiveNotification, UIApplication.willResignActiveNotification,
-      UIApplication.didEnterBackgroundNotification, UIApplication.willEnterForegroundNotification,
-    ] {
-      center.addObserver(self, selector: #selector(update), name: name, object: nil)
-    }
+    center.addObserver(
+      self, selector: #selector(becameActive),
+      name: UIApplication.didBecomeActiveNotification, object: nil)
+    center.addObserver(
+      self, selector: #selector(resignedActive),
+      name: UIApplication.willResignActiveNotification, object: nil)
     // Metal compiles once, while the first sheet opens; that first backdrop
     // eases in over what's behind it.
     if BackdropPipeline.shared.pipeline == nil {
@@ -104,12 +104,24 @@ final class BackdropView: ExpoView {
     drawIfStill()
   }
 
-  @objc private func update() {
-    active = UIApplication.shared.applicationState == .active
-    // The system may have discarded the last frame while away.
-    if active { needsDraw = true }
+  @objc private func reduceMotionChanged() {
     updateRunning()
     drawIfStill()
+  }
+
+  @objc private func becameActive() {
+    active = true
+    // The system may have discarded the last frame while away.
+    needsDraw = true
+    updateRunning()
+    drawIfStill()
+  }
+
+  /// Comes before the background too. The app's state still reads active at
+  /// this point, so it can't be asked.
+  @objc private func resignedActive() {
+    active = false
+    updateRunning()
   }
 
   private func pipelineReady() {

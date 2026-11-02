@@ -182,7 +182,8 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   (`text-footnote` semibold / `text-caption muted`), `backward.fill`,
   `play.fill` / `pause.fill`, and `forward.fill`. Tap opens the player. In
   the inline placement (tab bar minimized) it drops the artist line and
-  `backward.fill`. "Not Playing" when the queue is empty.
+  `backward.fill`. "Not Playing" when the queue is empty. Its controls and
+  artwork behave as the full player's do.
 - **Full player** (modal sheet, swipe down to close): behind everything,
   soft pools of the artwork's own colors drifting slowly, never brighter
   than white text can read over (`modules/synq-backdrop`, and the
@@ -192,11 +193,34 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   eases to 85% scale when paused; a cover with its own rounded corners is
   zoomed until they're past the clip; title
   (`text-title` semibold, one line) over the artist (muted, tappable);
-  `heart` toggle and `ellipsis` menu on the right; a thin scrubber whose
-  thumb grows while dragging, elapsed left and remaining right
-  (`text-caption` tabular); `backward.fill`, large `play.fill` /
-  `pause.fill`, `forward.fill`; bottom row `shuffle`, `repeat` /
-  `repeat.1` (accent when on), AirPlay route picker, `list.bullet` (queue).
+  `heart` toggle and `ellipsis` menu on the right, the dots' right edge at the
+  scrubber's right end and the button's target larger than the dots on every
+  side (52 × 64 pt); a thin scrubber whose thumb grows while dragging, elapsed
+  left and remaining right (`text-caption` tabular), hanging under the bar and
+  taking up no room; `backward.fill`, large `play.fill` / `pause.fill`,
+  `forward.fill`, centered between the scrubber's bar and the volume bar; the
+  system volume (a bar matching the scrubber, between quiet `speaker.fill` and
+  `speaker.wave.3.fill`; left out of binaries without `modules/synq-volume`);
+  bottom row `shuffle`, `repeat` / `repeat.1` (accent when on), AirPlay route
+  picker, `list.bullet` (queue). The gaps grow with the phone's height
+  (`player-layout.ts`), and on a very short screen or with very large text the
+  artwork gives way first.
+- **Player controls**: pressing one shrinks and dims the symbol itself, with
+  nothing drawn around it (`icon-button.tsx`), in the player and the mini
+  player.
+- **Artwork on a skip** swaps in a single frame: the current cover stays up
+  until the next is ready, with no fade and no empty frame, and the covers on
+  either side of the current song are already decoded in memory
+  (`SeamlessArtwork`, `artwork-prefetch.ts`). A song with no art shows the
+  placeholder at once; going back to art, the placeholder stays until the image
+  is drawn.
+- **Long titles** (`marquee-text.tsx`) scroll at one speed, 30 pt/s, however
+  long they are: a pause, to the end, a pause, and back. They fade to
+  transparent at whichever edge cuts something off, with a real alpha mask
+  since the backdrop moves (`modules/synq-fade`): at rest only the right edge
+  fades, the left fades in once the text moves, and at the end only the left
+  fades. Text that fits stays still and unfaded. Under Reduce Motion it's
+  truncated. Binaries without the module clip.
 - **Queue** (form sheet, detents medium and large): "Playing from
   <source>", the current song, then "Up Next"; toolbar Shuffle / Repeat
   toggles and Clear. Every Up Next row has a `line.3.horizontal` handle: a

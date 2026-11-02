@@ -22,12 +22,16 @@ const THUMB_GROWN = 2.6;
 const BAR_GROWN = 2;
 const GROW = { duration: 160 };
 const TIME_STYLE = { fontVariant: ["tabular-nums" as const] };
+/** The row with the bar; the times hang under it and take up no room. */
+const ROW_HEIGHT = 20;
 
 /**
  * The player's scrubber: a thin bar with a small thumb that grows while
  * dragged, elapsed time on the left and remaining on the right. The drag
  * is relative (touching doesn't jump), and the seek happens on release.
- * Disabled while nothing is loaded.
+ * Disabled while nothing is loaded. Its height is the bar's row: the times
+ * hang below it without pushing anything, so what follows is spaced from the
+ * bar.
  */
 export function Scrubber({
   disabled,
@@ -93,10 +97,11 @@ export function Scrubber({
 
   const shownMs = dragSeconds >= 0 ? dragSeconds * 1000 : progress.positionMs;
   return (
-    <View className="gap-2">
+    <View style={{ height: ROW_HEIGHT }}>
       <GestureDetector gesture={pan}>
         <View
-          className="h-5 justify-center"
+          className="justify-center"
+          style={{ height: ROW_HEIGHT }}
           accessibilityRole="adjustable"
           accessibilityLabel="Position"
           accessibilityValue={{ text: formatTime(shownMs) }}
@@ -118,7 +123,11 @@ export function Scrubber({
           />
         </View>
       </GestureDetector>
-      <View className="flex-row justify-between">
+      <View
+        pointerEvents="none"
+        className="absolute inset-x-0 flex-row justify-between"
+        style={{ top: ROW_HEIGHT }}
+      >
         <Text className="text-caption text-muted" style={TIME_STYLE}>
           {formatTime(shownMs)}
         </Text>

@@ -8,6 +8,7 @@ import {
   forgetSongIds,
   insertEntries,
   moveEntry,
+  neighbors,
   newEntries,
   playNextIndex,
   removeEntries,
@@ -232,4 +233,44 @@ void test("shuffled returns a permutation", () => {
     items,
   );
   assert.notDeepEqual(result, items);
+});
+
+function queueAt(startIndex: number) {
+  return buildQueue([1, 2, 3], { shuffle: false, startIndex });
+}
+
+void test("neighbors are the entries on either side of the current one", () => {
+  const queue = queueAt(1);
+  assert.deepEqual(
+    neighbors(queue, "off").map((entry) => entry.songId),
+    [3, 1],
+  );
+});
+
+void test("neighbors stop at the ends unless the queue repeats", () => {
+  const first = queueAt(0);
+  const last = queueAt(2);
+  assert.deepEqual(
+    neighbors(first, "off").map((entry) => entry.songId),
+    [2],
+  );
+  assert.deepEqual(
+    neighbors(last, "one").map((entry) => entry.songId),
+    [2],
+  );
+  assert.deepEqual(
+    neighbors(first, "all").map((entry) => entry.songId),
+    [2, 3],
+  );
+  assert.deepEqual(
+    neighbors(last, "all").map((entry) => entry.songId),
+    [1, 2],
+  );
+});
+
+void test("an empty queue has no neighbors", () => {
+  assert.deepEqual(
+    neighbors(buildQueue([], { shuffle: false, startIndex: null }), "all"),
+    [],
+  );
 });

@@ -1,4 +1,5 @@
 import type { SymbolViewProps } from "expo-symbols";
+import { useState } from "react";
 import { View } from "react-native";
 import { Paths } from "expo-file-system";
 import { Image } from "expo-image";
@@ -62,13 +63,7 @@ export function Artwork({
       style={{ borderRadius: corner, height: size, width: size }}
     >
       {artwork === null ? (
-        <SymbolIcon
-          name={PLACEHOLDER_SYMBOL[placeholder]}
-          size={Math.round(size * (size >= 120 ? 0.3 : 0.4))}
-          tintColorClassName={
-            placeholder === "liked" ? "accent-accent" : "accent-subtle"
-          }
-        />
+        <PlaceholderSymbol placeholder={placeholder} size={size} />
       ) : (
         <Image
           source={{
@@ -92,6 +87,126 @@ export function Artwork({
         style={{ borderRadius: corner }}
       />
     </View>
+  );
+}
+
+/**
+ * Artwork that changes in place, for what's playing: the current image stays
+ * up until the next one is ready, and the swap is one frame, with no fade and
+ * no gap. List rows clear on `recyclingKey` so a recycled row never shows
+ * another song's cover; here it's what caused the flicker on every skip.
+ *
+ * The player prefetches the covers around the current song into the memory
+ * cache this reads (`features/player/artwork-prefetch.ts`). Nothing resizes
+ * them on the way, which would cost the main thread a frame.
+ */
+export function SeamlessArtwork({
+  artwork,
+  placeholder,
+  size,
+  radius,
+  zoom = 1,
+}: {
+  artwork: ArtworkRef | null;
+  placeholder: ArtworkPlaceholder;
+  size: number;
+  radius?: number;
+  zoom?: number;
+}) {
+  const corner = radius ?? (size >= 120 ? 10 : 6);
+  const { source, standIn, onError } = useFallingBackSource(artwork, size);
+  const { placeholderShown, onDisplay } = useHeldPlaceholder(source);
+  return (
+    <View
+      className={cn(
+        "items-center justify-center overflow-hidden",
+        placeholderShown && "bg-fill",
+      )}
+      style={{ borderRadius: corner, height: size, width: size }}
+    >
+      {placeholderShown && (
+        <PlaceholderSymbol placeholder={placeholder} size={size} />
+      )}
+      {source !== null && (
+        <Image
+          source={{ uri: source }}
+          placeholder={standIn === null ? null : { uri: standIn }}
+          placeholderContentFit="cover"
+          style={{
+            height: size,
+            position: "absolute",
+            transform: [{ scale: zoom }],
+            width: size,
+          }}
+          contentFit="cover"
+          cachePolicy="memory"
+          allowDownscaling={false}
+          onDisplay={onDisplay}
+          onError={onError}
+          accessibilityIgnoresInvertColors
+        />
+      )}
+      <View
+        className="border-hairline absolute inset-0 border-white/10"
+        pointerEvents="none"
+        style={{ borderRadius: corner }}
+      />
+    </View>
+  );
+}
+
+/**
+ * A song without art going to one with it: the placeholder stays until the
+ * image is drawn. Going the other way, it shows at once.
+ */
+function useHeldPlaceholder(source: string | null) {
+  const [holding, setHolding] = useState(false);
+  if (source === null && !holding) setHolding(true);
+  return {
+    onDisplay: () => setHolding(false),
+    placeholderShown: source === null || holding,
+  };
+}
+
+/**
+ * A 2.5.2 cover may exist in only one size, so a file that fails moves on to
+ * the other one. It has to say so here: with the previous image still up, the
+ * last song's cover would otherwise stay. Null when there's nothing to show.
+ */
+function useFallingBackSource(artwork: ArtworkRef | null, size: number) {
+  const primary =
+    artwork === null
+      ? null
+      : artworkUri(Paths.document.uri, artwork, artworkSize(size));
+  const standIn =
+    artwork === null
+      ? null
+      : artworkUri(Paths.document.uri, artwork, otherSize(size));
+  const [failure, setFailure] = useState({ count: 0, uri: primary });
+  const failures = failure.uri === primary ? failure.count : 0;
+  const candidates = [primary, standIn];
+  return {
+    onError: () => setFailure({ count: failures + 1, uri: primary }),
+    source: candidates[failures] ?? null,
+    standIn,
+  };
+}
+
+function PlaceholderSymbol({
+  placeholder,
+  size,
+}: {
+  placeholder: ArtworkPlaceholder;
+  size: number;
+}) {
+  return (
+    <SymbolIcon
+      name={PLACEHOLDER_SYMBOL[placeholder]}
+      size={Math.round(size * (size >= 120 ? 0.3 : 0.4))}
+      tintColorClassName={
+        placeholder === "liked" ? "accent-accent" : "accent-subtle"
+      }
+    />
   );
 }
 

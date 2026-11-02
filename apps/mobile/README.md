@@ -118,6 +118,10 @@ profile (the team's registered iPhones).
 - `modules/synq-media`: SYNQ's local Expo module (Swift): audio metadata,
   covers, export retagging, backup staging, and the Wi-Fi Transfer server
   (`src/features/media/native.ts`). See docs/rewrite.md → Data.
+- `modules/synq-volume`: the player's volume slider, `MPVolumeView` styled like
+  the scrubber. Optional: the player leaves it out without it.
+- `modules/synq-fade`: the fade at the clipped edges of a scrolling title, a
+  `CAGradientLayer` mask. Optional: the title clips without it.
 - `modules/synq-backdrop`: the player's moving backdrop, in Metal, and the
   read of a cover behind it (`src/features/player/README.md` → Backdrop).
 - `src/features/import`, `export`, `backup`, `settings`, `analytics`:

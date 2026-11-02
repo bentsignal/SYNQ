@@ -1,39 +1,87 @@
+import type { StyleProp, ViewStyle } from "react-native";
+import { processColor } from "react-native";
+import { requireNativeView, requireOptionalNativeModule } from "expo";
 import { Image, Menu } from "@expo/ui/swift-ui";
 import {
   accessibilityLabel,
   contentShape,
   frame,
   menuIndicator,
+  padding,
   shapes,
 } from "@expo/ui/swift-ui/modifiers";
 
 import type { MenuGroups } from "./menu";
+import { afterMenuCloses, menuAction, menuJson } from "./menu";
 import { MenuItems } from "./menu-items";
 import { NativeHost } from "./native-host";
 
+interface MenuButtonViewProps {
+  menu: string;
+  color: ReturnType<typeof processColor>;
+  trailingInset: number;
+  style: StyleProp<ViewStyle>;
+  onMenuAction: (event: { nativeEvent: { id: string } }) => void;
+}
+
+/** `MenuButtonView.swift`, or null in a binary built before it. */
+const MenuButtonView =
+  requireOptionalNativeModule("SynqMenuButton") === null
+    ? null
+    : requireNativeView<MenuButtonViewProps>("SynqMenuButton");
+
 /**
  * A native `ellipsis` button that opens `menu`, for places outside a
- * `NativeRow` (the player). `size` is the tappable square.
+ * `NativeRow` (the player). All of `width` by `height` takes the touch, and
+ * the dots sit `trailingInset` from its right edge.
  */
 export function MenuButton({
   menu,
-  size,
+  width,
+  height,
+  trailingInset = 0,
   color = "white",
+  style,
 }: {
   menu: MenuGroups;
-  size: number;
+  width: number;
+  height: number;
+  trailingInset?: number;
   color?: string;
+  style?: StyleProp<ViewStyle>;
 }) {
+  if (MenuButtonView !== null) {
+    return (
+      <MenuButtonView
+        menu={menuJson(menu)}
+        color={processColor(color)}
+        trailingInset={trailingInset}
+        style={[{ height, width }, style]}
+        onMenuAction={({ nativeEvent }) => {
+          const action = menuAction(menu, nativeEvent.id);
+          if (action !== undefined) afterMenuCloses(action.onPress);
+        }}
+      />
+    );
+  }
   return (
-    <NativeHost style={{ height: size, width: size }}>
+    <NativeHost style={[{ height, width }, style]}>
       <Menu
-        label={<Image systemName="ellipsis" size={20} color={color} />}
-        modifiers={[
-          menuIndicator("hidden"),
-          frame({ height: size, width: size }),
-          contentShape(shapes.rectangle()),
-          accessibilityLabel("More"),
-        ]}
+        // SwiftUI's menu only takes touches on its label, so the label is
+        // the whole button.
+        label={
+          <Image
+            systemName="ellipsis"
+            size={20}
+            color={color}
+            modifiers={[
+              padding({ trailing: trailingInset }),
+              frame({ alignment: "trailing", height, width }),
+              contentShape(shapes.rectangle()),
+            ]}
+          />
+        }
+        modifiers={[menuIndicator("hidden"), accessibilityLabel("More")]}
       >
         <MenuItems groups={menu} />
       </Menu>

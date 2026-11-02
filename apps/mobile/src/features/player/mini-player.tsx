@@ -4,16 +4,19 @@ import { NativeTabs } from "expo-router/unstable-native-tabs";
 
 import type { SongListItem } from "@synq/db";
 
-import { Artwork } from "~/components/artwork";
-import { SymbolIcon } from "~/components/symbol-icon";
+import { SeamlessArtwork } from "~/components/artwork";
 import { cn } from "~/lib/cn";
-import { lightImpact } from "~/lib/haptics";
 import { skipToNext, skipToPrevious, togglePlayback } from "./commands";
 import { usePlayer } from "./hooks";
+import { IconButton } from "./icon-button";
 import { MarqueeText } from "./marquee-text";
 import { isPlaying } from "./store";
 import { artistLine } from "./tracks";
 import { useCurrentSong } from "./use-player-songs";
+
+const CONTROL_SIZE = 20;
+/** Only up and down: sideways they'd reach the title and each other. */
+const CONTROL_SLOP = { bottom: 6, top: 6 };
 
 /**
  * The tab bar's bottom accessory: what's playing, with previous, play/pause,
@@ -39,7 +42,7 @@ export function MiniPlayer() {
         disabled={shown.empty}
         onPress={() => router.push("/player")}
       >
-        <Artwork artwork={shown.artwork} placeholder="song" size={32} />
+        <SeamlessArtwork artwork={shown.artwork} placeholder="song" size={32} />
         <View className="flex-1">
           <MarqueeText
             key={`title-${entryKey}`}
@@ -61,22 +64,28 @@ export function MiniPlayer() {
         </View>
       </Pressable>
       {placement === "regular" && (
-        <ControlButton
+        <IconButton
           label="Previous"
           symbol="backward.fill"
+          size={CONTROL_SIZE}
+          hitSlop={CONTROL_SLOP}
           disabled={shown.empty}
           onPress={skipToPrevious}
         />
       )}
-      <ControlButton
+      <IconButton
         label={playing ? "Pause" : "Play"}
         symbol={playing ? "pause.fill" : "play.fill"}
+        size={CONTROL_SIZE}
+        hitSlop={CONTROL_SLOP}
         disabled={shown.empty}
         onPress={togglePlayback}
       />
-      <ControlButton
+      <IconButton
         label="Next"
         symbol="forward.fill"
+        size={CONTROL_SIZE}
+        hitSlop={CONTROL_SLOP}
         disabled={shown.empty}
         onPress={skipToNext}
       />
@@ -95,37 +104,4 @@ function describe(song: SongListItem | null) {
     subtitle: artistLine(song),
     title: song.title,
   };
-}
-
-function ControlButton({
-  label,
-  symbol,
-  disabled,
-  onPress,
-}: {
-  label: string;
-  symbol: "backward.fill" | "play.fill" | "pause.fill" | "forward.fill";
-  disabled: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled }}
-      disabled={disabled}
-      hitSlop={{ bottom: 6, top: 6 }}
-      className="size-9 items-center justify-center rounded-full active:bg-white/10"
-      onPress={() => {
-        lightImpact();
-        onPress();
-      }}
-    >
-      <SymbolIcon
-        name={symbol}
-        size={20}
-        tintColorClassName={disabled ? "accent-subtle" : "accent-foreground"}
-      />
-    </Pressable>
-  );
 }

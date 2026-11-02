@@ -28,7 +28,12 @@ jest.mock("expo-symbols", () => {
 });
 jest.mock("expo-image", () => {
   const { View } = require("react-native");
-  return { Image: Object.assign(View, { prefetch: () => Promise.resolve() }) };
+  return {
+    Image: Object.assign(View, {
+      configureCache: () => undefined,
+      prefetch: () => Promise.resolve(),
+    }),
+  };
 });
 
 // The mini player is the tab bar's bottom accessory; outside the tab bar,

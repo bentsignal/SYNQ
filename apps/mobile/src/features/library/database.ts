@@ -17,6 +17,7 @@ import {
   readLegacyAsyncStorage,
 } from "@synq/db/legacy";
 
+import { recoverInterruptedRestore } from "~/features/backup/restore-files";
 import { applyLegacySettings } from "./legacy-settings";
 
 /** 2.5.2's bundle id, which owns the AsyncStorage folder the importer reads. */
@@ -70,7 +71,8 @@ async function importLegacyInstall(db: LibraryDb) {
  * applied to this app's stores. The import is one transaction and leaves
  * 2.5.2's files untouched, so a failure here retries cleanly next time.
  * Settings are applied from the import's own record, so a crash between
- * the import and applying them can't lose them.
+ * the import and applying them can't lose them. A restore the app didn't
+ * live to finish is cleared away here too.
  */
 export async function openLibrary() {
   const { client, db } = openLibraryDb();
@@ -82,6 +84,7 @@ export async function openLibrary() {
   if (imported !== null && imported.source === "install") {
     applyLegacySettings(imported.id, legacySettingsFrom(imported.settings));
   }
+  recoverInterruptedRestore(db);
   ensureLikedPlaylist(db);
   current = db;
   currentClient = client;

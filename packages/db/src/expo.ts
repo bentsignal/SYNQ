@@ -27,6 +27,18 @@ export function openLibraryDb() {
   return { db: drizzle(client, { schema }), client };
 }
 
+/**
+ * Opens a `library.db` in another folder: a backup's, or an empty one to
+ * import a 2.5.2 backup into. Call `migrateLibraryDb` before reading it.
+ */
+export function openLibraryDbIn(directory: Directory) {
+  // expo-sqlite wants a plain path (its default directory is one), not a file:// URI.
+  const path = decodeURIComponent(directory.uri.replace(/^file:\/\//, ""));
+  const client = openDatabaseSync(LIBRARY_DB_NAME, {}, path);
+  client.execSync("PRAGMA foreign_keys = ON;");
+  return { close: () => client.closeSync(), db: drizzle(client, { schema }) };
+}
+
 /** Applies the bundled Drizzle migrations (no babel or Metro configuration needed). */
 export async function migrateLibraryDb(db: ExpoSQLiteDatabase<LibrarySchema>) {
   await migrate(db, libraryMigrations);

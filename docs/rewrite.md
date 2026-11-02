@@ -208,11 +208,77 @@ importer). The contract:
    It never modifies or deletes legacy files. A failure rolls back and the
    next launch retries; the app shows an error with a retry, never an empty
    library.
-3. The same importer restores 2.5.2 backup zips (which hold `SQLite/synq.db`
-   and the folders above, but no AsyncStorage).
+3. The same importer reads 2.5.2 backup zips (which hold `SQLite/synq.db`
+   and the folders above, but no AsyncStorage) when one is restored (see
+   "Restoring a backup").
 4. Covered by node tests against a synthetic 2.5.2 database and a real one
    captured from the 2.5.2 app in the simulator, and by an end-to-end
    upgrade test: install 2.5.2, add data, install 3.0 over it.
+
+### Restoring a backup
+
+Restoring **adds a backup to the library**; it never removes or overwrites
+anything the person has now (Shawn, November 2026). Erase is a separate
+action. The code is `packages/db/src/merge`, tested on real files. Every backup is first read into a `library.db` of its
+own: a 3.0 backup's own database, migrated; a 2.5.2 backup's through the
+importer. So one merge handles both.
+
+The rule behind the rest: **what's missing is added, what's blank is filled
+in, and what's there stays.** Restoring the same backup twice changes
+nothing the second time.
+
+- **Same song.** Ids can't say, since a backup's come from another install.
+  When both sides have the audio file, its bytes decide: size, then an MD5
+  of the same-sized ones. SYNQ keeps audio exactly as imported and edits
+  only change the database, so a song retitled on one side still matches.
+  Without a file on one side there's nothing to compare, so the title,
+  duration (within a second, since 2.5.2 floored it), and an artist must
+  agree. Two different files are never the same song, even with identical
+  tags: a wrong match loses a song, and a duplicate loses nothing. Each copy
+  of a file imported twice pairs with one copy, same title first, so copies
+  are neither lost nor multiplied.
+- **New songs** get a fresh id and folder, in the usual
+  `Documents/{library,albums,artists,playlists}/{id}/` layout. Their
+  `added_at` stays the backup's, so they sort where they did.
+- **Existing files** are never moved, renamed, or overwritten. A new id
+  skips any folder a failed delete left, and is reserved in
+  `sqlite_sequence`, so a song imported during the restore can't take it.
+- **A song on both sides** keeps its title and credits; the current library
+  wins. Only blanks fill in: artwork, artists if it has none, albums if it
+  has none, a track number, or its audio if the file is missing.
+- **Artists and albums** match by name the way import does (ignoring case,
+  an exact match first), and combine. Two different albums with the same
+  name combine too, as they would on import. An album gaining songs adds the
+  backup's album artists after its own; one gaining nothing keeps them unless
+  it has none. A backup's artist or album that nothing would use isn't
+  created (all its songs matched and kept their own credits: that's the
+  other side of an edit, like Bjork to Björk), unless it had no songs to
+  begin with. Case variants new to the library stay separate, as they were.
+- **Playlists** match by name. A match keeps its order and appends the
+  backup's other songs in backup order; otherwise it's created. Liked Songs
+  is the union whatever each side calls it, and keeps the current name.
+- **Artwork** fills in only where the current item has none, and never over
+  a cover file that's already in the folder.
+- **Settings stay.** A backup has no theme, icon, or haptics. A 3.0 backup's
+  `legacy_import` row may hold 2.5.2's settings; it's ignored, so a restore
+  can't bring back an old theme. This device's own `legacy_import` row stays.
+- **Playback carries on.** No id or file changes, so the queue is untouched,
+  and the library queries refresh when it's done.
+
+**Atomicity.** Files move first, from the extracted backup (same volume, so
+it's a rename), and the database follows in one transaction. A failure
+removes the moved files and leaves the library as it was. For the app being
+killed partway, a journal in the kv-store lists what's being added before the
+first file moves, and the transaction writes the journal's token to `PRAGMA
+user_version`. The next launch reads both: token there, it committed; token
+absent, the listed files go. A failed try can burn ids, which nothing sees.
+
+Reading folders, comparing files, and moving files all pause between items
+and report progress, so a large backup doesn't hold up the JS thread, and audio
+plays in native code throughout. What can't pause is short: `File.md5` is one
+file at a time, and planning and the transaction are synchronous, but planning
+only looks paths up in memory, and the transaction's statements each take
+their rows as one JSON array, so SQLite does the work.
 
 ## Playback (`packages/audio`)
 

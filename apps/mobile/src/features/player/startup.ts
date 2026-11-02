@@ -5,7 +5,7 @@ import type { PlaybackState } from "@synq/audio";
 import * as Audio from "@synq/audio";
 
 import type { PlayerSongs } from "./songs";
-import { onLibraryReplaced } from "~/features/backup/backup";
+import { onLibraryErased } from "~/features/backup/backup";
 import { queryClient } from "~/lib/query-client";
 import { clearQueue, forgetSongs } from "./commands";
 import { reportPlaybackError } from "./errors";
@@ -89,8 +89,8 @@ function startPlayer() {
   Audio.addListener("error", reportPlaybackError);
   restoreSession();
   watchLibrary();
-  // A restore or erase reuses song ids for other songs, or removes them.
-  onLibraryReplaced(clearQueue);
+  // Restoring only adds to the library, so the queue plays on through it.
+  onLibraryErased(clearQueue);
   AppState.addEventListener("change", (next) => {
     if (next !== "active") saveFromNative();
   });

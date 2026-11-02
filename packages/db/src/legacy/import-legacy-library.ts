@@ -33,7 +33,6 @@ import { parseLegacySettings } from "./settings.ts";
 import {
   assertTargetEmpty,
   carrySequences,
-  clearLibrary,
   insertPlan,
   verify,
 } from "./write-import.ts";
@@ -64,12 +63,6 @@ export interface ImportLegacyLibraryOptions {
   source: LegacyImportSource;
   /** From `readLegacyAsyncStorage`; omit for backups (they have none). */
   asyncStorage?: LegacyAsyncStorage | null;
-  /**
-   * Replace whatever library.db holds (restoring a backup over a 3.0
-   * library). Without it, a non-empty library is an error and an existing
-   * `legacy_import` row makes the call a no-op.
-   */
-  replaceExisting?: boolean;
   now?: number;
   /** Progress for a splash screen; throwing from it aborts (and rolls back) the import. */
   onProgress?: (step: LegacyImportStep) => void;
@@ -104,15 +97,13 @@ export function getLegacyImport(db: LibraryDb) {
 }
 
 export async function importLegacyLibrary(options: ImportLegacyLibraryOptions) {
-  const { targetDb: db, replaceExisting = false } = options;
+  const { targetDb: db } = options;
   const now = options.now ?? Date.now();
   const root = options.root.replace(/\/+$/, "");
 
-  if (!replaceExisting) {
-    const previous = getLegacyImport(db);
-    if (previous) return alreadyImported(previous);
-    assertTargetEmpty(db, false);
-  }
+  const previous = getLegacyImport(db);
+  if (previous) return alreadyImported(previous);
+  assertTargetEmpty(db, false);
 
   const warnings = new Array<LegacyImportWarning>();
   options.onProgress?.("reading-database");
@@ -124,13 +115,9 @@ export async function importLegacyLibrary(options: ImportLegacyLibraryOptions) {
 
   const outcome = db.transaction((tx): LegacyImportResult => {
     // Re-checked inside the transaction in case two imports raced.
-    if (!replaceExisting) {
-      const previous = getLegacyImport(tx);
-      if (previous) return alreadyImported(previous);
-      assertTargetEmpty(tx, true);
-    } else {
-      clearLibrary(tx);
-    }
+    const raced = getLegacyImport(tx);
+    if (raced) return alreadyImported(raced);
+    assertTargetEmpty(tx, true);
     return writeImport(tx, {
       options,
       plan,

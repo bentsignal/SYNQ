@@ -198,12 +198,17 @@ void test("ids never land on a leftover folder or a used id", async () => {
 void test("a stored name in another Unicode form still finds its file", async () => {
   const current = await library();
   const backup = await library();
-  backup.file("library/1/Café.mp3".normalize("NFD"), "audio");
+  const stored = "library/1/Café.mp3".normalize("NFC");
+  const onDisk = stored.normalize("NFD");
+  backup.file(onDisk, "audio");
   backup.db.run(
-    sql`INSERT INTO songs (id, title, file_path, added_at) VALUES (1, 'Café', ${"library/1/Café.mp3".normalize("NFC")}, 1)`,
+    sql`INSERT INTO songs (id, title, file_path, added_at) VALUES (1, 'Café', ${stored}, 1)`,
   );
-  await merge(current, backup);
-  const stored = dumpLibrary(current.db).songs[0]?.filePath;
-  assert.equal(stored, "library/1/Café.mp3".normalize("NFC"));
-  assert.equal(read(current, "library/1/Café.mp3"), "audio");
+  // APFS opens either form; CI's file system doesn't, so the move does it here.
+  await merge(current, backup, (fs) => ({
+    ...fs,
+    move: (from, to) => fs.move(from.normalize("NFD"), to),
+  }));
+  assert.equal(dumpLibrary(current.db).songs[0]?.filePath, stored);
+  assert.equal(read(current, stored), "audio");
 });

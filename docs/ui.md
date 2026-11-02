@@ -28,8 +28,9 @@ numbers.
   `music.note` (songs, albums), `music.note.list` (playlists),
   `music.microphone` (artists, circular), `heart.fill` in the accent (Liked
   Songs). Corner radius 6 at row size, 10 at header size; artists are
-  circles. A 0.5 px `separator` stroke keeps dark artwork off the
-  background.
+  circles. A 0.5 px stroke over the art keeps dark artwork off the
+  background; nothing sits behind or around the art, so its edge is the
+  component's edge.
 - **Song row** (fixed 64 pt, for the list's estimated size): 48 pt
   artwork, title (`text-body`) over `artist · album` (`text-subhead
   muted`), trailing `ellipsis` button opening the song menu; long press
@@ -166,10 +167,14 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   `pause.fill` and `forward.fill`. Tap opens the player. In the inline
   placement (tab bar minimized) it drops the artist line. "Not Playing"
   when the queue is empty.
-- **Full player** (modal sheet, swipe down to close): behind everything, a
-  soft gradient in the artwork's own colors, darkened enough for white text
-  (2.5.2's signature look; a blur of the artwork is the fallback); large artwork (screen width minus 64,
-  radius 12, soft shadow) that eases to 85% scale when paused; title
+- **Full player** (modal sheet, swipe down to close): behind everything,
+  soft pools of the artwork's own colors drifting slowly, never brighter
+  than white text can read over (`modules/synq-backdrop`, and the
+  [player README](../apps/mobile/src/features/player/README.md#backdrop));
+  binaries without it show a gradient in the artwork's colors. Large artwork
+  (screen width minus 64, radius 12, soft shadow with the same radius) that
+  eases to 85% scale when paused; a cover with its own rounded corners is
+  zoomed until they're past the clip; title
   (`text-title` semibold, one line) over the artist (muted, tappable);
   `heart` toggle and `ellipsis` menu on the right; a thin scrubber whose
   thumb grows while dragging, elapsed left and remaining right

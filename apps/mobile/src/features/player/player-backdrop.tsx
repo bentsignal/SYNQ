@@ -1,15 +1,17 @@
 import { View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
+import { useIsFocused } from "expo-router";
 // eslint-disable-next-line no-restricted-imports -- The colors come from an async native read of the cover, not the library; the previous song's gradient stays up until the next one's is ready.
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import type { ArtworkRef } from "@synq/db";
-import { artworkPath } from "@synq/db";
-import { documentFile } from "@synq/db/expo";
 
 import { synqMedia, synqMediaAvailable } from "~/features/media/native";
+import { coverFileUri, useArtworkAnalysis } from "./artwork-analysis";
 import { backdropColors } from "./backdrop-colors";
+import { backdropPalette, CHARCOAL } from "./backdrop-palette";
+import { BackdropView } from "./native-backdrop";
 
 /** A cover's dimmed average colors, top and bottom (null: no art, or a build without the reader). */
 function useBackdropColors(artwork: ArtworkRef | null) {
@@ -19,12 +21,7 @@ function useBackdropColors(artwork: ArtworkRef | null) {
     placeholderData: keepPreviousData,
     queryFn: async () => {
       if (artwork === null) return null;
-      // A 2.5.2 cover may exist in only one size.
-      const small = documentFile(artworkPath(artwork, "small"));
-      const image = small.exists
-        ? small
-        : documentFile(artworkPath(artwork, "full"));
-      const averages = await synqMedia().artworkColors?.(image.uri);
+      const averages = await synqMedia().artworkColors?.(coverFileUri(artwork));
       return averages === undefined ? null : backdropColors(averages);
     },
     queryKey: ["artwork-colors", artwork?.kind, artwork?.id, artwork?.version],
@@ -34,11 +31,48 @@ function useBackdropColors(artwork: ArtworkRef | null) {
 }
 
 /**
- * Behind the whole player: a gradient in the artwork's own colors, dimmed
- * so white text reads over it (2.5.2's signature look), crossfading as
- * songs change. Songs without art get the plain background.
+ * Behind the whole player: colors from the cover, drifting slowly (see
+ * modules/synq-backdrop), crossfading as songs change. It holds still while
+ * something covers the player. Songs without art get a slow charcoal.
  */
 export function PlayerBackdrop({ artwork }: { artwork: ArtworkRef | null }) {
+  return BackdropView === null ? (
+    <GradientBackdrop artwork={artwork} />
+  ) : (
+    <MovingBackdrop artwork={artwork} View={BackdropView} />
+  );
+}
+
+function MovingBackdrop({
+  artwork,
+  View: NativeBackdrop,
+}: {
+  artwork: ArtworkRef | null;
+  View: NonNullable<typeof BackdropView>;
+}) {
+  const clusters = useArtworkAnalysis(artwork).data?.clusters;
+  const animating = useIsFocused();
+  return (
+    <View className="bg-background absolute inset-0" pointerEvents="none">
+      <NativeBackdrop
+        animating={animating}
+        style={{ flex: 1 }}
+        swatches={
+          artwork === null || clusters === undefined
+            ? CHARCOAL
+            : backdropPalette(clusters)
+        }
+      />
+    </View>
+  );
+}
+
+/**
+ * For a binary built before the moving backdrop: a gradient in the artwork's
+ * own colors, dimmed so white text reads over it (2.5.2's signature look),
+ * crossfading as songs change. Songs without art get the plain background.
+ */
+function GradientBackdrop({ artwork }: { artwork: ArtworkRef | null }) {
   const colors = useBackdropColors(artwork);
   const shown = artwork === null ? null : colors;
   return (

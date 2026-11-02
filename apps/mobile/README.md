@@ -118,6 +118,8 @@ profile (the team's registered iPhones).
 - `modules/synq-media`: SYNQ's local Expo module (Swift): audio metadata,
   covers, export retagging, backup staging, and the Wi-Fi Transfer server
   (`src/features/media/native.ts`). See docs/rewrite.md → Data.
+- `modules/synq-backdrop`: the player's moving backdrop, in Metal, and the
+  read of a cover behind it (`src/features/player/README.md` → Backdrop).
 - `src/features/import`, `export`, `backup`, `settings`, `analytics`:
   Import from Files and Wi-Fi Transfer, Export (`exportSongs`, and
   `exportAlbum`, `exportPlaylist`, `exportArtist` as zips), Backup & Restore, the Settings tab, and `track`

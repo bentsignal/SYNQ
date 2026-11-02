@@ -68,6 +68,46 @@ library is open) or a play action.
 - `queue-screen.tsx` (route `/queue`, a form sheet): a SwiftUI `List`, with
   drag to reorder and swipe to remove in Up Next.
 
+## Backdrop
+
+People who have taken apart Apple Music's web and Mac players found blurred,
+rotating copies of the cover (nobody has published the iOS app's), but a blur
+of a black cover with a small red ring is black. SYNQ draws the field from
+colors it chooses instead, so the ring carries the backdrop.
+
+- `modules/synq-backdrop` reads a 128 px copy of the cover
+  (`ArtworkAnalysis.swift`, off the main thread, once per cover): weighted
+  k-means in Oklab, where saturated pixels pull harder, seeded farthest-first
+  so a small area gets a cluster of its own. It's deterministic.
+- `backdrop-palette.ts` picks five colors from the clusters. Chroma counts
+  more than area. A cover with no color at all gets a spread of its own
+  tones. Everything is capped at `MAX_LUMINANCE`, and this is JavaScript so
+  it's tested (`backdrop-palette.test.ts`) and updates over the air.
+- `BackdropView.swift` draws them with a Metal fragment shader
+  (`BackdropShader.swift`): each pixel is a normalized blend of the pools, so
+  no pixel can be brighter than the brightest color and white text always
+  reads. It renders at one pixel per point at 30 fps; a new song blends the
+  colors in place (0.9 s), which is a crossfade of the two fields without
+  drawing both. No JavaScript runs per frame. It stops off screen, while the
+  app is inactive or backgrounded, while something covers the player
+  (`animating`), and holds still under Reduce Motion (a song change still
+  fades). The shader is compiled from source at run time, off the main thread,
+  so the pod needs no Metal resource bundle.
+- Binaries without the module keep `GradientBackdrop`, the gradient of the
+  cover's average colors (`backdrop-colors.ts`, `ArtworkColors.swift`).
+
+`SynqBackdrop.frameStats()` (`scripts/sim.sh eval
+"expo.modules.SynqBackdrop.frameStats()"`) reports frames drawn and what they
+cost, to check that it stops when it should.
+
+## Artwork corners
+
+Some covers have rounded corners of their own. New imports crop past
+transparent ones (`Covers.swift`); covers already on disk are never rewritten,
+so `ArtworkAnalysis` also finds corners already flattened to a color or still
+transparent, and the player zooms the art until they're past its clip
+(`cornerZoom`). The player is the one place art sits on a light background.
+
 ## Development
 
 `synqDev.player` (`features/dev/player-automation.ts`) drives all of this

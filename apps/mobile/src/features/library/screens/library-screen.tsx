@@ -61,6 +61,7 @@ function RecentCard({
   return (
     <View style={{ width: size }}>
       <NativeRow
+        card
         height={size + CARD_TEXT_HEIGHT}
         label={`${song.title}, ${artist}`}
         menu={songMenu(song, { liked })}

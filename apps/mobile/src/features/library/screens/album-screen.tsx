@@ -1,5 +1,5 @@
 import { Text } from "react-native";
-import { Stack } from "expo-router";
+import { router, Stack, useFocusEffect } from "expo-router";
 
 import type { AlbumListItem, AlbumTrack } from "@synq/db";
 import { getAlbum, listAlbumTracks } from "@synq/db";
@@ -120,6 +120,11 @@ export default function AlbumScreen() {
     key: ["album", id],
     read: (db) => getAlbum(db, id),
     select: (found) => found,
+  });
+  // Deleted from its menu, or from a sheet that emptied it: leave once this
+  // page is the one showing, so a sheet closes first.
+  useFocusEffect(() => {
+    if (album === null && router.canGoBack()) router.back();
   });
   if (album === null) return null;
   return <Album album={album} />;

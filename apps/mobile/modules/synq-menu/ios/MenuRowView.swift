@@ -2,8 +2,9 @@ import ExpoModulesCore
 import UIKit
 
 /// A list row: React Native draws its look, and UIKit handles the touch.
-/// A tap highlights the row and sends `onRowPress`; a long press lifts it into
-/// a context menu; the trailing `ellipsis` button opens the same menu.
+/// A tap flashes the row's highlight and sends `onRowPress`; a long press lifts
+/// its content into a context menu; the trailing `ellipsis` button opens the
+/// same menu.
 ///
 /// It replaces a SwiftUI `Host` per row (`ContextMenu`, `Button`, `Menu`),
 /// which made flings through thousands of songs drop frames. Nothing here
@@ -27,11 +28,14 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
   var buttonColor: UIColor? {
     didSet { button.tintColor = buttonColor }
   }
-  /// The lifted preview's background. At rest the row stays clear, so a
-  /// neighbor that overlaps it by a fraction of a point never covers its
-  /// hairline separator.
-  var rowColor: UIColor?
+  /// What a finished tap flashes behind the row; nil (a card) flashes nothing.
+  /// Only a finished tap: a touch that's still down may become a long press,
+  /// which must lift with nothing gray behind it. The rest of the time the row
+  /// is clear, so a neighbor overlapping it by a fraction of a point never
+  /// covers its hairline separator.
   var highlightColor: UIColor?
+  /// The corners of the shape a long press lifts.
+  var previewRadius: CGFloat = 12
 
   /// Holds the React Native row, under the button. It takes no touches
   /// itself, so they land on this view.
@@ -39,8 +43,6 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
   private let button = UIButton(type: .system)
 
   private var touching = false
-  private var highlighted = false
-  private var pendingHighlight: DispatchWorkItem?
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -89,51 +91,28 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
 
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     // A touch that stops a fling only stops it, as in a table view.
-    if enclosingScrollViewIsMoving() {
-      touching = false
-      return
-    }
-    touching = true
-    // Wait a moment before highlighting, so the start of a scroll doesn't
-    // flash the row.
-    let work = DispatchWorkItem { [weak self] in self?.setHighlighted(true) }
-    pendingHighlight = work
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.08, execute: work)
+    touching = !enclosingScrollViewIsMoving()
   }
 
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
     guard touching, let touch = touches.first else { return }
     if !bounds.insetBy(dx: -20, dy: -20).contains(touch.location(in: self)) {
-      endTouch()
+      touching = false
     }
   }
 
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     guard touching else { return }
-    pendingHighlight?.cancel()
-    pendingHighlight = nil
     touching = false
-    setHighlighted(true)
+    content.backgroundColor = highlightColor
     onRowPress()
     UIView.animate(withDuration: 0.3, delay: 0.05, options: [.allowUserInteraction]) {
-      self.setHighlighted(false)
+      self.content.backgroundColor = .clear
     }
   }
 
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    endTouch()
-  }
-
-  private func endTouch() {
     touching = false
-    pendingHighlight?.cancel()
-    pendingHighlight = nil
-    setHighlighted(false)
-  }
-
-  private func setHighlighted(_ value: Bool) {
-    highlighted = value
-    content.backgroundColor = value ? (highlightColor ?? rowColor) : .clear
   }
 
   private func enclosingScrollViewIsMoving() -> Bool {
@@ -161,7 +140,7 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
   ) -> UIContextMenuConfiguration? {
     if menuJSON.isEmpty { return nil }
     // The lift is the long press's feedback, and the tap no longer counts.
-    endTouch()
+    touching = false
     // An identifier, so iOS asks for the highlight and dismissal previews.
     return UIContextMenuConfiguration(identifier: "row" as NSString, previewProvider: nil) {
       [weak self] _ in
@@ -185,12 +164,12 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
     preview()
   }
 
-  /// The row lifted with rounded corners on its own background.
+  /// The content itself lifted. Clear, or iOS fills the shape with its own gray.
   private func preview() -> UITargetedPreview? {
     guard window != nil else { return nil }
     let parameters = UIPreviewParameters()
-    parameters.backgroundColor = rowColor
-    parameters.visiblePath = UIBezierPath(roundedRect: bounds, cornerRadius: 12)
+    parameters.backgroundColor = .clear
+    parameters.visiblePath = UIBezierPath(roundedRect: bounds, cornerRadius: previewRadius)
     return UITargetedPreview(view: self, parameters: parameters)
   }
 }

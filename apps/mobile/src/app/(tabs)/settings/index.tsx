@@ -11,7 +11,7 @@ export default function SettingsScreen() {
   return (
     <>
       <RootTabTitle title="Settings" />
-      <Form>
+      <Form glassBar>
         <AppearanceSection />
         <PlaybackSection />
         <LibrarySection />

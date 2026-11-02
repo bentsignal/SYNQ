@@ -1,6 +1,5 @@
 import { Text } from "react-native";
 import { Stack } from "expo-router";
-import { useCSSVariable } from "uniwind";
 
 /**
  * A tab's native large title: it starts big at the top left, scrolls with
@@ -18,24 +17,28 @@ export function TabTitle({ title }: { title: string }) {
 /**
  * A root tab's title, on the bar's own row: left-aligned opposite the
  * toolbar's buttons, so the row isn't half empty above a large title, and
- * always in view. The bar is solid in the background's color, so content
- * scrolls behind the title instead of colliding with it. Pushed screens
- * keep `TabTitle`: their top left is Back.
+ * always in view. The bar is transparent, so at the top of the page there's
+ * no bar to see. Content scrolling under it goes through iOS's `hard` scroll
+ * edge effect: dark glass ending in a hairline, which keeps the title readable
+ * over bright artwork (docs/ui.md → Library). A SwiftUI form asks for the same
+ * effect itself (`Form`'s `glassBar`). Pushed screens keep `TabTitle`: their
+ * top left is Back.
  */
 export function RootTabTitle({ title }: { title: string }) {
-  const background = useCSSVariable("--color-background");
   return (
     <>
       <Stack.Screen
         options={{
           headerLargeTitleEnabled: false,
           headerShadowVisible: false,
-          headerStyle: {
-            backgroundColor:
-              typeof background === "string" ? background : undefined,
-          },
           headerTitle: "",
-          headerTransparent: false,
+          headerTransparent: true,
+          scrollEdgeEffects: {
+            bottom: "automatic",
+            left: "automatic",
+            right: "automatic",
+            top: "hard",
+          },
           title,
         }}
       />

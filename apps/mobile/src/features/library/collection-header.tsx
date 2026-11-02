@@ -157,6 +157,7 @@ function AlbumCard({
 }) {
   return (
     <NativeRow
+      card
       height={CARD_HEIGHT}
       label={album.name}
       menu={albumMenu(album, { artistId })}

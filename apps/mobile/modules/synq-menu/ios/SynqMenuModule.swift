@@ -22,11 +22,11 @@ public class SynqMenuModule: Module {
       Prop("buttonColor") { (view: MenuRowView, color: UIColor?) in
         view.buttonColor = color
       }
-      Prop("rowColor") { (view: MenuRowView, color: UIColor?) in
-        view.rowColor = color
-      }
       Prop("highlightColor") { (view: MenuRowView, color: UIColor?) in
         view.highlightColor = color
+      }
+      Prop("previewRadius") { (view: MenuRowView, radius: Double) in
+        view.previewRadius = CGFloat(radius)
       }
     }
   }

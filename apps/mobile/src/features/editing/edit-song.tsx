@@ -3,13 +3,14 @@ import { router, Stack } from "expo-router";
 import { FieldGroup } from "@expo/ui";
 
 import type { SongDetail } from "@synq/db";
-import { editSong, getSong, listAlbums } from "@synq/db";
+import { editSong, getSong, listAlbums, listEmptyAlbums } from "@synq/db";
 
 import type { ArtworkChange } from "./artwork-change";
 import type { Pick } from "./pick";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
-import { tryWrite } from "~/features/library/actions";
+import { offerToDeleteEmptyAlbums, tryWrite } from "~/features/library/actions";
+import { libraryDb } from "~/features/library/database";
 import { dotted, names } from "~/features/library/format";
 import { useIdParam } from "~/features/library/params";
 import { useLibraryQuery } from "~/features/library/queries";
@@ -53,6 +54,13 @@ function save(song: SongDetail) {
   const [album] = edited.albums;
   if (album === undefined) saveArtworkChange(edits.artwork, "song", song.id);
   else saveArtworkChange(edits.artwork, "album", album.id);
+  const kept = new Set(edited.albums.map((item) => item.id));
+  offerToDeleteEmptyAlbums(
+    listEmptyAlbums(
+      libraryDb(),
+      song.albums.map((item) => item.id).filter((id) => !kept.has(id)),
+    ),
+  );
 }
 
 function Form({ song }: { song: SongDetail }) {

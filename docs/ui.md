@@ -50,9 +50,13 @@ numbers.
   changes after the menu closes (Vera's `afterMenuCloses`).
   Built as `NativeRow` (`src/components/native-row.tsx`): the React Native
   row inside a UIKit view (`modules/synq-menu`) that handles the touches.
-  A tap highlights the row in `fill`, a long press lifts it into a
+  A finished tap flashes the row in `fill`, a long press lifts it into a
   `UIContextMenuInteraction`, and the trailing `ellipsis` is a `UIButton`
-  showing the same menu as its primary action. The menu goes to native as
+  showing the same menu as its primary action. Nothing is gray during a long
+  press: the highlight waits for the finger to lift, since a touch that's still
+  down may become a long press, and the lifted preview has a clear background,
+  so only the content rises, in a shape with rounded corners (12 pt on a row,
+  10 pt on a card, its artwork's). The menu goes to native as
   JSON and is only built when a menu opens, so a recycled row costs a
   string compare. This replaced a SwiftUI `Host` per row (`ContextMenu`
   around a `Button`, plus a `Menu`): with 3,000 songs and six identical
@@ -73,7 +77,7 @@ numbers.
   only Edit and Delete. Liked Songs has no Delete. Collection rows and
   Recently Added's and an artist's cards are `NativeRow`s without the
   `ellipsis` button or a separator, so a long press lifts them natively and
-  lists cost what song rows cost. The queue's rows have no menu either; they
+  lists cost what song rows cost. Cards (`card`) have no tap highlight at all. The queue's rows have no menu either; they
   drag and swipe instead.
 - **Song picker** (`src/features/editing/song-picker.tsx`): add several
   songs from the library at once, from Edit Songs and New Playlist / Album.
@@ -105,6 +109,13 @@ numbers.
   divider, New Playlist. A large title would leave that row's left half
   empty, with the title alone on the row below; pushed screens keep large
   titles, since their top left is Back.
+- The bar is transparent, so at the top of the page there's no bar to see.
+  Content scrolling under it goes through iOS's `hard` scroll edge effect:
+  dark glass ending in a very faint hairline, which keeps the title readable
+  over bright artwork. A SwiftUI form asks for the same effect itself (`Form`'s
+  `glassBar`), since the screen's option only reaches a React Native scroll
+  view. The `soft` effect left the title colliding with what's under it, and a
+  `UIBlurEffect` bar showed at the top of the page and lost the glass.
 - Rows (accent symbol, label, chevron): Liked Songs (`heart`), Playlists
   (`music.note.list`), Artists (`music.microphone`), Albums
   (`square.stack`), Songs (`music.note`).
@@ -147,7 +158,11 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   opening the song picker, drag to reorder, swipe to remove).
 - **Album**: artwork, name, year, artists (toggle list), Edit Songs (same
   native list). Adding a song moves it here: see docs/rewrite.md → Adding
-  a song to an album.
+  a song to an album. Albums left empty stay, but the edit that empties one
+  offers to delete it, once, in an alert (Keep, then a destructive Delete):
+  coming back from Edit Songs with the last song removed, or after saving an
+  edit that moved another album's last song here or took it off in the song's
+  own Edit Info. An album that was already empty never asks.
 - **Artist**: artwork, name.
 - **Song**: artwork, title, artists, albums (toggle lists with search).
   Setting a cover on a song with an album sets the album's cover (2.5.2).
@@ -206,8 +221,7 @@ A native form (`FieldGroup`):
 - **Playback**: Haptics toggle.
 - **Library**: Backup & Restore (Back Up Library shares a zip; Restore
   from Backup picks one, including 2.5.2 backups; Erase Library,
-  destructive with confirmation), How to Import (the Spotify local files
-  guide from 2.5.2's info modal, with its images).
+  destructive with confirmation).
 - **SYNQ**: Rate SYNQ, Contact Support, X, Instagram, Discord, and the
   version in the section footer.
 

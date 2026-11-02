@@ -56,7 +56,8 @@ void describe("adding songs to an album", () => {
     const before = getAlbum(db, albumId);
     const target = newAlbum();
     const result = addSongsToAlbum(db, target.id, [songId]);
-    assert.deepEqual(result.value, { added: [songId], skipped: [] });
+    assert.deepEqual(result.value.added, [songId]);
+    assert.deepEqual(result.value.skipped, []);
     assert.ok(result.changed.includes("album_songs"));
     assert.deepEqual(
       getSong(db, songId)?.albums.map((album) => album.id),
@@ -141,7 +142,11 @@ void describe("what else adding songs to an album does", () => {
     assert.ok(a && b);
     addSongsToAlbum(db, target.id, [a]);
     const result = addSongsToAlbum(db, target.id, [a, b, 999_999]);
-    assert.deepEqual(result.value, { added: [b], skipped: [a, 999_999] });
+    assert.deepEqual(result.value, {
+      added: [b],
+      emptied: [],
+      skipped: [a, 999_999],
+    });
     assert.deepEqual(tracksOf(target.id), [
       [a, 1],
       [b, 2],

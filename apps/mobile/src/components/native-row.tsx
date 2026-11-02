@@ -18,13 +18,20 @@ export interface NativeRowProps {
   separatorInset?: number;
   /** Whether the trailing `ellipsis` button shows; long press works either way. */
   menuButton?: boolean;
+  /** Artwork over text rather than a list row: a tap doesn't highlight it. */
+  card?: boolean;
   children: ReactNode;
 }
 
+/** A list row lifts with these corners, and a card with its artwork's. */
+const ROW_PREVIEW_RADIUS = 12;
+const CARD_PREVIEW_RADIUS = 10;
+
 /**
  * A list row with the native touches of a table view row: a tap
- * highlights it, a long press lifts it into a context menu, and the
- * trailing `ellipsis` button (song rows) opens the same menu. `children`
+ * highlights it, a long press lifts its content into a context menu with
+ * nothing behind it, and the trailing `ellipsis` button (song rows) opens the
+ * same menu. `children`
  * is the row's React Native look; UIKit (modules/synq-menu) handles the
  * touches and builds `menu` only when one opens, so thousands of rows
  * scroll as cheaply as plain views (docs/ui.md → Song menu). Collection
@@ -42,11 +49,11 @@ function MenuRow({
   onPress,
   separatorInset,
   menuButton = true,
+  card = false,
   children,
 }: NativeRowProps) {
   const buttonWidth = menuButton ? MENU_WIDTH : 0;
   const muted = useNativeColor("--color-muted");
-  const background = useNativeColor("--color-background");
   const fill = useNativeColor("--color-fill");
   if (MenuRowView === null) return null;
   return (
@@ -56,15 +63,15 @@ function MenuRow({
         label={label}
         buttonWidth={buttonWidth}
         buttonColor={processColor(muted)}
-        rowColor={processColor(background)}
-        highlightColor={processColor(fill)}
+        highlightColor={card ? null : processColor(fill)}
+        previewRadius={card ? CARD_PREVIEW_RADIUS : ROW_PREVIEW_RADIUS}
         onRowPress={onPress}
         onRowMenuAction={({ nativeEvent }) => {
           const action = menuAction(menu, nativeEvent.id);
           if (action !== undefined) afterMenuCloses(action.onPress);
         }}
         // Starting a hairline down: rows under a header of fractional
-        // height overlap by that much, and the opaque row hid the
+        // height overlap by that much, and a tap's highlight would hide the
         // separator above.
         style={{
           height: height - StyleSheet.hairlineWidth,

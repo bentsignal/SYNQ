@@ -11,10 +11,12 @@ import {
   removeSongsFromAlbum,
   removeSongsFromPlaylist,
   setSongLiked,
+  written,
 } from "@synq/db";
 
 import { forgetSongs } from "~/features/player/actions";
 import { selectionTick } from "~/lib/haptics";
+import { emptyAlbumPrompt } from "./empty-album-prompt";
 import { deleteLibraryFolders } from "./files";
 import { writeLibrary } from "./queries";
 
@@ -163,6 +165,48 @@ export function confirmDeleteAlbum(
     },
     title: "Delete Album?",
   });
+}
+
+/**
+ * Offers to delete albums an edit just left with no songs (docs/ui.md →
+ * Editing). Keep is the default answer: empty albums stay, as they did in
+ * 2.5.2, so this runs only at the moment an edit empties one and never for
+ * older empty albums. Their songs stay in the library either way.
+ */
+export function offerToDeleteEmptyAlbums(
+  albums: readonly { id: number; name: string }[],
+  onDeleted?: () => void,
+) {
+  if (albums.length === 0) return;
+  const { title, message } = emptyAlbumPrompt(
+    albums.map((album) => album.name),
+  );
+  Alert.alert(title, message, [
+    { style: "cancel", text: "Keep" },
+    {
+      onPress: () => {
+        const deleted = tryWrite(
+          albums.length === 1
+            ? "Couldn't Delete Album"
+            : "Couldn't Delete Albums",
+          (db) =>
+            db.transaction((tx) =>
+              written(
+                albums.flatMap(
+                  (album) => deleteAlbum(tx, album.id).value.deletePaths,
+                ),
+                ["albums", "album_songs", "album_artists"],
+              ),
+            ),
+        );
+        if (deleted === undefined) return;
+        onDeleted?.();
+        deleteLibraryFolders(deleted);
+      },
+      style: "destructive",
+      text: "Delete",
+    },
+  ]);
 }
 
 export function confirmDeleteArtist(

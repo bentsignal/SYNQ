@@ -1,7 +1,10 @@
 import type { SymbolViewProps } from "expo-symbols";
 import type { ComponentProps, ReactNode } from "react";
 import { FieldGroup, Host, ListItem, Text } from "@expo/ui";
-import { scrollContentBackground } from "@expo/ui/swift-ui/modifiers";
+import {
+  scrollContentBackground,
+  scrollEdgeEffectStyle,
+} from "@expo/ui/swift-ui/modifiers";
 import { useCSSVariable } from "uniwind";
 
 import { SymbolIcon } from "~/components/symbol-icon";
@@ -26,12 +29,25 @@ export function FormHost(props: ComponentProps<typeof Host>) {
 
 /**
  * A grouped native form on the app's background (SwiftUI's own is pure
- * black), filling its screen.
+ * black), filling its screen. `glassBar` is for a form under `RootTabTitle`:
+ * the screen's option doesn't reach a SwiftUI scroll view, so the form asks
+ * for the same edge effect itself.
  */
-export function Form({ children }: { children: ReactNode }) {
+export function Form({
+  children,
+  glassBar = false,
+}: {
+  children: ReactNode;
+  glassBar?: boolean;
+}) {
   return (
     <FormHost style={{ flex: 1 }} className="bg-background">
-      <FieldGroup modifiers={[scrollContentBackground("hidden")]}>
+      <FieldGroup
+        modifiers={[
+          scrollContentBackground("hidden"),
+          ...(glassBar ? [scrollEdgeEffectStyle("hard", "top")] : []),
+        ]}
+      >
         {children}
       </FieldGroup>
     </FormHost>

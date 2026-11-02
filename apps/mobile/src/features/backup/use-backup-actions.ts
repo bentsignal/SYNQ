@@ -2,15 +2,12 @@ import { useRef, useState } from "react";
 import { Alert, Linking } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 
+import type { MergeSummary } from "@synq/db/merge";
+
 import { errorFeedback, successFeedback } from "~/lib/haptics";
-import {
-  backUpLibrary,
-  eraseLibrary,
-  finishRestore,
-  inspectBackup,
-  RestoreError,
-  restoreLibrary,
-} from "./backup";
+import { backUpLibrary, eraseLibrary, inspectBackup } from "./backup";
+import { RestoreError, restoreLibrary } from "./restore";
+import { restoreSummary } from "./restore-summary";
 
 const SUPPORT_URL = "https://directedbyshawn.com/synq-support";
 
@@ -20,11 +17,13 @@ interface Task {
   progress: number | null;
 }
 
-function failed(title: string, retry?: () => void) {
+function failed(
+  title: string,
+  message = "Try again. If it keeps happening, contact support.",
+) {
   errorFeedback();
-  Alert.alert(title, "Try again. If it keeps happening, contact support.", [
+  Alert.alert(title, message, [
     { style: "cancel", text: "OK" },
-    ...(retry === undefined ? [] : [{ onPress: retry, text: "Try Again" }]),
     {
       onPress: () => void Linking.openURL(SUPPORT_URL),
       text: "Contact Support",
@@ -32,17 +31,17 @@ function failed(title: string, retry?: () => void) {
   ]);
 }
 
-/** Tells someone why a restore failed; `retry` finishes one whose files didn't move. */
-function restoreFailed(error: unknown, retry: () => void) {
+/** Tells someone why a restore failed, which changed nothing. */
+function restoreFailed(error: unknown) {
   if (!(error instanceof RestoreError)) {
-    failed("Couldn't Restore Library");
+    failed(
+      "Couldn't Restore Backup",
+      "Your library wasn't changed. Try again. If it keeps happening, contact support.",
+    );
     return;
   }
   errorFeedback();
   switch (error.code) {
-    case "files":
-      failed("Couldn't Finish Restoring", retry);
-      return;
     case "newer":
       Alert.alert(
         "Update SYNQ to Restore",
@@ -85,7 +84,15 @@ export function useBackupActions() {
     if (running.current) return Promise.resolve(false);
     running.current = true;
     setTask({ label, progress: null });
-    return work((value) => setTask({ label, progress: value })).then(
+    // Only when the percentage changes: a restore reports every file.
+    let shown = -1;
+    function report(value: number) {
+      const percent = Math.round(value * 100);
+      if (percent === shown) return;
+      shown = percent;
+      setTask({ label, progress: value });
+    }
+    return work(report).then(
       () => {
         running.current = false;
         setTask(null);
@@ -105,21 +112,18 @@ export function useBackupActions() {
     );
   }
 
-  function retryFiles() {
-    run("Restoring", () => finishRestore()).then(
-      () => successFeedback(),
-      () => failed("Couldn't Finish Restoring", retryFiles),
-    );
-  }
-
   function restoreFrom(uri: string) {
-    run("Restoring", (progress) => restoreLibrary(uri, progress)).then(
-      (done) => {
-        if (!done) return;
+    let summary: MergeSummary | undefined;
+    run("Restoring", async (progress) => {
+      summary = await restoreLibrary(uri, progress);
+    }).then(
+      () => {
+        if (summary === undefined) return;
         successFeedback();
-        Alert.alert("Library Restored");
+        const { message, title } = restoreSummary(summary);
+        Alert.alert(title, message);
       },
-      (error: unknown) => restoreFailed(error, retryFiles),
+      (error: unknown) => restoreFailed(error),
     );
   }
 
@@ -127,15 +131,11 @@ export function useBackupActions() {
     const uri = await pickBackup();
     if (uri === null) return;
     Alert.alert(
-      "Replace Your Library?",
-      "Everything in your library is replaced by the backup. This can't be undone.",
+      "Restore This Backup?",
+      "Songs, albums, artists, and playlists in the backup are added to your library. Nothing you have now is changed or removed.",
       [
         { style: "cancel", text: "Cancel" },
-        {
-          onPress: () => restoreFrom(uri),
-          style: "destructive",
-          text: "Restore",
-        },
+        { onPress: () => restoreFrom(uri), text: "Restore" },
       ],
     );
   }

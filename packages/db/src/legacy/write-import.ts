@@ -16,7 +16,6 @@ import {
   albums,
   albumSongs,
   artists,
-  legacyImport,
   playlists,
   playlistSongs,
   songArtists,
@@ -48,26 +47,10 @@ export function assertTargetEmpty(db: LibraryDb, removePlaceholder: boolean) {
   ) {
     throw new LegacyImportError(
       "target-not-empty",
-      "library.db already has a library; pass replaceExisting to restore over it",
+      "library.db already has a library",
     );
   }
   if (removePlaceholder) db.delete(playlists).run();
-}
-
-export function clearLibrary(db: LibraryDb) {
-  for (const table of [
-    playlistSongs,
-    albumArtists,
-    albumSongs,
-    songArtists,
-    playlists,
-    songs,
-    albums,
-    artists,
-    legacyImport,
-  ]) {
-    db.delete(table).run();
-  }
 }
 
 /** Inserts every planned row, parents before the join rows that reference them. */

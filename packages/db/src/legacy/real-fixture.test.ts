@@ -57,7 +57,6 @@ async function importRoot(
     root: string;
     source: "install" | "backup";
     asyncStorageDir: string | null;
-    replaceExisting?: boolean;
   },
 ) {
   const legacy = openLegacyDatabaseFile(join(options.root, LEGACY_DB_PATH));
@@ -71,7 +70,6 @@ async function importRoot(
       asyncStorage: options.asyncStorageDir
         ? await readLegacyAsyncStorage(options.asyncStorageDir, nodeFileSystem)
         : null,
-      replaceExisting: options.replaceExisting ?? false,
       now: NOW,
     });
   } finally {
@@ -104,19 +102,13 @@ void describe("the real 2.5.2 fixture", () => {
     const root = await findLegacyBackupRoot(nodeFileSystem, extracted);
     assert.equal(root, extracted);
 
-    // Restore over an imported library, as Settings > Restore would.
+    // Into a database of its own, as Settings > Restore does before merging.
     const { db } = await openTestLibraryDb();
-    await importRoot(db, {
-      root: documents,
-      source: "install",
-      asyncStorageDir,
-    });
     const before = hashTree(extracted);
     const result = await importRoot(db, {
       root: extracted,
       source: "backup",
       asyncStorageDir: null,
-      replaceExisting: true,
     });
     assert.deepEqual(hashTree(extracted), before);
 

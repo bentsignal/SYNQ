@@ -186,15 +186,15 @@ AsyncStorage. To restore one in 3.0:
 1. Unzip into a temporary folder; `findLegacyBackupRoot(fs, dir)` locates
    the folder containing `SQLite/synq.db`, even if it's nested one level.
 2. Run `importLegacyLibrary({ root, source: "backup", asyncStorage: null,
-   replaceExisting: true, ... })`. This clears the current library in the
-   same transaction.
-3. Then replace `Documents/{library,albums,artists,playlists}` with the
-   backup's (2.5.2 cleared Documents and unzipped over it). Delete the
-   temp folder.
+   ... })` into a new, empty `library.db` in the temporary folder, so every
+   case in this document is handled the same way as an upgrade.
+3. Merge that library into the current one (`mergeBackup` in
+   `@synq/db/merge`; the rules are in `docs/rewrite.md`, "Restoring a
+   backup"). 2.5.2 cleared Documents and unzipped over it; 3.0 replaces
+   nothing. The current library's `legacy_import` row stays as it is.
 
-Ids come from the backup, so its folders line up with its rows. Do step 3
-only after step 2 succeeds; if step 3 fails, the library points at files
-that aren't there yet, so retry the copy.
+The backup's ids are its own, so the merge gives everything new a fresh id
+and folder.
 
 ## Tests
 
@@ -209,9 +209,10 @@ v1-era database, missing tables, and backup roots.
 through the app's UI in the simulator (`packages/db/fixtures/legacy-2.5.2/`;
 its `EXPECTED.md` lists every action) and asserts the exact library, the
 settings and queue from AsyncStorage, and the warnings, with the legacy
-tree unchanged. It then restores the real 2.5.2 backup zip of the same
-library over it and asserts the same library, including the device's NFD
-file names.
+tree unchanged. It then imports the real 2.5.2 backup zip of the same
+library into a new database and asserts the same library, including the
+device's NFD file names. `src/merge/merge-backups.test.ts` merges that backup into
+libraries: an empty one, the one it came from, and one with colliding ids.
 
 ### The upgrade in the simulator
 

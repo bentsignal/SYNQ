@@ -97,7 +97,7 @@ export function forgetSongs(songIds: readonly number[]) {
   );
 }
 
-/** Empties the queue, stopping playback (a restore or erase replaced the library). */
+/** Empties the queue, stopping playback (the library was erased). */
 export function clearQueue() {
   removeFromQueue(getPlayerState().queue.entries.map((_, index) => index));
 }

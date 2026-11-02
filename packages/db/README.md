@@ -9,6 +9,7 @@ importer's contract are in `docs/migration.md`.
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `@synq/db`        | `LibraryDb`, `schema`, `libraryMigrations`, every query and write                                                       |
 | `@synq/db/legacy` | `importLegacyLibrary`, `readLegacyAsyncStorage`, `findLegacyBackupRoot`, settings types                                 |
+| `@synq/db/merge`  | Restoring a backup: `mergeBackup`, `recoverInterruptedMerge`, `readLibrarySnapshot`                                     |
 | `@synq/db/expo`   | App wiring: `openLibraryDb`, `migrateLibraryDb`, `openLegacyDatabaseCopy`, `createExpoLegacyFileSystem`, `documentFile` |
 | `@synq/db/schema` | The Drizzle tables, for ad-hoc queries                                                                                  |
 
@@ -139,6 +140,10 @@ the same SQL the app does.
   AsyncStorage directory with an MD5-named queue file). It also carries the
   cases the real fixture revealed (untitled songs, a packed m4a track), so
   they stay covered if the fixture ever changes.
+- `src/merge/*.test.ts` merges backups into libraries on real files: id
+  collisions, the same song on both sides, restoring twice, playlists,
+  renamed Liked Songs, failure and interruption, and the real 2.5.2 backup
+  (the rules are in `docs/rewrite.md`, "Restoring a backup").
 - `src/legacy/import-legacy-library.test.ts` asserts the whole migrated
   library row by row, the settings, idempotency, rollback, legacy files left
   untouched, v1-era and damaged databases, and backup roots.

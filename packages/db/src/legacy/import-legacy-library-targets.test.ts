@@ -33,14 +33,6 @@ void describe("importLegacyLibrary (unusual targets and sources)", () => {
         );
       },
     );
-    const replaced = await runImport(install, {
-      targetDb: db,
-      replaceExisting: true,
-      source: "backup",
-      asyncStorage: null,
-    });
-    assert.equal(replaced.result.status, "imported");
-    assert.deepEqual(dumpLibrary(db), EXPECTED_LIBRARY);
   });
 
   void test("tolerates an empty auto-created Liked Songs in the target", async () => {

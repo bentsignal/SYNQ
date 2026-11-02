@@ -1,99 +1,162 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { router, Stack } from "expo-router";
 import { FieldGroup } from "@expo/ui";
 
-import type { AlbumListItem, AlbumTrack } from "@synq/db";
+import type { AlbumListItem } from "@synq/db";
 import {
+  createAlbum,
   getAlbum,
   listAlbumTracks,
   listArtists,
-  reorderAlbumTracks,
+  setAlbumTracks,
   updateAlbum,
+  written,
 } from "@synq/db";
 
-import type { ArtworkChange } from "./artwork-change";
-import type { Pick } from "./pick";
-import type { ReorderRow } from "./reorder-list";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
 import { tryWrite } from "~/features/library/actions";
+import { copyCoverToAlbum } from "~/features/library/files";
 import { names, songCount } from "~/features/library/format";
+import { openLibraryScreen } from "~/features/library/links";
 import { useIdParam } from "~/features/library/params";
 import { useLibraryQuery } from "~/features/library/queries";
+import {
+  coverFromTracks,
+  draft,
+  editRoutes,
+  NEW_ALBUM_ROUTES,
+  parseYear,
+  toRow,
+  trackIds,
+} from "./album-draft";
 import { KEEP_ARTWORK, saveArtworkChange } from "./artwork-change";
 import { ArtworkField } from "./artwork-field";
 import { ChoiceList } from "./choice-list";
-import { createDraft } from "./draft";
 import { LinkRow } from "./link-row";
 import { artistIds } from "./pick";
-import { moveItems } from "./reorder";
+import { moveItems, removeItems } from "./reorder";
 import { ReorderList } from "./reorder-list";
 import { SheetToolbar } from "./sheet-toolbar";
+import { SongPicker } from "./song-picker";
 
-interface AlbumDraft {
-  name: string;
-  year: string;
-  artists: readonly Pick[];
-  artwork: ArtworkChange;
-  tracks: readonly ReorderRow[];
-  tracksChanged: boolean;
-}
-
-const draft = createDraft<AlbumDraft>("album");
-
-function toRow(track: AlbumTrack) {
-  return {
-    artwork: track.artwork,
-    key: String(track.id),
-    subtitle: names(track.artists),
-    title: track.title,
-  } satisfies ReorderRow;
-}
-
-/** A year as typed, or null when the field is empty or not a year. */
-function parseYear(text: string) {
-  const year = Number.parseInt(text.trim(), 10);
-  return Number.isInteger(year) && year > 0 && year < 10_000 ? year : null;
-}
-
-function save(album: AlbumListItem) {
+/** Saves the sheet: fields and tracks together, then covers. */
+function saveEdits(album: AlbumListItem, saved: ReadonlySet<string>) {
   const edits = draft.get();
+  const cover = coverFromTracks(edits, album.artwork !== null, saved);
   const updated = tryWrite("Couldn't Save Album", (db) =>
-    db.transaction((tx) =>
-      updateAlbum(tx, album.id, {
+    db.transaction((tx) => {
+      const result = updateAlbum(tx, album.id, {
         artistIds: artistIds(tx, edits.artists),
         name: edits.name,
         year: parseYear(edits.year),
-      }),
-    ),
+      });
+      setAlbumTracks(tx, album.id, trackIds(edits));
+      return written(result.value, ["albums", "album_songs", "songs"]);
+    }),
   );
   if (updated === undefined) return;
-  if (edits.tracksChanged) {
-    tryWrite("Couldn't Reorder Tracks", (db) =>
-      reorderAlbumTracks(
-        db,
-        album.id,
-        edits.tracks.map((row) => Number(row.key)),
-      ),
-    );
-  }
+  if (cover !== null) copyCoverToAlbum(album.id, cover);
   router.back();
   saveArtworkChange(edits.artwork, "album", album.id);
 }
 
-function Form({ album }: { album: AlbumListItem }) {
+/** Creates the album with its songs, then covers. False keeps the sheet up. */
+function saveNew() {
+  const edits = draft.get();
+  const cover = coverFromTracks(edits, false, new Set());
+  const created = tryWrite("Couldn't Create Album", (db) =>
+    db.transaction((tx) => {
+      const album = createAlbum(tx, {
+        artistIds: artistIds(tx, edits.artists),
+        name: edits.name,
+        year: parseYear(edits.year),
+      }).value;
+      setAlbumTracks(tx, album.id, trackIds(edits));
+      return written(album, ["albums", "album_songs", "album_artists"]);
+    }),
+  );
+  if (created === undefined) return false;
+  if (cover !== null) copyCoverToAlbum(created.id, cover);
+  router.back();
+  openLibraryScreen({ id: created.id, screen: "album" });
+  saveArtworkChange(edits.artwork, "album", created.id);
+  return true;
+}
+
+function AlbumFields({ artwork }: { artwork: AlbumListItem["artwork"] }) {
+  const edits = draft.useValue();
+  return (
+    <NativeHost style={{ flex: 1 }}>
+      <FieldGroup>
+        <FieldGroup.Section>
+          <ArtworkField
+            artwork={artwork}
+            change={edits.artwork}
+            placeholder="album"
+            onChange={(change) => draft.update(() => ({ artwork: change }))}
+          />
+        </FieldGroup.Section>
+        <FieldGroup.Section title="Name">
+          <TextInput
+            defaultValue={edits.name}
+            placeholder="Album Name"
+            autoCapitalize="words"
+            onChangeText={(name) => draft.update(() => ({ name }))}
+          />
+        </FieldGroup.Section>
+        <FieldGroup.Section title="Year">
+          <TextInput
+            defaultValue={edits.year}
+            placeholder="Year"
+            keyboardType="number-pad"
+            maxLength={4}
+            onChangeText={(year) => draft.update(() => ({ year }))}
+          />
+        </FieldGroup.Section>
+        <FieldGroup.Section>
+          <LinkRow
+            label="Artists"
+            value={names(edits.artists) || "None"}
+            onPress={() => router.push(edits.routes.artists)}
+          />
+          <LinkRow
+            label={edits.tracks.length === 0 ? "Add Songs" : "Edit Songs"}
+            value={
+              edits.tracks.length === 0
+                ? undefined
+                : songCount(edits.tracks.length)
+            }
+            onPress={() =>
+              router.push(
+                edits.tracks.length === 0
+                  ? edits.routes.addSongs
+                  : edits.routes.songs,
+              )
+            }
+          />
+        </FieldGroup.Section>
+      </FieldGroup>
+    </NativeHost>
+  );
+}
+
+function EditForm({ album }: { album: AlbumListItem }) {
   const tracks = useLibraryQuery({
     key: ["album-tracks", album.id],
     read: (db) => listAlbumTracks(db, album.id),
     select: (items) => items,
   });
+  const [saved] = useState(
+    () => new Set(tracks.map((song) => String(song.id))),
+  );
   useState(() =>
     draft.begin({
       artists: album.artists,
       artwork: KEEP_ARTWORK,
       name: album.name,
+      routes: editRoutes(album.id),
       tracks: tracks.map(toRow),
-      tracksChanged: false,
       year: album.year === null ? "" : String(album.year),
     }),
   );
@@ -104,64 +167,14 @@ function Form({ album }: { album: AlbumListItem }) {
         title="Edit Album"
         canSave={edits.name.trim() !== ""}
         onCancel={() => router.back()}
-        onDone={() => save(album)}
+        onDone={() => saveEdits(album, saved)}
       />
-      <NativeHost style={{ flex: 1 }}>
-        <FieldGroup>
-          <FieldGroup.Section>
-            <ArtworkField
-              artwork={album.artwork}
-              change={edits.artwork}
-              placeholder="album"
-              onChange={(artwork) => draft.update(() => ({ artwork }))}
-            />
-          </FieldGroup.Section>
-          <FieldGroup.Section title="Name">
-            <TextInput
-              defaultValue={album.name}
-              placeholder="Album Name"
-              autoCapitalize="words"
-              onChangeText={(name) => draft.update(() => ({ name }))}
-            />
-          </FieldGroup.Section>
-          <FieldGroup.Section title="Year">
-            <TextInput
-              defaultValue={edits.year}
-              placeholder="Year"
-              keyboardType="number-pad"
-              maxLength={4}
-              onChangeText={(year) => draft.update(() => ({ year }))}
-            />
-          </FieldGroup.Section>
-          <FieldGroup.Section>
-            <LinkRow
-              label="Artists"
-              value={names(edits.artists) || "None"}
-              onPress={() =>
-                router.push({
-                  params: { id: String(album.id) },
-                  pathname: "/edit-album/[id]/artists",
-                })
-              }
-            />
-            <LinkRow
-              label="Reorder Tracks"
-              value={songCount(edits.tracks.length)}
-              onPress={() =>
-                router.push({
-                  params: { id: String(album.id) },
-                  pathname: "/edit-album/[id]/tracks",
-                })
-              }
-            />
-          </FieldGroup.Section>
-        </FieldGroup>
-      </NativeHost>
+      <AlbumFields artwork={album.artwork} />
     </>
   );
 }
 
-/** Edit Album: artwork, name, year, artists, and Reorder Tracks. */
+/** Edit Album: artwork, name, year, artists, and Edit Songs. */
 export function EditAlbumScreen() {
   const id = useIdParam();
   const album = useLibraryQuery({
@@ -170,7 +183,38 @@ export function EditAlbumScreen() {
     select: (found) => found,
   });
   if (album === null) return null;
-  return <Form album={album} />;
+  return <EditForm album={album} />;
+}
+
+/** New Album: the same form as Edit Album, so it can start with songs. */
+export function NewAlbumScreen() {
+  useState(() =>
+    draft.begin({
+      artists: [],
+      artwork: KEEP_ARTWORK,
+      name: "",
+      routes: NEW_ALBUM_ROUTES,
+      tracks: [],
+      year: "",
+    }),
+  );
+  const edits = draft.useValue();
+  // Saving closes the sheet; a second tap must not make another.
+  const saved = useRef(false);
+  return (
+    <>
+      <SheetToolbar
+        title="New Album"
+        canSave={edits.name.trim() !== ""}
+        onCancel={() => router.back()}
+        onDone={() => {
+          if (saved.current) return;
+          saved.current = saveNew();
+        }}
+      />
+      <AlbumFields artwork={null} />
+    </>
+  );
 }
 
 /** Every artist, for choosing an album's or a song's. */
@@ -198,21 +242,49 @@ export function EditAlbumArtistsScreen() {
   );
 }
 
-/** Reorder Tracks: the order sets track numbers 1 to n (as 2.5.2 did). */
+/**
+ * Edit Songs: add from the library, drag to reorder, swipe to remove. Taking
+ * a song off leaves it in the library. A new order sets track numbers 1 to n
+ * (as 2.5.2 did).
+ */
 export function EditAlbumTracksScreen() {
   const edits = draft.useValue();
   return (
     <>
-      <Stack.Screen options={{ title: "Reorder Tracks" }} />
+      <Stack.Screen options={{ title: "Edit Songs" }} />
       <ReorderList
         rows={edits.tracks}
+        onAdd={() => router.push(edits.routes.addSongs)}
         onMove={(from, to) =>
           draft.update((current) => ({
             tracks: moveItems(current.tracks, from, to),
-            tracksChanged: true,
+          }))
+        }
+        onDelete={(indices) =>
+          draft.update((current) => ({
+            tracks: removeItems(current.tracks, indices),
           }))
         }
       />
     </>
+  );
+}
+
+/**
+ * Add Songs: they join the end of the sheet's tracks at once, and move to
+ * this album when the sheet saves.
+ */
+export function AddAlbumSongsScreen() {
+  const edits = draft.useValue();
+  return (
+    <SongPicker
+      added={new Set(trackIds(edits))}
+      onDone={(songs) => {
+        draft.update((current) => ({
+          tracks: [...current.tracks, ...songs.map(toRow)],
+        }));
+        router.back();
+      }}
+    />
   );
 }

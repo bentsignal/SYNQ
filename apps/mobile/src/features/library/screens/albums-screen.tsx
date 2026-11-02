@@ -7,6 +7,7 @@ import type { Sort } from "../sort";
 import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
 import { TabTitle } from "~/components/tab-title";
+import { albumMenu } from "../collection-menu";
 import { COLLECTION_ROW_HEIGHT, CollectionRow } from "../collection-row";
 import { albumDetail } from "../format";
 import { openLibraryScreen } from "../links";
@@ -74,6 +75,7 @@ export default function AlbumsScreen() {
             placeholder="album"
             name={item.name}
             detail={albumDetail(item)}
+            menu={albumMenu(item)}
             onPress={() => openLibraryScreen({ id: item.id, screen: "album" })}
           />
         )}

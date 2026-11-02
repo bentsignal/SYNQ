@@ -1,13 +1,12 @@
 import { Text } from "react-native";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 
 import type { AlbumListItem, AlbumTrack } from "@synq/db";
 import { getAlbum, listAlbumTracks } from "@synq/db";
 
 import { ScreenList } from "~/components/screen-list";
-import { exportAlbum } from "~/features/export/export";
+import { toolbarMenuItems } from "~/components/toolbar-menu-items";
 import { playSongs } from "~/features/player/actions";
-import { confirmDeleteAlbum, failed } from "../actions";
 import {
   ArtistLinks,
   CollectionHeader,
@@ -15,6 +14,7 @@ import {
   HeaderLine,
   useHeaderTitle,
 } from "../collection-header";
+import { albumMenu } from "../collection-menu";
 import { collectionSummary, dotted, names } from "../format";
 import { useIdParam } from "../params";
 import { PlayShuffleButtons } from "../play-shuffle-buttons";
@@ -36,32 +36,7 @@ function AlbumMenu({ album }: { album: AlbumListItem }) {
   return (
     <Stack.Toolbar placement="right">
       <Stack.Toolbar.Menu icon="ellipsis" accessibilityLabel="More">
-        <Stack.Toolbar.MenuAction
-          icon="pencil"
-          onPress={() =>
-            router.push({
-              params: { id: String(album.id) },
-              pathname: "/edit-album/[id]",
-            })
-          }
-        >
-          Edit
-        </Stack.Toolbar.MenuAction>
-        <Stack.Toolbar.MenuAction
-          icon="square.and.arrow.up"
-          onPress={() =>
-            exportAlbum(album.id).catch(() => failed("Couldn't Export Album"))
-          }
-        >
-          Export
-        </Stack.Toolbar.MenuAction>
-        <Stack.Toolbar.MenuAction
-          icon="trash"
-          destructive
-          onPress={() => confirmDeleteAlbum(album, () => router.back())}
-        >
-          Delete Album
-        </Stack.Toolbar.MenuAction>
+        {toolbarMenuItems(albumMenu(album, { onPage: true }))}
       </Stack.Toolbar.Menu>
     </Stack.Toolbar>
   );

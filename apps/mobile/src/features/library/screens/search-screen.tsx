@@ -21,6 +21,7 @@ import {
   useSearchQuery,
   useSearchText,
 } from "~/features/search/use-search-query";
+import { albumMenu, artistMenu, playlistMenu } from "../collection-menu";
 import { COLLECTION_ROW_HEIGHT, CollectionRow } from "../collection-row";
 import { albumDetail, songCount } from "../format";
 import { LibraryLinkRow } from "../library-link-row";
@@ -112,6 +113,7 @@ function ResultRow({ item }: { item: SearchItem }) {
           placeholder="album"
           name={item.album.name}
           detail={albumDetail(item.album)}
+          menu={albumMenu(item.album)}
           onPress={() =>
             openLibraryScreen({ id: item.album.id, screen: "album" })
           }
@@ -124,6 +126,7 @@ function ResultRow({ item }: { item: SearchItem }) {
           placeholder="artist"
           name={item.artist.name}
           detail={songCount(item.artist.songCount)}
+          menu={artistMenu(item.artist)}
           onPress={() =>
             openLibraryScreen({ id: item.artist.id, screen: "artist" })
           }
@@ -136,6 +139,7 @@ function ResultRow({ item }: { item: SearchItem }) {
           placeholder={item.playlist.kind === "liked" ? "liked" : "playlist"}
           name={item.playlist.name}
           detail={songCount(item.playlist.songCount)}
+          menu={playlistMenu(item.playlist)}
           onPress={() =>
             openLibraryScreen({ id: item.playlist.id, screen: "playlist" })
           }

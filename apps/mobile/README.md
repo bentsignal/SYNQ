@@ -119,8 +119,8 @@ profile (the team's registered iPhones).
   covers, export retagging, backup staging, and the Wi-Fi Transfer server
   (`src/features/media/native.ts`). See docs/rewrite.md → Data.
 - `src/features/import`, `export`, `backup`, `settings`, `analytics`:
-  Import from Files and Wi-Fi Transfer, Export (`exportSongs`,
-  `exportPlaylist`, ...), Backup & Restore, the Settings tab, and `track`
+  Import from Files and Wi-Fi Transfer, Export (`exportSongs`, and
+  `exportAlbum`, `exportPlaylist`, `exportArtist` as zips), Backup & Restore, the Settings tab, and `track`
   ([docs/analytics.md](../../docs/analytics.md)).
 - `src/components`, `src/lib`: shared components and helpers.
   `lib/query-client.ts` is the one TanStack Query cache the library reads

@@ -46,7 +46,7 @@ const WORK = new Directory(Paths.cache, "backup");
 let pendingFolders: Directory | undefined;
 
 /** A file:// URI as the path react-native-zip-archive and SQLite take. */
-function pathOf(entry: File | Directory) {
+export function pathOf(entry: File | Directory) {
   return decodeURIComponent(entry.uri.replace(/^file:\/\//, "")).replace(
     /\/$/,
     "",
@@ -67,7 +67,7 @@ function clearWork() {
 }
 
 /** Zip progress (0 to 1) while `run` runs. */
-async function withZipProgress<Value>(
+export async function withZipProgress<Value>(
   onProgress: (fraction: number) => void,
   run: () => Promise<Value>,
 ) {

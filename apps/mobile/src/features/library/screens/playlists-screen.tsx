@@ -5,6 +5,7 @@ import { listPlaylists } from "@synq/db";
 import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
 import { TabTitle } from "~/components/tab-title";
+import { playlistMenu } from "../collection-menu";
 import { COLLECTION_ROW_HEIGHT, CollectionRow } from "../collection-row";
 import { songCount } from "../format";
 import { openLibraryScreen, openNewPlaylist } from "../links";
@@ -65,6 +66,7 @@ export default function PlaylistsScreen() {
             placeholder={item.kind === "liked" ? "liked" : "playlist"}
             name={item.name}
             detail={songCount(item.songCount)}
+            menu={playlistMenu(item)}
             onPress={() =>
               openLibraryScreen({ id: item.id, screen: "playlist" })
             }

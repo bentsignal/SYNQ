@@ -50,6 +50,10 @@ function sortStore<Key extends string>(
     return { key, order } satisfies Sort<Key>;
   }
   return {
+    /** The current sort, read outside React (a menu action). */
+    get(id?: number) {
+      return decode(saved.get(scopeOf(id)));
+    },
     initial,
     keys,
     set(next: Sort<Key>, id?: number) {

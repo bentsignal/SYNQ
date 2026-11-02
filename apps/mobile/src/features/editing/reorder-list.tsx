@@ -1,5 +1,12 @@
 import { View } from "react-native";
-import { HStack, List, RNHostView, Text, VStack } from "@expo/ui/swift-ui";
+import {
+  Button,
+  HStack,
+  List,
+  RNHostView,
+  Text,
+  VStack,
+} from "@expo/ui/swift-ui";
 import {
   deleteDisabled,
   environment,
@@ -27,20 +34,30 @@ const ARTWORK_SIZE = 40;
 /**
  * A native SwiftUI `List` in edit mode (docs/ui.md → Editing): drag the
  * handles to reorder, and, with `onDelete`, tap the red control or swipe
- * to remove. Edit Songs and Reorder Tracks. The parent keeps the order.
+ * to remove, with an Add Songs row on top. An album's and a playlist's Edit
+ * Songs. The parent keeps the order.
  */
 export function ReorderList({
   rows,
   onMove,
   onDelete,
+  onAdd,
 }: {
   rows: readonly ReorderRow[];
   onMove: (from: number[], to: number) => void;
   onDelete?: (indices: number[]) => void;
+  onAdd?: () => void;
 }) {
   return (
     <NativeHost style={{ flex: 1 }}>
       <List modifiers={[listStyle("plain"), environment("editMode", "active")]}>
+        {onAdd !== undefined && (
+          <Button
+            label="Add Songs"
+            systemImage="plus.circle.fill"
+            onPress={onAdd}
+          />
+        )}
         <List.ForEach onMove={onMove} onDelete={onDelete}>
           {rows.map((row) => (
             <HStack

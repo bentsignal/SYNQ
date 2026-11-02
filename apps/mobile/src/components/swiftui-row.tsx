@@ -20,6 +20,7 @@ import type { NativeRowProps } from "./native-row";
 import { MENU_WIDTH } from "./menu";
 import { MenuItems } from "./menu-items";
 import { NativeHost, useNativeColor } from "./native-host";
+import { RowSeparator } from "./row-separator";
 
 /**
  * `NativeRow` in a binary without the UIKit menu row (modules/synq-menu):
@@ -34,6 +35,7 @@ export function SwiftUIRow({
   menu,
   onPress,
   separatorInset,
+  menuButton = true,
   children,
 }: NativeRowProps) {
   const muted = useNativeColor("--color-muted");
@@ -76,32 +78,30 @@ export function SwiftUIRow({
                   </View>
                 </RNHostView>
               </Button>
-              <Menu
-                label={
-                  <Image
-                    systemName="ellipsis"
-                    size={17}
-                    color={muted ?? "gray"}
-                  />
-                }
-                modifiers={[
-                  menuIndicator("hidden"),
-                  frame({ height, width: MENU_WIDTH }),
-                  contentShape(shapes.rectangle()),
-                  accessibilityLabel("More"),
-                ]}
-              >
-                <MenuItems groups={menu} />
-              </Menu>
+              {menuButton && (
+                <Menu
+                  label={
+                    <Image
+                      systemName="ellipsis"
+                      size={17}
+                      color={muted ?? "gray"}
+                    />
+                  }
+                  modifiers={[
+                    menuIndicator("hidden"),
+                    frame({ height, width: MENU_WIDTH }),
+                    contentShape(shapes.rectangle()),
+                    accessibilityLabel("More"),
+                  ]}
+                >
+                  <MenuItems groups={menu} />
+                </Menu>
+              )}
             </HStack>
           </ContextMenu.Trigger>
         </ContextMenu>
       </NativeHost>
-      <View
-        pointerEvents="none"
-        className="border-b-hairline border-separator absolute right-4 bottom-0"
-        style={{ left: separatorInset }}
-      />
+      {separatorInset !== undefined && <RowSeparator inset={separatorInset} />}
     </View>
   );
 }

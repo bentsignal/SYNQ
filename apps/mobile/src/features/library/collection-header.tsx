@@ -9,6 +9,8 @@ import type { AlbumListItem, ArtworkRef } from "@synq/db";
 
 import type { ArtworkPlaceholder } from "~/components/artwork";
 import { Artwork } from "~/components/artwork";
+import { NativeRow } from "~/components/native-row";
+import { albumMenu } from "./collection-menu";
 import { dotted } from "./format";
 import { openLibraryScreen } from "./links";
 
@@ -143,32 +145,49 @@ export function SectionTitle({ title }: { title: string }) {
 }
 
 const CARD_SIZE = 140;
+/** The artwork and two lines of footnote text under it. */
+const CARD_HEIGHT = CARD_SIZE + 44;
 
-function AlbumCard({ album }: { album: AlbumListItem }) {
+function AlbumCard({
+  album,
+  artistId,
+}: {
+  album: AlbumListItem;
+  artistId?: number;
+}) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={album.name}
-      className="active:opacity-70"
-      style={{ width: CARD_SIZE }}
+    <NativeRow
+      height={CARD_HEIGHT}
+      label={album.name}
+      menu={albumMenu(album, { artistId })}
+      menuButton={false}
       onPress={() => openLibraryScreen({ id: album.id, screen: "album" })}
     >
-      <Artwork artwork={album.artwork} placeholder="album" size={CARD_SIZE} />
-      <Text
-        numberOfLines={1}
-        className="text-footnote text-foreground mt-1.5 font-medium"
-      >
-        {album.name}
-      </Text>
-      <Text numberOfLines={1} className="text-footnote text-muted">
-        {dotted(album.year) || " "}
-      </Text>
-    </Pressable>
+      <View style={{ width: CARD_SIZE }}>
+        <Artwork artwork={album.artwork} placeholder="album" size={CARD_SIZE} />
+        <Text
+          numberOfLines={1}
+          className="text-footnote text-foreground mt-1.5 font-medium"
+        >
+          {album.name}
+        </Text>
+        <Text numberOfLines={1} className="text-footnote text-muted">
+          {dotted(album.year) || " "}
+        </Text>
+      </View>
+    </NativeRow>
   );
 }
 
 /** An artist's albums as a horizontal row of 140 pt cards. */
-export function AlbumCards({ albums }: { albums: readonly AlbumListItem[] }) {
+export function AlbumCards({
+  albums,
+  artistId,
+}: {
+  albums: readonly AlbumListItem[];
+  /** The artist page they're on: their long-press menus skip Go to Artist for them. */
+  artistId?: number;
+}) {
   return (
     <LegendList
       horizontal
@@ -177,8 +196,12 @@ export function AlbumCards({ albums }: { albums: readonly AlbumListItem[] }) {
       estimatedItemSize={CARD_SIZE + 12}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ gap: 12, paddingHorizontal: 16 }}
-      style={{ height: CARD_SIZE + 44 }}
-      renderItem={({ item }) => <AlbumCard album={item} />}
+      style={{ height: CARD_HEIGHT }}
+      renderItem={({ item }) => (
+        <View style={{ width: CARD_SIZE }}>
+          <AlbumCard album={item} artistId={artistId} />
+        </View>
+      )}
     />
   );
 }

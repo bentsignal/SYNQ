@@ -117,6 +117,22 @@ function pictureOf(frameToRead: Id3Frame, version: 3 | 4) {
   return body === null ? null : parseApic(body);
 }
 
+/**
+ * The compilation flag: TCMP, or the TXXX frame ffmpeg writes in its place, a
+ * description and then a value.
+ */
+function isCompilation(frames: readonly Id3Frame[], version: 3 | 4) {
+  return frames.some((candidate) => {
+    if (candidate.id !== "TCMP" && candidate.id !== "TXXX") return false;
+    const body = frameBody(candidate, version);
+    if (body === null) return false;
+    const values = textValues(body);
+    return candidate.id === "TCMP"
+      ? values[0] === "1"
+      : values[0]?.toLowerCase() === "compilation" && values[1] === "1";
+  });
+}
+
 /** The tags and front cover in an ID3v2 tag, for import. */
 export function readId3Tags(tag: Uint8Array) {
   const parsed = parseId3Frames(tag);
@@ -139,7 +155,7 @@ export function readId3Tags(tag: Uint8Array) {
       album: text("TALB"),
       albumArtist: text("TPE2"),
       artist: text("TPE1"),
-      compilation: text("TCMP") === "1",
+      compilation: isCompilation(frames, version),
       title: text("TIT2"),
       track: text("TRCK"),
       year: text("TDRC") ?? text("TYER"),
@@ -173,18 +189,19 @@ function joined(names: readonly string[]) {
   return names.length === 0 ? null : names.join(", ");
 }
 
-/** The number in a frame's text, like the 2019 of "2019-05-01"; null when unreadable. */
+/** The number in the first of these frames, like the 2019 of "2019-05-01"; null when unreadable. */
 function frameNumber(
   frames: readonly Id3Frame[],
   ids: readonly string[],
   version: 3 | 4,
 ) {
-  for (const id of ids) {
-    const found = frames.find((candidate) => candidate.id === id);
-    const body = found === undefined ? null : frameBody(found, version);
-    if (body !== null) return firstNumber(textValues(body)[0]);
+  const first = new Map<string, Id3Frame>();
+  for (const candidate of frames) {
+    if (!first.has(candidate.id)) first.set(candidate.id, candidate);
   }
-  return null;
+  const found = ids.flatMap((id) => first.get(id) ?? [])[0];
+  const body = found === undefined ? null : frameBody(found, version);
+  return body === null ? null : firstNumber(textValues(body)[0]);
 }
 
 /**

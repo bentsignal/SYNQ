@@ -32,3 +32,28 @@ export function importSample(count: number) {
   addImportSources(sources);
   return { files: sources.length };
 }
+
+/**
+ * Runs the import queue on every file in a folder of the app's cache, under
+ * its own name, for checking real files end to end:
+ * `scripts/sim.sh eval "synqDev.importCached('audio-tags')"`.
+ */
+export function importCached(folderName: string) {
+  const staged = new Directory(Paths.cache, folderName);
+  const folder = new Directory(Paths.cache, "DocumentPicker");
+  folder.create({ idempotent: true, intermediates: true });
+  const run = Date.now().toString(36);
+  const files = staged.list().filter((entry) => entry instanceof File);
+  const sources = files.map((file, index): ImportSource => {
+    const copy = new File(folder, `${run}-${String(index)}-${file.name}`);
+    file.copySync(copy);
+    return {
+      key: `cached-${run}-${String(index)}`,
+      mimeType: null,
+      name: file.name,
+      uri: copy.uri,
+    };
+  });
+  addImportSources(sources);
+  return { files: sources.length };
+}

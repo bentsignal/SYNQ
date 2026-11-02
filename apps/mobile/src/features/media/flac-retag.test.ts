@@ -198,3 +198,20 @@ void test("a truncated FLAC isn't tagged", () => {
     null,
   );
 });
+
+void test("FLAC: a second comment block's fields aren't lost", () => {
+  const copy = applied(
+    flacWith(
+      { body: vorbisBody(["GENRE=Jazz"]), type: FLAC_BLOCK.vorbisComment },
+      { body: vorbisBody(["MOOD=Calm"]), type: FLAC_BLOCK.vorbisComment },
+    ),
+    "a.flac",
+  );
+  const comments = blocksIn(copy).filter(
+    (block) => block.type === FLAC_BLOCK.vorbisComment,
+  );
+  assert.equal(comments.length, 1);
+  const { fields } = parseVorbisComment(comments[0]?.body ?? new Uint8Array());
+  assert.ok(fields.includes("GENRE=Jazz"));
+  assert.ok(fields.includes("MOOD=Calm"));
+});

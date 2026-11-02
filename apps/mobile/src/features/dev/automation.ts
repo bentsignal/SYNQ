@@ -3,8 +3,9 @@ import { DevSettings } from "react-native";
 import { router } from "expo-router";
 
 import { env } from "~/env";
+import { exportSongs } from "~/features/export/export";
 import { frameReport, startFrames, stopFrames } from "./frames";
-import { importSample } from "./import-sample";
+import { importCached, importSample } from "./import-sample";
 import { playerAutomation } from "./player-automation";
 import { seed } from "./seed";
 
@@ -34,6 +35,9 @@ export function installDevAutomation() {
       frames: { report: frameReport, start: startFrames, stop: stopFrames },
       /** A large import without the Files picker: see import-sample.ts. */
       importSample,
+      /** Real files through the import queue, and out again: see import-sample.ts. */
+      importCached,
+      exportSongs,
       /** Playback: see player-automation.ts. */
       player: playerAutomation,
     },

@@ -237,3 +237,14 @@ void test("emoji, CJK, right-to-left, and very long values round trip in 2.3 and
     endsWith(copy, MP3);
   }
 });
+
+void test("the compilation flag is TCMP, or ffmpeg's TXXX", () => {
+  function compilation(...frames: Uint8Array[]) {
+    return readId3Tags(id3(3, 0, ...frames))?.tags.compilation;
+  }
+  assert.equal(compilation(frame23("TCMP", latin1("1"))), true);
+  assert.equal(compilation(frame23("TCMP", latin1("0"))), false);
+  assert.equal(compilation(frame23("TXXX", latin1("compilation\x001"))), true);
+  assert.equal(compilation(frame23("TXXX", latin1("mood\x001"))), false);
+  assert.equal(compilation(frame23("TIT2", latin1("x"))), false);
+});

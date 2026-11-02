@@ -7,6 +7,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { useCSSVariable } from "uniwind";
 
 import { installDevAutomation } from "~/features/dev/automation";
+import { ExportBanner } from "~/features/export/export-banner";
 import { ImportActivity } from "~/features/import/import-activity";
 import { LibraryGate } from "~/features/library/library-gate";
 import { applyStoredPreferences } from "~/features/preferences/store";
@@ -56,8 +57,8 @@ const TOOLBAR_SHEET = {
 };
 
 /**
- * An edit sheet with its own stack (the form, and the lists it pushes such
- * as Edit Songs), as a page sheet: a form sheet can't hold a stack.
+ * An edit or create sheet with its own stack (the form, and the lists it
+ * pushes such as Edit Songs), as a page sheet: a form sheet can't hold a stack.
  */
 const EDIT_SHEET = { presentation: "modal" } as const;
 
@@ -66,14 +67,8 @@ function RootStack() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen
-        name="new-playlist"
-        options={{ ...TOOLBAR_SHEET, title: "New Playlist" }}
-      />
-      <Stack.Screen
-        name="new-album"
-        options={{ ...TOOLBAR_SHEET, title: "New Album" }}
-      />
+      <Stack.Screen name="new-playlist" options={EDIT_SHEET} />
+      <Stack.Screen name="new-album" options={EDIT_SHEET} />
       <Stack.Screen
         name="new-artist"
         options={{ ...TOOLBAR_SHEET, title: "New Artist" }}
@@ -128,6 +123,7 @@ export default function RootLayout() {
           <LibraryGate>
             <RootStack />
             <ImportActivity />
+            <ExportBanner />
           </LibraryGate>
         </QueryClientProvider>
       </ThemeProvider>

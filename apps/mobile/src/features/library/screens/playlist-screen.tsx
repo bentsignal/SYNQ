@@ -1,19 +1,19 @@
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 
 import type { PlaylistListItem } from "@synq/db";
 import { getPlaylist, listPlaylistSongs } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
-import { exportPlaylist } from "~/features/export/export";
+import { toolbarMenuItems } from "~/components/toolbar-menu-items";
 import { playSongs } from "~/features/player/actions";
-import { confirmDeletePlaylist, failed } from "../actions";
 import {
   CollectionHeader,
   DetailTitle,
   HeaderLine,
   useHeaderTitle,
 } from "../collection-header";
+import { playlistMenu } from "../collection-menu";
 import { collectionSummary } from "../format";
 import { openLibraryScreen } from "../links";
 import { useIdParam } from "../params";
@@ -28,42 +28,13 @@ function PlaylistMenu({ playlist }: { playlist: PlaylistListItem }) {
   return (
     <Stack.Toolbar placement="right">
       <Stack.Toolbar.Menu icon="ellipsis" accessibilityLabel="More">
-        <Stack.Toolbar.MenuAction
-          icon="pencil"
-          onPress={() =>
-            router.push({
-              params: { id: String(playlist.id) },
-              pathname: "/edit-playlist/[id]",
-            })
-          }
-        >
-          Edit
-        </Stack.Toolbar.MenuAction>
         {sortMenuItems({
           id: playlist.id,
           sort,
           store: playlistSongSort,
           submenu: true,
         })}
-        <Stack.Toolbar.MenuAction
-          icon="square.and.arrow.up"
-          onPress={() =>
-            exportPlaylist(playlist.id).catch(() =>
-              failed("Couldn't Export Playlist"),
-            )
-          }
-        >
-          Export
-        </Stack.Toolbar.MenuAction>
-        {playlist.kind !== "liked" && (
-          <Stack.Toolbar.MenuAction
-            icon="trash"
-            destructive
-            onPress={() => confirmDeletePlaylist(playlist, () => router.back())}
-          >
-            Delete Playlist
-          </Stack.Toolbar.MenuAction>
-        )}
+        {toolbarMenuItems(playlistMenu(playlist, { onPage: true }))}
       </Stack.Toolbar.Menu>
     </Stack.Toolbar>
   );

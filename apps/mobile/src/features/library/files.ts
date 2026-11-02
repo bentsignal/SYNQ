@@ -1,8 +1,9 @@
 import { Directory, File, Paths } from "expo-file-system";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 
-import type { ArtworkKind } from "@synq/db";
-import { artworkDir, setArtwork } from "@synq/db";
+import type { ArtworkKind, ArtworkRef } from "@synq/db";
+import { artworkDir, artworkPath, setArtwork } from "@synq/db";
+import { documentFile } from "@synq/db/expo";
 
 import { writeLibrary } from "./queries";
 
@@ -90,6 +91,28 @@ export async function writeArtwork({
     new File(folder, "cover_small.jpg"),
   );
   writeLibrary((db) => setArtwork(db, { id, kind, present: true }));
+}
+
+/**
+ * Gives an album with no cover a copy of a song's, as an import gives a new
+ * album the first song's. The song's own files stay where they are. A cover
+ * is a nicety here, so a failure leaves the album without one.
+ */
+export function copyCoverToAlbum(albumId: number, cover: ArtworkRef) {
+  try {
+    const folder = documentDirectory(artworkDir("album", albumId));
+    if (!folder.exists) folder.create({ intermediates: true });
+    for (const size of ["full", "small"] as const) {
+      const target = new File(folder, `cover_${size}.jpg`);
+      if (target.exists) target.delete();
+      documentFile(artworkPath(cover, size)).copySync(target);
+    }
+    writeLibrary((db) =>
+      setArtwork(db, { id: albumId, kind: "album", present: true }),
+    );
+  } catch {
+    // The album shows its placeholder, and can be given a cover in Edit.
+  }
 }
 
 /** Deletes an entity's cover files and records that it has none. */

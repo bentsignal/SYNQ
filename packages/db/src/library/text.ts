@@ -111,3 +111,15 @@ function compareEmpty(
   if (leftEmpty && rightEmpty) return 0;
   return leftEmpty ? 1 : -1;
 }
+
+/** How many ids or rows one statement binds, under SQLite's variable limit. */
+const CHUNK_SIZE = 1000;
+
+/** Splits a long list so each statement binds fewer variables than SQLite allows. */
+export function chunked<T>(items: readonly T[], size = CHUNK_SIZE) {
+  const chunks = new Array<T[]>();
+  for (let start = 0; start < items.length; start += size) {
+    chunks.push(items.slice(start, start + size));
+  }
+  return chunks;
+}

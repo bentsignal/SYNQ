@@ -7,6 +7,7 @@ import { changesOf, written } from "./changes.ts";
 import { LibraryError } from "./errors.ts";
 import { uniqueIds } from "./find-or-create.ts";
 import { requirePlaylistRow, touchPlaylist } from "./playlist-rows.ts";
+import { chunked } from "./text.ts";
 
 /**
  * Appends songs to a playlist in the given order. A playlist holds a song at
@@ -29,12 +30,14 @@ export function addSongsToPlaylist(
         .map((r) => r.id),
     );
     const existingSongs = new Set(
-      tx
-        .select({ id: songs.id })
-        .from(songs)
-        .where(inArray(songs.id, uniqueIds(songIds)))
-        .all()
-        .map((r) => r.id),
+      chunked(uniqueIds(songIds)).flatMap((ids) =>
+        tx
+          .select({ id: songs.id })
+          .from(songs)
+          .where(inArray(songs.id, ids))
+          .all()
+          .map((r) => r.id),
+      ),
     );
     const added = [];
     const skipped = [];
@@ -49,15 +52,14 @@ export function addSongsToPlaylist(
         .where(eq(playlistSongs.playlistId, playlistId))
         .get();
       const start = Math.floor(last?.value ?? 0) + 1;
-      tx.insert(playlistSongs)
-        .values(
-          added.map((songId, index) => ({
-            playlistId,
-            songId,
-            position: start + index,
-          })),
-        )
-        .run();
+      const rows = added.map((songId, index) => ({
+        playlistId,
+        songId,
+        position: start + index,
+      }));
+      for (const chunk of chunked(rows)) {
+        tx.insert(playlistSongs).values(chunk).run();
+      }
       touchPlaylist(tx, playlistId, options);
     }
     return { added, skipped };
@@ -75,17 +77,20 @@ export function removeSongsFromPlaylist(
   options?: WriteOptions,
 ) {
   const removed = db.transaction((tx) => {
-    const count = changesOf(
-      tx
-        .delete(playlistSongs)
-        .where(
-          and(
-            eq(playlistSongs.playlistId, playlistId),
-            inArray(playlistSongs.songId, uniqueIds(songIds)),
-          ),
-        )
-        .run(),
-    );
+    let count = 0;
+    for (const ids of chunked(uniqueIds(songIds))) {
+      count += changesOf(
+        tx
+          .delete(playlistSongs)
+          .where(
+            and(
+              eq(playlistSongs.playlistId, playlistId),
+              inArray(playlistSongs.songId, ids),
+            ),
+          )
+          .run(),
+      );
+    }
     if (count > 0) touchPlaylist(tx, playlistId, options);
     return count;
   });
@@ -168,6 +173,32 @@ export function setPlaylistOrder(
       return;
     renumber(tx, ordered);
     touchPlaylist(tx, playlistId, options);
+  });
+  return written(undefined, ["playlist_songs", "playlists"]);
+}
+
+/**
+ * Makes a playlist hold exactly these songs in this order (an edit sheet's
+ * Done): removes the ones not listed, appends the new ones, then orders them.
+ */
+export function setPlaylistSongs(
+  db: LibraryDb,
+  playlistId: number,
+  songIds: readonly number[],
+  options?: WriteOptions,
+) {
+  db.transaction((tx) => {
+    const wanted = uniqueIds(songIds);
+    const wantedSet = new Set(wanted);
+    const current = orderedEntries(tx, playlistId).map((entry) => entry.songId);
+    removeSongsFromPlaylist(
+      tx,
+      playlistId,
+      current.filter((id) => !wantedSet.has(id)),
+      options,
+    );
+    addSongsToPlaylist(tx, playlistId, wanted, options);
+    setPlaylistOrder(tx, playlistId, wanted, options);
   });
   return written(undefined, ["playlist_songs", "playlists"]);
 }

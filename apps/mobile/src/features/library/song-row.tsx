@@ -23,7 +23,7 @@ const LEADING = 16;
 const GAP = 12;
 
 /** Whether the song is in Liked Songs (one shared read for every row). */
-function useIsLiked(songId: number) {
+export function useIsLiked(songId: number) {
   return useLibraryQuery({
     key: ["liked-ids"],
     read: listLikedSongIds,

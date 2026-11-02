@@ -8,11 +8,11 @@ import type {
   MenuItem,
   MenuSubmenu,
 } from "~/components/menu";
-import { exportSongs } from "~/features/export/export";
+import { exportFailed, exportSongs } from "~/features/export/export";
 import { addToQueue, playNext } from "~/features/player/actions";
 import {
   confirmDeleteSongs,
-  failed,
+  removeFromAlbum,
   removeFromPlaylist,
   setLiked,
 } from "./actions";
@@ -24,7 +24,7 @@ export interface SongMenuPlace {
   liked: boolean;
   /** The user playlist the row is in: adds Remove from Playlist. */
   playlistId?: number;
-  /** The album page the row is on: drops Go to Album. */
+  /** The album page the row is on: drops Go to Album, adds Remove from Album. */
   albumId?: number;
   /** The artist page the row is on: drops Go to Artist for them. */
   artistId?: number;
@@ -32,7 +32,7 @@ export interface SongMenuPlace {
 
 /** Shares the song with the library's current tags written in (features/export). */
 function shareSong(song: SongListItem) {
-  exportSongs([song.id]).catch(() => failed("Couldn't Share Song"));
+  exportSongs([song.id]).catch(exportFailed("Couldn't Share Song"));
 }
 
 function goToArtist(song: SongListItem, place: SongMenuPlace) {
@@ -66,6 +66,42 @@ function goToArtist(song: SongListItem, place: SongMenuPlace) {
       label: "Go to Artist",
     } satisfies MenuSubmenu,
   ];
+}
+
+/** Taking the song off where it is, then out of the library. */
+function removeGroup(
+  song: SongListItem,
+  { albumId, playlistId }: SongMenuPlace,
+) {
+  return [
+    ...(playlistId === undefined
+      ? []
+      : [
+          {
+            icon: "minus.circle",
+            key: "remove",
+            label: "Remove from Playlist",
+            onPress: () => removeFromPlaylist(playlistId, [song.id]),
+          } satisfies MenuAction,
+        ]),
+    ...(albumId === undefined
+      ? []
+      : [
+          {
+            icon: "minus.circle",
+            key: "remove-album",
+            label: "Remove from Album",
+            onPress: () => removeFromAlbum(albumId, [song.id]),
+          } satisfies MenuAction,
+        ]),
+    {
+      destructive: true,
+      icon: "trash",
+      key: "delete",
+      label: "Delete from Library",
+      onPress: () => confirmDeleteSongs([song]),
+    },
+  ] satisfies MenuItem[];
 }
 
 /**
@@ -144,27 +180,7 @@ export function songMenu(song: SongListItem, place: SongMenuPlace) {
       onPress: () => shareSong(song),
     },
   ] satisfies MenuItem[];
-  const { playlistId } = place;
-  const remove = [
-    ...(playlistId === undefined
-      ? []
-      : [
-          {
-            icon: "minus.circle",
-            key: "remove",
-            label: "Remove from Playlist",
-            onPress: () => removeFromPlaylist(playlistId, [song.id]),
-          } satisfies MenuAction,
-        ]),
-    {
-      destructive: true,
-      icon: "trash",
-      key: "delete",
-      label: "Delete from Library",
-      onPress: () => confirmDeleteSongs([song]),
-    },
-  ] satisfies MenuItem[];
-  return [queue, keep, go, edit, remove].filter(
+  return [queue, keep, go, edit, removeGroup(song, place)].filter(
     (group) => group.length > 0,
   ) satisfies MenuGroups;
 }

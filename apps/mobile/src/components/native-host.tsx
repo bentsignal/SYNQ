@@ -22,6 +22,7 @@ export function useNativeColor(
   name:
     | "--color-accent"
     | "--color-background"
+    | "--color-background-elevated"
     | "--color-fill"
     | "--color-muted"
     | "--color-separator",

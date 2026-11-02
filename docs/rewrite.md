@@ -171,6 +171,26 @@ Preferences (accent, haptics, shuffle, repeat, review bookkeeping) and the playb
 source) live in `expo-sqlite/kv-store` behind a small typed store, read
 synchronously at startup.
 
+### Adding a song to an album
+
+Adding a song from an album's Edit Songs (or New Album) moves it there
+(`addSongsToAlbum`). No schema change, so a 2.5.2 library upgrades through
+it untouched, and no audio or artwork file moves or is deleted.
+
+- It leaves its primary album; this one becomes primary. A second album
+  it's also on stays second.
+- It lands at the end: tracks number on from the last one. An unnumbered
+  track sorts after every numbered one, so an album with any gets numbered
+  1..n in its current order first.
+- An album left without a cover copies the first added song's, as an import
+  gives a new album its first song's. Otherwise moving a song would lose its
+  artwork, since an album's cover stays with that album.
+- An album with no artists takes the added songs' artists; one that has
+  artists keeps them, and a track by someone else shows them under its
+  title.
+- The album it leaves stays, even when emptied, with its cover: albums left
+  without songs are kept, as `deleteSongs` keeps them and as 2.5.2 did.
+
 ### Migrating a 2.5.2 install
 
 Details and test fixtures: `docs/migration.md` (written with the

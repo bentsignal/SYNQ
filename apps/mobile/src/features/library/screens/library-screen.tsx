@@ -1,4 +1,4 @@
-import { Pressable, Text, useWindowDimensions, View } from "react-native";
+import { Text, useWindowDimensions, View } from "react-native";
 import { Stack } from "expo-router";
 
 import type { SongListItem } from "@synq/db";
@@ -6,6 +6,7 @@ import { findLikedPlaylistId, listSongs } from "@synq/db";
 
 import { Artwork } from "~/components/artwork";
 import { EmptyState } from "~/components/empty-state";
+import { NativeRow } from "~/components/native-row";
 import { ScreenScroll } from "~/components/screen-scroll";
 import { RootTabTitle } from "~/components/tab-title";
 import { playSongs } from "~/features/player/actions";
@@ -19,12 +20,16 @@ import {
   openNewPlaylist,
 } from "../links";
 import { useLibraryQuery } from "../queries";
+import { songMenu } from "../song-menu";
+import { useIsLiked } from "../song-row";
 import { songSort } from "../sort";
 
 /** How many of the newest songs Recently Added shows. */
 const RECENT_COUNT = 12;
 const GRID_GAP = 16;
 const GRID_PADDING = 16;
+/** Two lines of footnote text and the gap above them, under a card's artwork. */
+const CARD_TEXT_HEIGHT = 44;
 
 function LikedSongsRow() {
   const likedId = useLibraryQuery({
@@ -52,25 +57,30 @@ function RecentCard({
   onPress: () => void;
 }) {
   const artist = names(song.artists) || UNKNOWN_ARTIST;
+  const liked = useIsLiked(song.id);
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`${song.title}, ${artist}`}
-      className="active:opacity-70"
-      style={{ width: size }}
-      onPress={onPress}
-    >
-      <Artwork artwork={song.artwork} placeholder="song" size={size} />
-      <Text
-        numberOfLines={1}
-        className="text-footnote text-foreground mt-1.5 font-medium"
+    <View style={{ width: size }}>
+      <NativeRow
+        height={size + CARD_TEXT_HEIGHT}
+        label={`${song.title}, ${artist}`}
+        menu={songMenu(song, { liked })}
+        menuButton={false}
+        onPress={onPress}
       >
-        {song.title}
-      </Text>
-      <Text numberOfLines={1} className="text-footnote text-muted">
-        {artist}
-      </Text>
-    </Pressable>
+        <View style={{ width: size }}>
+          <Artwork artwork={song.artwork} placeholder="song" size={size} />
+          <Text
+            numberOfLines={1}
+            className="text-footnote text-foreground mt-1.5 font-medium"
+          >
+            {song.title}
+          </Text>
+          <Text numberOfLines={1} className="text-footnote text-muted">
+            {artist}
+          </Text>
+        </View>
+      </NativeRow>
+    </View>
   );
 }
 

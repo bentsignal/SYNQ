@@ -1,14 +1,13 @@
 import { View } from "react-native";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 
 import type { ArtistDetail, ArtistListItem } from "@synq/db";
 import { getArtistDetail } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
-import { exportArtist } from "~/features/export/export";
+import { toolbarMenuItems } from "~/components/toolbar-menu-items";
 import { playSongs } from "~/features/player/actions";
-import { confirmDeleteArtist, failed } from "../actions";
 import {
   AlbumCards,
   CollectionHeader,
@@ -17,6 +16,7 @@ import {
   SectionTitle,
   useHeaderTitle,
 } from "../collection-header";
+import { artistMenu } from "../collection-menu";
 import { albumCount, dotted, songCount } from "../format";
 import { useIdParam } from "../params";
 import { PlayShuffleButtons } from "../play-shuffle-buttons";
@@ -27,34 +27,7 @@ function ArtistMenu({ artist }: { artist: ArtistListItem }) {
   return (
     <Stack.Toolbar placement="right">
       <Stack.Toolbar.Menu icon="ellipsis" accessibilityLabel="More">
-        <Stack.Toolbar.MenuAction
-          icon="pencil"
-          onPress={() =>
-            router.push({
-              params: { id: String(artist.id) },
-              pathname: "/edit-artist/[id]",
-            })
-          }
-        >
-          Edit
-        </Stack.Toolbar.MenuAction>
-        <Stack.Toolbar.MenuAction
-          icon="square.and.arrow.up"
-          onPress={() =>
-            exportArtist(artist.id).catch(() =>
-              failed("Couldn't Export Artist"),
-            )
-          }
-        >
-          Export
-        </Stack.Toolbar.MenuAction>
-        <Stack.Toolbar.MenuAction
-          icon="trash"
-          destructive
-          onPress={() => confirmDeleteArtist(artist, () => router.back())}
-        >
-          Delete Artist
-        </Stack.Toolbar.MenuAction>
+        {toolbarMenuItems(artistMenu(artist, { onPage: true }))}
       </Stack.Toolbar.Menu>
     </Stack.Toolbar>
   );
@@ -91,7 +64,7 @@ function ArtistHeader({
       {albums.length > 0 && (
         <View>
           <SectionTitle title="Albums" />
-          <AlbumCards albums={albums} />
+          <AlbumCards albums={albums} artistId={artist.id} />
         </View>
       )}
       {songs.length > 0 && <SectionTitle title="Songs" />}

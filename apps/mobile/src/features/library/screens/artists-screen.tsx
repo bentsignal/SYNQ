@@ -5,6 +5,7 @@ import { listArtists } from "@synq/db";
 import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
 import { TabTitle } from "~/components/tab-title";
+import { artistMenu } from "../collection-menu";
 import { COLLECTION_ROW_HEIGHT, CollectionRow } from "../collection-row";
 import { songCount } from "../format";
 import { openLibraryScreen } from "../links";
@@ -49,6 +50,7 @@ export default function ArtistsScreen() {
             placeholder="artist"
             name={item.name}
             detail={songCount(item.songCount)}
+            menu={artistMenu(item)}
             onPress={() => openLibraryScreen({ id: item.id, screen: "artist" })}
           />
         )}

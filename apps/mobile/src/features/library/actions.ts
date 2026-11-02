@@ -8,6 +8,7 @@ import {
   deletePlaylist,
   deleteSongs,
   LibraryError,
+  removeSongsFromAlbum,
   removeSongsFromPlaylist,
   setSongLiked,
 } from "@synq/db";
@@ -64,6 +65,12 @@ export function removeFromPlaylist(
 ) {
   tryWrite("Couldn't Remove from Playlist", (db) =>
     removeSongsFromPlaylist(db, playlistId, songIds),
+  );
+}
+
+export function removeFromAlbum(albumId: number, songIds: readonly number[]) {
+  tryWrite("Couldn't Remove from Album", (db) =>
+    removeSongsFromAlbum(db, albumId, songIds),
   );
 }
 

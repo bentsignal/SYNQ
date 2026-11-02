@@ -62,6 +62,26 @@ numbers.
   (`src/components/swiftui-row.tsx`). The separator is a React Native
   hairline. Share sends the file as imported until export writes tags into
   a copy.
+- **Collection menu** (`src/features/library/collection-menu.ts`): a long
+  press on a playlist, album, or artist, wherever one appears (lists,
+  search, an artist's album cards), and the `ellipsis` on its own page,
+  from one definition in the song menu's order: Play, Shuffle; Play Next,
+  Add to Queue; Add to Playlist…; Go to Artist; Edit, Export; Delete. Its
+  page leaves out Play and Shuffle (they're buttons there) and Go to
+  Artist (the header links to them). A collection with no songs offers
+  only Edit and Delete. Liked Songs has no Delete. Collection rows and
+  Recently Added's and an artist's cards are `NativeRow`s without the
+  `ellipsis` button or a separator, so a long press lifts them natively and
+  lists cost what song rows cost. The queue's rows (a SwiftUI `List`) and
+  the import list's are the only song lists without a menu.
+- **Song picker** (`src/features/editing/song-picker.tsx`): add several
+  songs from the library at once, from Edit Songs and New Playlist / Album.
+  The Songs list's sort in a Legend List of plain React Native rows (no
+  native host per row, so 3,000 songs scroll freely), with a circle that
+  fills with a check; the bar's search narrows what's listed and choices
+  stay through it. The title counts them ("3 Selected"); Select All applies
+  to what's listed; a song already there is dimmed with a gray check. Back
+  discards, Done (`checkmark`, prominent) adds them in the order chosen.
 - **Empty states** (`EmptyState`, one component for every empty page and
   every "no results"): a small `subtle` symbol (26 pt), a short `muted` title,
   and only the actions that help, as quiet capsules on `fill`, sitting in the
@@ -109,29 +129,33 @@ in Apple Music. Liked Songs is the playlist screen (it's a playlist row).
 The header scrolls with the list: 240 pt artwork centered (artists: 180 pt
 circle), name (`text-title` bold), detail line (`Album · 2021` with the
 artist in the accent and tappable; `14 songs, 52 minutes`), then Play /
-Shuffle. Toolbar `ellipsis` menu: Edit, Sort By (submenu, playlists only),
-Export, Delete (not for Liked Songs). Album: track-number rows
-and a footer `14 songs, 52 minutes`. Artist: "Albums" as a horizontal row
+Shuffle. Toolbar `ellipsis` menu: the collection menu, with Sort By first
+on playlists. Album: track-number rows and a footer `14 songs, 52 minutes`. Artist: "Albums" as a horizontal row
 of 140 pt album cards, then "Songs".
 
 ### Editing (form sheets)
 
 Native forms (`FieldGroup`) with Cancel (`xmark`) and Done (`checkmark`,
-prominent) in the toolbar. The small sheets (New Playlist / Album /
-Artist, Add to Playlist) are form sheets; the edit sheets push lists (Edit
-Songs, Artists, Albums, Reorder Tracks) inside their own stack, which a
-form sheet can't hold, so they're page sheets, and Done saves everything
-the sheet changed (`src/features/editing/draft.ts`):
+prominent) in the toolbar. The small sheets (New Artist, Add to Playlist)
+are form sheets; the edit and create sheets push lists (Edit Songs, Add
+Songs, Artists, Albums) inside their own stack, which a form sheet can't
+hold, so they're page sheets, and Done saves everything the sheet changed
+(`src/features/editing/draft.ts`):
 - **Playlist**: artwork (tap to choose a photo, cropped square), name,
-  and Edit Songs (a SwiftUI `List` in edit mode: drag to reorder, swipe to
-  remove).
-- **Album**: artwork, name, year, artists (toggle list), Reorder Tracks
-  (same native list).
+  and Edit Songs (a SwiftUI `List` in edit mode: an Add Songs row on top
+  opening the song picker, drag to reorder, swipe to remove).
+- **Album**: artwork, name, year, artists (toggle list), Edit Songs (same
+  native list). Adding a song moves it here: see docs/rewrite.md → Adding
+  a song to an album.
 - **Artist**: artwork, name.
 - **Song**: artwork, title, artists, albums (toggle lists with search).
   Setting a cover on a song with an album sets the album's cover (2.5.2).
-- **New Playlist / Album / Artist**: a small form sheet with the name
-  field focused.
+- **New Playlist / Album**: the same form as editing, with no field focused
+  so the keyboard doesn't hide Add Songs, so someone can pick a picture and
+  songs before it exists. With no songs yet,
+  Add Songs goes straight to the picker. From Add to Playlist, New Playlist
+  starts with those songs and Done closes both sheets.
+- **New Artist**: a small form sheet with the name field focused.
 - **Add to Playlist**: a form sheet listing playlists (Liked Songs first)
   with a New Playlist row at the top; tapping adds and closes at once.
 
@@ -206,7 +230,15 @@ fail don't interrupt anything: one alert names them when the queue is done.
   browser went away and the sheet closes. A page that says nothing gets 6 s.
   If nothing imported at all, the sheet stays open with its address after the
   alert, to try again.
-- **Export / Share**: tags written into a copy, then the share sheet.
+- **Export / Share**: tags written into copies, then the share sheet: one
+  song as its file; an album, playlist, or artist as one zip named after
+  it (`Album Name.zip`, stored rather than compressed, since audio doesn't
+  compress). Album and playlist files are numbered in play order (`03
+  Title.mp3`), so sorting by name gives that order; artist files are just
+  titled. An export that takes more than half a second shows a banner at
+  the top (`Exporting Album Name`, `3 of 14`, a progress bar, and `xmark`
+  to cancel); the app stays usable underneath. One export runs at a time,
+  and its temporary files go when the sheet closes.
 
 ## Updating from 2.5.2
 

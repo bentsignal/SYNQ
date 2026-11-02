@@ -37,6 +37,14 @@
       "channel": "internal",
       "autoIncrement": true
     },
+    "upgrade-test": {
+      "extends": "internal",
+      "autoIncrement": false,
+      "env": {
+        "APP_VARIANT": "development",
+        "SYNQ_UPGRADE_TEST": "1"
+      }
+    },
     "production": {
       "extends": "base",
       "distribution": "store",

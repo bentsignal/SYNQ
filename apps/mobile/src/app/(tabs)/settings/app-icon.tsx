@@ -8,13 +8,13 @@ import { SymbolIcon } from "~/components/symbol-icon";
 import { APP_ICONS } from "~/features/app-icon/app-icon";
 import { chooseAppIcon, useAppIcon } from "~/features/settings/use-app-icon";
 import { cn } from "~/lib/cn";
-import blue from "../../../../assets/icons/icon-blue.png";
-import mint from "../../../../assets/icons/icon-mint.png";
-import orange from "../../../../assets/icons/icon-orange.png";
-import pink from "../../../../assets/icons/icon-pink.png";
-import purple from "../../../../assets/icons/icon-purple.png";
-import red from "../../../../assets/icons/icon-red.png";
-import yellow from "../../../../assets/icons/icon-yellow.png";
+import blue from "../../../../assets/icons/previews/icon-blue.png";
+import mint from "../../../../assets/icons/previews/icon-mint.png";
+import orange from "../../../../assets/icons/previews/icon-orange.png";
+import pink from "../../../../assets/icons/previews/icon-pink.png";
+import purple from "../../../../assets/icons/previews/icon-purple.png";
+import red from "../../../../assets/icons/previews/icon-red.png";
+import yellow from "../../../../assets/icons/previews/icon-yellow.png";
 
 const PREVIEWS = {
   "icon-blue": blue,

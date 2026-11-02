@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { Paths } from "expo-file-system";
 
 import type { LibraryDb } from "@synq/db";
@@ -20,8 +21,13 @@ import {
 import { recoverInterruptedRestore } from "~/features/backup/restore-files";
 import { applyLegacySettings } from "./legacy-settings";
 
-/** 2.5.2's bundle id, which owns the AsyncStorage folder the importer reads. */
-const LEGACY_BUNDLE_ID = "com.directedbyshawn.synq";
+/**
+ * The bundle id that owns the AsyncStorage folder the importer reads: 2.5.2's, on
+ * any store build. The app's own, so a phone test of the update under SYNQ Dev's
+ * id finds its settings too (the `upgrade-test` build profile).
+ */
+const LEGACY_BUNDLE_ID =
+  Constants.expoConfig?.ios?.bundleIdentifier ?? "com.directedbyshawn.synq";
 
 let current: LibraryDb | undefined;
 let currentClient: ReturnType<typeof openLibraryDb>["client"] | undefined;

@@ -7,34 +7,20 @@ const {
 } = require("@expo/config-plugins");
 
 /**
- * Adds 1024 px PNGs as iOS alternate app icons: each becomes an app icon
- * set in the app's asset catalog, and the build settings list them in
+ * Adds Icon Composer (`.icon`) documents as iOS alternate app icons, so each
+ * keeps its Liquid Glass and tinted appearances. Expo installs the primary
+ * `.icon` from `ios.icon`; this does the same for the rest and lists them in
  * ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES, from which Xcode writes
  * `CFBundleAlternateIcons`. The app switches between them with
  * `expo-alternate-app-icons` (src/features/app-icon/app-icon.ts), whose own
- * plugin isn't used so the names stay exactly 2.5.2's.
+ * plugin only handles PNGs and doesn't keep 2.5.2's names.
  *
- * Options: `{ icons: ["./assets/icons/icon-blue.png", ...] }`. Each icon's
- * name is its file name without `.png`, and iOS remembers the person's
- * choice by that name.
+ * Options: `{ icons: ["./assets/icons/icon-blue.icon", ...] }`. Each icon's
+ * name is its file name without `.icon`, and iOS remembers the person's choice
+ * by that name.
  */
 function iconName(iconPath) {
-  return path.basename(iconPath, ".png");
-}
-
-/** An app icon set's Contents.json: one universal 1024 px image. */
-function iconSetContents(fileName) {
-  return {
-    images: [
-      {
-        filename: fileName,
-        idiom: "universal",
-        platform: "ios",
-        size: "1024x1024",
-      },
-    ],
-    info: { author: "expo", version: 1 },
-  };
+  return path.basename(iconPath, ".icon");
 }
 
 function withAlternateIconFiles(config, icons) {
@@ -43,22 +29,11 @@ function withAlternateIconFiles(config, icons) {
     async (config) => {
       const { platformProjectRoot, projectName, projectRoot } =
         config.modRequest;
-      const catalog = path.join(
-        platformProjectRoot,
-        projectName,
-        "Images.xcassets",
-      );
       for (const icon of icons) {
-        const name = iconName(icon);
-        const set = path.join(catalog, `${name}.appiconset`);
-        await fs.promises.mkdir(set, { recursive: true });
-        await fs.promises.copyFile(
+        await fs.promises.cp(
           path.join(projectRoot, icon),
-          path.join(set, `${name}.png`),
-        );
-        await fs.promises.writeFile(
-          path.join(set, "Contents.json"),
-          `${JSON.stringify(iconSetContents(`${name}.png`), null, 2)}\n`,
+          path.join(platformProjectRoot, projectName, `${iconName(icon)}.icon`),
+          { recursive: true },
         );
       }
       return config;
@@ -70,6 +45,14 @@ function withAlternateIconProject(config, icons) {
   return withXcodeProject(config, (config) => {
     const project = config.modResults;
     const { projectName } = config.modRequest;
+    for (const icon of icons) {
+      IOSConfig.XcodeUtils.addResourceFileToGroup({
+        filepath: `${projectName}/${iconName(icon)}.icon`,
+        groupName: projectName,
+        isBuildFile: true,
+        project,
+      });
+    }
     const [, target] = IOSConfig.Target.findNativeTargetByName(
       project,
       projectName,
@@ -99,4 +82,3 @@ module.exports = function withAlternateIcons(config, { icons = [] } = {}) {
 };
 module.exports.alternateIconSettings = alternateIconSettings;
 module.exports.iconName = iconName;
-module.exports.iconSetContents = iconSetContents;

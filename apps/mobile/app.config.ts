@@ -9,6 +9,13 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
  */
 const dev = process.env.APP_VARIANT === "development";
 
+/**
+ * The phone test of updating from 2.5.2 (the `upgrade-test` profile): still
+ * SYNQ Dev's bundle ID, so the App Store app is left alone, but with the name
+ * and icon a real update would bring.
+ */
+const upgradeTest = process.env.SYNQ_UPGRADE_TEST === "1";
+
 const EAS_PROJECT_ID = "df86bb9d-1587-48b7-a40e-85a09eee2a72";
 
 /**
@@ -25,8 +32,8 @@ const RUNTIME_VERSION = "ios-1";
 /**
  * The 2.5.2 app icons, registered as iOS alternate icons under the names
  * 2.5.2 gave them. iOS remembers someone's choice by name, so these names
- * must never change. `icon-blue` is also SYNQ's primary icon; SYNQ Dev's
- * is `synq-dev` (assets/icons/README.md).
+ * must never change. SYNQ's primary icon, `synq`, is `icon-blue` again under
+ * its own name, and SYNQ Dev's is `synq-dev` (assets/icons/README.md).
  */
 const ALTERNATE_ICONS = [
   "icon-blue",
@@ -36,14 +43,14 @@ const ALTERNATE_ICONS = [
   "icon-purple",
   "icon-orange",
   "icon-pink",
-].map((name) => `./assets/icons/${name}.png`);
+].map((name) => `./assets/icons/${name}.icon`);
 
 /** The app's background, behind the splash and every screen. */
 const BACKGROUND = "#141414";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: dev ? "SYNQ Dev" : "SYNQ",
+  name: upgradeTest ? "SYNQ 3.0" : dev ? "SYNQ Dev" : "SYNQ",
   slug: "synq",
   owner: "directedbyshawn",
   scheme: dev ? "synq-dev" : "synq",
@@ -62,6 +69,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     fallbackToCacheTimeout: 0,
   },
   ios: {
+    // Liquid Glass, from Icon Composer documents (assets/icons/README.md).
+    icon:
+      dev && !upgradeTest
+        ? "./assets/icons/synq-dev.icon"
+        : "./assets/icons/synq.icon",
     bundleIdentifier: dev
       ? "com.directedbyshawn.synq.dev"
       : "com.directedbyshawn.synq",

@@ -5,7 +5,6 @@ const { test } = require("node:test");
 const {
   alternateIconSettings,
   iconName,
-  iconSetContents,
 } = require("./with-alternate-icons.cjs");
 
 const APP = path.join(__dirname, "..");
@@ -32,23 +31,35 @@ test("the app config registers exactly 2.5.2's alternate icon names", () => {
   assert.deepEqual(names, LEGACY_NAMES);
 });
 
-test("every alternate icon is a 1024 px PNG in assets/icons", () => {
-  for (const name of [...LEGACY_NAMES, "synq-dev"]) {
-    const file = fs.readFileSync(path.join(APP, `assets/icons/${name}.png`));
-    // PNG signature, then the IHDR chunk's width and height.
-    assert.equal(file.toString("hex", 0, 8), "89504e470d0a1a0a");
-    assert.equal(file.readUInt32BE(16), 1024, `${name} width`);
-    assert.equal(file.readUInt32BE(20), 1024, `${name} height`);
+test("every icon is an Icon Composer document with both arrows", () => {
+  for (const name of [...LEGACY_NAMES, "synq", "synq-dev"]) {
+    const bundle = path.join(APP, `assets/icons/${name}.icon`);
+    const document = JSON.parse(
+      fs.readFileSync(path.join(bundle, "icon.json"), "utf8"),
+    );
+    assert.equal(document.groups.length, 2, name);
+    for (const group of document.groups) {
+      const [layer] = group.layers;
+      assert.ok(
+        fs.existsSync(path.join(bundle, "Assets", layer["image-name"])),
+      );
+    }
   }
 });
 
-test("an icon's name is its file name without .png", () => {
-  assert.equal(iconName("./assets/icons/icon-blue.png"), "icon-blue");
+test("the primary icon is the blue one", () => {
+  const read = (name) =>
+    fs.readFileSync(path.join(APP, `assets/icons/${name}.icon/icon.json`));
+  assert.ok(read("synq").equals(read("icon-blue")));
+});
+
+test("an icon's name is its file name without .icon", () => {
+  assert.equal(iconName("./assets/icons/icon-blue.icon"), "icon-blue");
 });
 
 test("the build settings list every icon by name", () => {
   const settings = alternateIconSettings(
-    LEGACY_NAMES.map((name) => `./assets/icons/${name}.png`),
+    LEGACY_NAMES.map((name) => `./assets/icons/${name}.icon`),
   );
   assert.equal(
     settings.ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES,
@@ -58,15 +69,4 @@ test("the build settings list every icon by name", () => {
     settings.ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS,
     "YES",
   );
-});
-
-test("each icon set holds one universal 1024 px image", () => {
-  assert.deepEqual(iconSetContents("icon-mint.png").images, [
-    {
-      filename: "icon-mint.png",
-      idiom: "universal",
-      platform: "ios",
-      size: "1024x1024",
-    },
-  ]);
 });

@@ -62,11 +62,14 @@ library is open) or a play action.
 
 - `mini-player.tsx`: the tab bar's bottom accessory (both placements).
 - `marquee-text.tsx`: one line that scrolls to show the rest when it doesn't
-  fit, on the UI thread, in the player and the mini player.
+  fit, on the UI thread, in the player and the mini player. See
+  [Marquee](#marquee).
+- `icon-button.tsx`: every control in the player and the mini player.
 - `player-screen.tsx` (route `/player`, a modal sheet): backdrop, artwork
   (eases to 85% when paused), title, like and
   menu, `scrubber.tsx`, `player-controls.tsx` (transport, shuffle, repeat,
-  AirPlay via `RoutePickerButton`, queue).
+  AirPlay via `RoutePickerButton`, queue), `volume-slider.tsx`. The gaps come
+  from `player-layout.ts`.
 - `queue-screen.tsx` (route `/queue`, a form sheet) and `queue-list.tsx`.
 
 ## Reordering the queue
@@ -137,6 +140,59 @@ colors it chooses instead, so the ring carries the backdrop.
 `SynqBackdrop.frameStats()` (`scripts/sim.sh eval
 "expo.modules.SynqBackdrop.frameStats()"`) reports frames drawn and what they
 cost, to check that it stops when it should.
+
+## Skipping
+
+A skip never shows an empty cover. `SeamlessArtwork` differs from the `Artwork`
+in lists in three ways:
+
+- No `recyclingKey`. In `expo-image`, changing it clears the view at once, which
+  is what a recycled list row wants and what made every skip flicker: the image
+  went away, the small placeholder loaded, then the new cover faded in over
+  120 ms. Without it the current image stays until the next one arrives.
+- No `transition`, so it's replaced in one frame.
+- No downscaling, which `expo-image` does on the main thread.
+
+`artwork-prefetch.ts` keeps the covers of the current song and the songs either
+side of it decoded in `expo-image`'s memory cache (both sizes), which
+`SeamlessArtwork` reads through `cachePolicy="memory"`. A hit comes back in the
+same main-thread turn as the new props, so the cover changes in the same frame
+as the title. It also runs each neighbor through `ArtworkAnalysis`, so the
+backdrop and the corner zoom are ready too.
+
+Holding on to the previous image means a file that fails would leave the last
+song's cover up, so `onError` moves to the cover's other size, and then to the
+placeholder.
+
+The memory cache holds only these covers, capped at 110 MB, about a dozen 1500 px
+ones. iOS can purge it at any time, and a miss just shows the old cover a moment
+longer.
+
+## Marquee
+
+`MarqueeText` translates the text with a Reanimated transform at a constant
+`SPEED`, with no easing, so a short overflow moves as fast as a long one.
+
+`modules/synq-fade` masks it with a `CAGradientLayer`, since the backdrop behind
+it moves and an overlay couldn't match it. The native view reads the text's
+measured width itself when it lays out, so a new title has the right mask on its
+first frame and text that fits has no mask at all. JavaScript only tells it where
+the text is (`phase`: at the start, moving, at the end), a few times a cycle, and
+Core Animation fades the edges from there. Nothing runs in JavaScript per frame.
+
+## Volume
+
+`modules/synq-volume` wraps `MPVolumeView`, which follows the hardware buttons
+itself and keeps iOS's volume overlay away while it's on screen. A touch on the
+thumb belongs to the slider inside it. A touch elsewhere on the bar drags relative
+to where it landed, like the scrubber, by setting that inner slider's value. iOS
+has no public way to reach it, but it has been the usual way to do this for years;
+if it ever stops working, only drags that start off the thumb are lost.
+
+Simulators have no system volume and `MPVolumeView` only says "No Volume
+Available" there, so a simulator build shows a stand-in slider (`Volume
+(simulator stand-in)` to VoiceOver) to check the layout and the touches. It
+changes nothing.
 
 ## Artwork corners
 

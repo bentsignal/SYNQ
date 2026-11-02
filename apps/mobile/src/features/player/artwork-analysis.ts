@@ -5,6 +5,7 @@ import type { ArtworkRef } from "@synq/db";
 import { artworkPath } from "@synq/db";
 import { documentFile } from "@synq/db/expo";
 
+import { queryClient } from "~/lib/query-client";
 import { analyzeArtwork } from "./native-backdrop";
 
 /** The cover's smallest file: a 2.5.2 cover may exist in only one size. */
@@ -15,12 +16,9 @@ export function coverFileUri(artwork: ArtworkRef) {
     : documentFile(artworkPath(artwork, "full")).uri;
 }
 
-/** The cover's colors and corners, or no data in a build without the reader. */
-export function useArtworkAnalysis(artwork: ArtworkRef | null) {
-  return useQuery({
-    enabled: artwork !== null && analyzeArtwork !== null,
+function analysisQuery(artwork: ArtworkRef | null) {
+  return {
     gcTime: Infinity,
-    placeholderData: keepPreviousData,
     queryFn: async () =>
       artwork === null || analyzeArtwork === null
         ? null
@@ -31,7 +29,22 @@ export function useArtworkAnalysis(artwork: ArtworkRef | null) {
       artwork?.id,
       artwork?.version,
     ],
-    select: (analysis) => analysis,
     staleTime: Infinity,
+  };
+}
+
+/** The cover's colors and corners, or no data in a build without the reader. */
+export function useArtworkAnalysis(artwork: ArtworkRef | null) {
+  return useQuery({
+    ...analysisQuery(artwork),
+    enabled: artwork !== null && analyzeArtwork !== null,
+    placeholderData: keepPreviousData,
+    select: (analysis) => analysis,
   });
+}
+
+/** Reads a cover ahead of time, so its song starts with its corners known. */
+export function prefetchArtworkAnalysis(artwork: ArtworkRef) {
+  if (analyzeArtwork === null) return;
+  void queryClient.prefetchQuery(analysisQuery(artwork));
 }

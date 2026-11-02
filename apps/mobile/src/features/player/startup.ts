@@ -7,6 +7,7 @@ import * as Audio from "@synq/audio";
 import type { PlayerSongs } from "./songs";
 import { onLibraryErased } from "~/features/backup/backup";
 import { queryClient } from "~/lib/query-client";
+import { prefetchAroundCurrent } from "./artwork-prefetch";
 import { clearQueue, forgetSongs } from "./commands";
 import { reportPlaybackError } from "./errors";
 import { pushedTrack, resyncNative } from "./native-queue";
@@ -17,7 +18,12 @@ import {
   saveFromNative,
 } from "./persistence";
 import { isSettingSongs, PLAYER_SONGS_QUERY } from "./songs";
-import { getPlayerState, onFirstUse, setPlayerState } from "./store";
+import {
+  getPlayerState,
+  onFirstUse,
+  setPlayerState,
+  subscribePlayer,
+} from "./store";
 import { sameTrack, trackFor } from "./tracks";
 
 /** While playing, the position is also saved this often. */
@@ -71,11 +77,10 @@ function onRefetched(songs: unknown) {
 function watchLibrary() {
   const playerSongs = hashKey(PLAYER_SONGS_QUERY);
   queryClient.getQueryCache().subscribe((event) => {
-    if (isSettingSongs() || event.type !== "updated") return;
-    if (event.action.type !== "success") return;
-    if (event.query.queryHash === playerSongs) {
-      onRefetched(event.query.state.data);
-    }
+    if (event.type !== "updated" || event.action.type !== "success") return;
+    if (event.query.queryHash !== playerSongs) return;
+    prefetchAroundCurrent();
+    if (!isSettingSongs()) onRefetched(event.query.state.data);
   });
 }
 
@@ -91,8 +96,10 @@ function startPlayer() {
   watchLibrary();
   // Restoring only adds to the library, so the queue plays on through it.
   onLibraryErased(clearQueue);
+  subscribePlayer(prefetchAroundCurrent);
   AppState.addEventListener("change", (next) => {
-    if (next !== "active") saveFromNative();
+    if (next === "active") prefetchAroundCurrent();
+    else saveFromNative();
   });
   setInterval(() => {
     if (getPlayerState().status === "playing") saveFromNative();

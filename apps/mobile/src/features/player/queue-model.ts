@@ -63,6 +63,20 @@ export function currentIndex(queue: Queue) {
   return queue.entries.findIndex((entry) => entry.key === queue.currentKey);
 }
 
+/**
+ * The entries a skip would land on: after and before the current one, wrapping
+ * around when the queue repeats.
+ */
+export function neighbors(queue: Queue, repeat: "off" | "all" | "one") {
+  const index = currentIndex(queue);
+  if (index === -1) return [];
+  const { entries } = queue;
+  const wraps = repeat === "all";
+  const next = entries[index + 1] ?? (wraps ? entries[0] : undefined);
+  const previous = entries[index - 1] ?? (wraps ? entries.at(-1) : undefined);
+  return [next, previous].filter((entry) => entry !== undefined);
+}
+
 /** How many Play Next entries directly follow the current one. */
 function queuedRunLength(entries: readonly QueueEntry[], index: number) {
   let length = 0;

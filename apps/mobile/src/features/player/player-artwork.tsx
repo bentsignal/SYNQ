@@ -1,14 +1,18 @@
-import Animated, { cubicBezier } from "react-native-reanimated";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 
 import type { ArtworkRef } from "@synq/db";
 
-import { Artwork } from "~/components/artwork";
+import { SeamlessArtwork } from "~/components/artwork";
 import { useArtworkAnalysis } from "./artwork-analysis";
 import { cornerZoom } from "./backdrop-palette";
 
 /** Paused, the artwork eases back a little, like Apple Music's. */
 const PAUSED_SCALE = 0.85;
-const EASE = cubicBezier(0.2, 0.9, 0.3, 1);
+const SCALE = { duration: 420, easing: Easing.bezier(0.2, 0.9, 0.3, 1) };
 const RADIUS = 12;
 
 /**
@@ -32,18 +36,23 @@ export function PlayerArtwork({
   const inset = analysis.isPlaceholderData
     ? 0
     : (analysis.data?.cornerInset ?? 0);
+  const scaleStyle = useAnimatedStyle(
+    () => ({
+      transform: [{ scale: withTiming(playing ? 1 : PAUSED_SCALE, SCALE) }],
+    }),
+    [playing],
+  );
   return (
     <Animated.View
-      style={{
-        borderRadius: RADIUS,
-        boxShadow: "0 16px 28px rgba(0, 0, 0, 0.4)",
-        transform: [{ scale: playing ? 1 : PAUSED_SCALE }],
-        transitionDuration: 420,
-        transitionProperty: "transform",
-        transitionTimingFunction: EASE,
-      }}
+      style={[
+        {
+          borderRadius: RADIUS,
+          boxShadow: "0 16px 28px rgba(0, 0, 0, 0.4)",
+        },
+        scaleStyle,
+      ]}
     >
-      <Artwork
+      <SeamlessArtwork
         artwork={artwork}
         placeholder="song"
         radius={RADIUS}

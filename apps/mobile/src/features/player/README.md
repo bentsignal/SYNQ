@@ -155,9 +155,8 @@ in lists in three ways:
 
 `artwork-prefetch.ts` keeps the covers of the current song and the songs either
 side of it decoded in `expo-image`'s memory cache (both sizes), which
-`SeamlessArtwork` reads through `cachePolicy="memory"`. A hit comes back in the
-same main-thread turn as the new props, so the cover changes in the same frame
-as the title. It also runs each neighbor through `ArtworkAnalysis`, so the
+`SeamlessArtwork` reads through `cachePolicy="memory"`, so the cover changes
+with the title. It also runs each neighbor through `ArtworkAnalysis`, so the
 backdrop and the corner zoom are ready too.
 
 Holding on to the previous image means a file that fails would leave the last

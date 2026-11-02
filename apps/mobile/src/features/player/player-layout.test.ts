@@ -1,12 +1,22 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { playerSpacing } from "./player-layout.ts";
+import {
+  ARTWORK_TOP,
+  OPTION_BOX,
+  PLAYER_GAP_MIN,
+  PLAYER_GAPS,
+  playerArtworkSize,
+  TRANSPORT_BOX,
+} from "./player-layout.ts";
 
-/** The rows that don't give way: grabber, title, sliders, transport, options. */
-const ROWS = 18 + 48 + 20 + 80 + 20 + 36;
-const BOTTOM_PADDING = 12;
-const ARTWORK_MARGIN = 24;
+/** The padding and grabber above, and the rows that don't give way. */
+const TOP = 12 + 6;
+const TITLE_ROW = 52;
+const SLIDER_ROW = 20;
+const ROWS = TITLE_ROW + SLIDER_ROW * 2 + TRANSPORT_BOX + OPTION_BOX;
+/** The times hang this far under the scrubber's row. */
+const TIMES = 16;
 
 /** Window, width, where the modal sheet starts, and the home indicator's inset. */
 const PHONES = [
@@ -18,32 +28,36 @@ const PHONES = [
   { bottom: 34, height: 956, name: "Pro Max", sheetTop: 64, width: 440 },
 ];
 
+function gapsRoom(phone: (typeof PHONES)[number]) {
+  return (
+    phone.height -
+    phone.sheetTop -
+    phone.bottom -
+    TOP -
+    ARTWORK_TOP -
+    playerArtworkSize(phone.width, phone.height) -
+    ROWS
+  );
+}
+
 for (const phone of PHONES) {
-  void test(`full-size artwork fits on ${phone.name}`, () => {
-    const spacing = playerSpacing(phone.height);
-    const gaps =
-      spacing.titleToScrubber +
-      spacing.sliderToTransport * 2 +
-      spacing.volumeToOptions;
-    const room =
-      phone.height -
-      phone.sheetTop -
-      phone.bottom -
-      BOTTOM_PADDING -
-      ROWS -
-      gaps -
-      ARTWORK_MARGIN;
-    assert.ok(
-      room >= phone.width - 64,
-      `${phone.name}: ${room} pt for ${phone.width - 64} pt of artwork`,
+  void test(`everything fits with room to breathe on ${phone.name}`, () => {
+    const gaps = Object.keys(PLAYER_GAPS).length + 1;
+    const room = gapsRoom(phone);
+    assert.ok(room >= gaps * PLAYER_GAP_MIN, `${phone.name}: ${room} pt`);
+  });
+
+  void test(`the times clear the transport on ${phone.name}`, () => {
+    const total = Object.values(PLAYER_GAPS).reduce(
+      (sum, gap) => sum + gap,
+      PLAYER_GAPS.sliderToTransport,
     );
+    const gap = (gapsRoom(phone) * PLAYER_GAPS.sliderToTransport) / total;
+    assert.ok(gap >= TIMES, `${phone.name}: ${gap} pt under the scrubber`);
   });
 }
 
-void test("the gaps grow with the phone and stop growing", () => {
-  const short = playerSpacing(667);
-  const tall = playerSpacing(932);
-  assert.ok(tall.sliderToTransport > short.sliderToTransport);
-  assert.deepEqual(playerSpacing(500), short);
-  assert.deepEqual(playerSpacing(1000), tall);
+void test("the artwork takes the width, and gives way on a short window", () => {
+  assert.equal(playerArtworkSize(402, 874), 350);
+  assert.equal(playerArtworkSize(375, 667), 307);
 });

@@ -13,29 +13,43 @@ import {
 } from "./commands";
 import { usePlayer } from "./hooks";
 import { IconButton } from "./icon-button";
+import {
+  OPTION_BOX,
+  OPTION_SIZE,
+  PLAY_SIZE,
+  SKIP_SIZE,
+  TRANSPORT_BOX,
+  TRANSPORT_GAP,
+} from "./player-layout";
 import { isPlaying } from "./store";
 
 /** Previous, play/pause, next. */
 export function Transport() {
   const playing = usePlayer((state) => isPlaying(state.status));
   return (
-    <View className="flex-row items-center justify-center gap-8">
+    <View
+      className="flex-row items-center justify-center"
+      style={{ gap: TRANSPORT_GAP }}
+    >
       <IconButton
         label="Previous"
         symbol="backward.fill"
-        size={30}
+        size={SKIP_SIZE}
+        box={TRANSPORT_BOX}
         onPress={skipToPrevious}
       />
       <IconButton
         label={playing ? "Pause" : "Play"}
         symbol={playing ? "pause.fill" : "play.fill"}
-        size={44}
+        size={PLAY_SIZE}
+        box={TRANSPORT_BOX}
         onPress={togglePlayback}
       />
       <IconButton
         label="Next"
         symbol="forward.fill"
-        size={30}
+        size={SKIP_SIZE}
+        box={TRANSPORT_BOX}
         onPress={skipToNext}
       />
     </View>
@@ -58,7 +72,8 @@ export function PlayerOptions() {
       <IconButton
         label="Shuffle"
         symbol="shuffle"
-        size={20}
+        size={OPTION_SIZE}
+        box={OPTION_BOX}
         selected={shuffle}
         tint={shuffle ? "accent-accent" : "accent-muted"}
         onPress={toggleShuffle}
@@ -66,7 +81,8 @@ export function PlayerOptions() {
       <IconButton
         label={REPEAT_LABEL[repeat]}
         symbol={repeat === "one" ? "repeat.1" : "repeat"}
-        size={20}
+        size={OPTION_SIZE}
+        box={OPTION_BOX}
         selected={repeat !== "off"}
         tint={repeat === "off" ? "accent-muted" : "accent-accent"}
         onPress={cycleRepeat}
@@ -75,12 +91,13 @@ export function PlayerOptions() {
         accessibilityLabel="AirPlay"
         color={typeof muted === "string" ? muted : undefined}
         activeColor={typeof accent === "string" ? accent : undefined}
-        style={{ height: 36, width: 36 }}
+        style={{ height: OPTION_BOX, width: OPTION_BOX }}
       />
       <IconButton
         label="Queue"
         symbol="list.bullet"
-        size={20}
+        size={OPTION_SIZE}
+        box={OPTION_BOX}
         tint="accent-muted"
         onPress={() => router.push("/queue")}
       />

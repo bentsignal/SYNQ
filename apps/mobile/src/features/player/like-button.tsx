@@ -5,6 +5,7 @@ import { isSongLiked, setSongLiked } from "@synq/db";
 import { useLibraryQuery, writeLibrary } from "~/features/library/queries";
 import { queryClient } from "~/lib/query-client";
 import { IconButton } from "./icon-button";
+import { PLAYER_CIRCLE } from "./player-layout";
 
 function likedKey(songId: number) {
   return ["player", "liked", songId] as const;
@@ -33,7 +34,9 @@ export function LikeButton({ songId }: { songId: number }) {
     <IconButton
       label={liked ? "Remove from Liked Songs" : "Love"}
       symbol={liked ? "heart.fill" : "heart"}
-      size={22}
+      size={16}
+      box={PLAYER_CIRCLE}
+      circle
       tint={liked ? "accent-accent" : "accent-foreground"}
       selected={liked}
       onPress={toggle}

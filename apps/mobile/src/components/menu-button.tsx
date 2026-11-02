@@ -7,7 +7,6 @@ import {
   contentShape,
   frame,
   menuIndicator,
-  padding,
   shapes,
 } from "@expo/ui/swift-ui/modifiers";
 
@@ -19,7 +18,6 @@ import { NativeHost } from "./native-host";
 interface MenuButtonViewProps {
   menu: string;
   color: ReturnType<typeof processColor>;
-  trailingInset: number;
   style: StyleProp<ViewStyle>;
   onMenuAction: (event: { nativeEvent: { id: string } }) => void;
 }
@@ -32,21 +30,19 @@ const MenuButtonView =
 
 /**
  * A native `ellipsis` button that opens `menu`, for places outside a
- * `NativeRow` (the player). All of `width` by `height` takes the touch, and
- * the dots sit `trailingInset` from its right edge.
+ * `NativeRow` (the player). All of `width` by `height` takes the touch, with
+ * the dots in its center.
  */
 export function MenuButton({
   menu,
   width,
   height,
-  trailingInset = 0,
   color = "white",
   style,
 }: {
   menu: MenuGroups;
   width: number;
   height: number;
-  trailingInset?: number;
   color?: string;
   style?: StyleProp<ViewStyle>;
 }) {
@@ -55,7 +51,6 @@ export function MenuButton({
       <MenuButtonView
         menu={menuJson(menu)}
         color={processColor(color)}
-        trailingInset={trailingInset}
         style={[{ height, width }, style]}
         onMenuAction={({ nativeEvent }) => {
           const action = menuAction(menu, nativeEvent.id);
@@ -72,11 +67,10 @@ export function MenuButton({
         label={
           <Image
             systemName="ellipsis"
-            size={20}
+            size={15}
             color={color}
             modifiers={[
-              padding({ trailing: trailingInset }),
-              frame({ alignment: "trailing", height, width }),
+              frame({ height, width }),
               contentShape(shapes.rectangle()),
             ]}
           />

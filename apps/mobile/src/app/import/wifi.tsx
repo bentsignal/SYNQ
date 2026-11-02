@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, PixelRatio, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Button, FieldGroup, ListItem, Switch } from "@expo/ui";
 import { Image, Text } from "@expo/ui/swift-ui";
@@ -8,7 +8,9 @@ import {
   font,
   foregroundStyle,
   monospacedDigit,
+  padding,
   scrollContentBackground,
+  scrollDisabled,
   textSelection,
 } from "@expo/ui/swift-ui/modifiers";
 
@@ -33,6 +35,8 @@ import { selectionTick } from "~/lib/haptics";
 
 /** How long Copy shows its checkmark. */
 const COPIED_MS = 1500;
+const MAX_FIXED_FONT_SCALE = 1.2;
+const FORM_TOP_TRIM = 18;
 
 function serverOf({ server }: WifiTransferState) {
   return server;
@@ -137,7 +141,16 @@ export default function ImportWifiScreen() {
         </View>
       ) : (
         <FormHost style={{ flex: 1 }}>
-          <FieldGroup modifiers={[scrollContentBackground("hidden")]}>
+          <FieldGroup
+            modifiers={[
+              scrollContentBackground("hidden"),
+              // It all fits, unless the text is very large.
+              scrollDisabled(PixelRatio.getFontScale() <= MAX_FIXED_FONT_SCALE),
+              // Most of SwiftUI's gap above a form's first section. Negative,
+              // so the form grows upward rather than leaving its bottom behind.
+              padding({ top: -FORM_TOP_TRIM }),
+            ]}
+          >
             <FieldGroup.Section>
               <Switch
                 label="Allow Transfers"

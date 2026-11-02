@@ -4,6 +4,7 @@ import { Directory } from "expo-file-system";
 
 import type { TransferServerState } from "./transfer-link";
 import { synqMedia, synqMediaAvailable } from "~/features/media/native";
+import { getPlayerState, isPlaying } from "~/features/player/store";
 import {
   getPreference,
   subscribePreferences,
@@ -68,6 +69,8 @@ let lastPort = PREFERRED_PORT;
 let startNumber = 0;
 let pageGoneTimer: ReturnType<typeof setTimeout> | undefined;
 let lastMessage: string | undefined;
+/** Backgrounded with nothing playing: iOS is about to suspend the app. */
+let away = false;
 
 function publish(change: Partial<WifiTransferState>) {
   state = { ...state, ...change };
@@ -90,6 +93,7 @@ function pushLiveState() {
   const { batch, finished, shown } = getImportState();
   const message = liveMessage({
     accent: currentAccent(),
+    away,
     importing: !finished && batch.total > 0,
     imported: finished ? batch.imported : shown.done,
     on: state.on,
@@ -249,6 +253,11 @@ export function installWifiTransfer() {
   if (installed || !synqMediaAvailable()) return;
   installed = true;
   AppState.addEventListener("change", (next) => {
+    if (next === "active" || next === "background") {
+      // Playing music keeps the app, and so the server, running.
+      away = next === "background" && !isPlaying(getPlayerState().status);
+      pushLiveState();
+    }
     if (next === "active") returnedToForeground();
   });
   if (!usedBefore || !hasLiveLink()) return;

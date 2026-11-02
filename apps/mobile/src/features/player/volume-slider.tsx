@@ -13,17 +13,17 @@ const NativeVolumeSlider =
 /** As tall as the scrubber's row, so the transport sits between equal rows. */
 const ROW_HEIGHT = 20;
 /** The native view's height: this much of it is touch, beyond the row. */
-const TOUCH_HEIGHT = 44;
+const TOUCH_HEIGHT = 52;
 /**
  * Each symbol is fitted into a square, so the wider one needs a larger square
  * for its speaker to match the other's. The boxes leave the same gap to the bar,
  * and `edge` takes up the clear space each symbol has on its outer side.
  */
-const QUIET = { box: 18, edge: -2, size: 12 };
-const LOUD = { box: 26, edge: -1.5, size: 18 };
+const QUIET = { box: 20, edge: -2, size: 13 };
+const LOUD = { box: 29, edge: -1.5, size: 20 };
 
 /**
- * The system volume under the transport, drawn like the scrubber, with a quiet
+ * The system volume under the transport, the same bar as the timeline, with a quiet
  * speaker at each end whose outer edges line up with the scrubber's ends. It
  * follows the hardware buttons by itself. A binary without it shows nothing.
  */

@@ -56,7 +56,9 @@ numbers.
   press: the highlight waits for the finger to lift, since a touch that's still
   down may become a long press, and the lifted preview has a clear background,
   so only the content rises, in a shape with rounded corners (12 pt on a row,
-  10 pt on a card, its artwork's). The menu goes to native as
+  10 pt on a card, its artwork's). Behind it the app blurs and dims for as long
+  as the menu is open (`FocusBackdrop.swift`), as Vera's message menu does, so
+  the lifted row stands out from whatever was under it. The menu goes to native as
   JSON and is only built when a menu opens, so a recycled row costs a
   string compare. This replaced a SwiftUI `Host` per row (`ContextMenu`
   around a `Button`, plus a `Menu`): with 3,000 songs and six identical
@@ -110,13 +112,13 @@ numbers.
   empty, with the title alone on the row below; pushed screens keep large
   titles, since their top left is Back.
 - The bar is transparent, so at the top of the page there's no bar to see.
-  Content scrolling under it goes through iOS's `hard` scroll edge effect:
-  dark glass ending in a very faint hairline, which keeps the title readable
-  over bright artwork. Settings' SwiftUI form asks for the same effect itself
-  (`RootTabForm`), since the screen's option only reaches a React Native scroll
-  view. SwiftUI's `hard` draws even with nothing under the bar, so that bar wears
-  the page's color until the form has scrolled. The `soft` effect left the title colliding with what's under it, and a
-  `UIBlurEffect` bar showed at the top of the page and lost the glass.
+  Once the page has scrolled, dark glass ending in a very faint hairline fades
+  in over 0.25 s, and fades out back at the top, which keeps the title readable
+  over bright artwork. It's our own view (`modules/synq-header-glass`) that
+  watches the page's scroll view natively, Library's and Settings' SwiftUI form
+  alike: iOS's `hard` scroll edge effect had the look but cut in and out at once,
+  and showed at the top of the page in Library, so it's hidden on these two
+  screens.
 - Rows (accent symbol, label, chevron): Liked Songs (`heart`), Playlists
   (`music.note.list`), Artists (`music.microphone`), Albums
   (`square.stack`), Songs (`music.note`).
@@ -189,25 +191,26 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   than white text can read over (`modules/synq-backdrop`, and the
   [player README](../apps/mobile/src/features/player/README.md#backdrop));
   binaries without it show a gradient in the artwork's colors. Large artwork
-  (screen width minus 64, radius 12, soft shadow with the same radius) that
-  eases to 85% scale when paused; a cover with its own rounded corners is
+  at the top of the sheet (screen width minus 52, at most 46% of the window's
+  height, radius 12, soft shadow with the same radius) that eases to 85% scale
+  when paused; a cover with its own rounded corners is
   zoomed until they're past the clip; title
   (`text-title` semibold, one line) over the artist (muted, tappable);
-  `heart` toggle and `ellipsis` menu on the right, the dots' right edge at the
-  scrubber's right end and the button's target larger than the dots on every
-  side (52 × 64 pt); a thin scrubber whose thumb grows while dragging, elapsed
-  left and remaining right (`text-caption` tabular), hanging under the bar and
-  taking up no room; `backward.fill`, large `play.fill` / `pause.fill`,
-  `forward.fill`, centered between the scrubber's bar and the volume bar; the
-  system volume (a bar matching the scrubber, between quiet `speaker.fill` and
-  `speaker.wave.3.fill`; left out of binaries without `modules/synq-volume`);
-  bottom row `shuffle`, `repeat` / `repeat.1` (accent when on), AirPlay route
-  picker, `list.bullet` (queue). The gaps grow with the phone's height
-  (`player-layout.ts`), and on a very short screen or with very large text the
-  artwork gives way first.
+  `heart` toggle and `ellipsis` menu on the right, each small in a quiet 34 pt
+  circle, the last circle's right edge at the timeline's right end and the
+  `ellipsis`'s target larger than its circle (46 × 60 pt); a timeline of two
+  nested capsules with no thumb, 7 pt tall and 14 pt while dragged, with round
+  ends at every height (`BarSliderView.swift`), elapsed left and remaining right
+  (`text-caption` tabular), hanging under the bar and taking up no room;
+  `backward.fill`, large `play.fill` / `pause.fill`, `forward.fill`, centered
+  between the timeline and the volume bar; the system volume (the same bar,
+  between quiet `speaker.fill` and `speaker.wave.3.fill`); bottom row `shuffle`,
+  `repeat` / `repeat.1` (accent when on), AirPlay route picker, `list.bullet`
+  (queue). The artwork takes about the top half, and everything under it shares
+  what's left in proportions measured off Apple Music (`player-layout.ts`).
 - **Player controls**: pressing one shrinks and dims the symbol itself, with
-  nothing drawn around it (`icon-button.tsx`), in the player and the mini
-  player.
+  nothing drawn around it beyond the heart's own circle (`icon-button.tsx`), in
+  the player and the mini player.
 - **Artwork on a skip** swaps in a single frame: the current cover stays up
   until the next is ready, with no fade and no empty frame, and the covers on
   either side of the current song are already decoded in memory
@@ -215,7 +218,7 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   placeholder at once; going back to art, the placeholder stays until the image
   is drawn.
 - **Long titles** (`marquee-text.tsx`) scroll at one speed, 30 pt/s, however
-  long they are: a pause, to the end, a pause, and back. They fade to
+  long they are: a pause of 8 s, to the end, a pause of 3 s, and back. They fade to
   transparent at whichever edge cuts something off, with a real alpha mask
   since the backdrop moves (`modules/synq-fade`): at rest only the right edge
   fades, the left fades in once the text moves, and at the end only the left
@@ -293,7 +296,9 @@ has started by then; the next clean batch asks instead.
   permission and the Wi-Fi Information entitlement, so it isn't shown.)
 
   **The switch** starts off on every launch, so a library doesn't go on taking
-  files from the network because someone once flipped it. While it's off, the
+  files from the network because someone once flipped it. Once on, it stays on
+  until it's turned off or the app is closed, through the sheet closing and the
+  app going to the background. While it's off, the
   server stays up and refuses uploads, and the page says so. Turned off during a
   transfer, the file on its way finishes and the rest wait on the page.
 
@@ -307,15 +312,19 @@ has started by then; the next clean batch asks instead.
   while the switch is on.
 
   **The page** (`features/import/transfer-page*.ts`) is one self-contained file,
-  since it has to work with no internet: charcoal, the theme's accent, a big
-  quiet drop area, and one line of copy. It holds a live link to the phone
+  since it has to work with no internet: charcoal, the theme's accent, the app
+  icon at the top left, a big quiet drop area, and one line of copy. It holds a live link to the phone
   (Server-Sent Events on the same server), which carries whether transfers are
   on, the accent (a theme change on the phone changes the page right away), and
   how the import is going. A small level meter shows the link: breathing when
   connected, moving while sending, flat with "Transfers Off" and "Turn on Wi-Fi
   Transfer in SYNQ" while off, which never reads as an error, and pulsing gray
-  with "Disconnected" only when the app is backgrounded or the phone is gone
-  (no ping for 8 s). Dropped files wait through any of that and go on by
+  with "Disconnected" only when the app is backgrounded or the phone is gone. A
+  closed app shows at once: going to the background tells the page (unless music
+  is playing, which keeps the server running), and a killed app's dropped stream
+  sets off a check. Otherwise the server pings every second, and after 2.5 s of
+  quiet the page asks; only no answer within 1.5 s counts as gone, so a Wi-Fi
+  hiccup doesn't cost an upload in flight. Dropped files wait through any of that and go on by
   themselves. The sheet being closed changes nothing here.
 
   In progress, the page shows one line ("Sending 3 of 12", the file's name, and

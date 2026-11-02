@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name           = 'SynqVolume'
   s.version        = '1.0.0'
-  s.summary        = 'The system volume as a slider styled like the player scrubber.'
+  s.summary        = 'The timeline and system volume, drawn as nested capsules.'
   s.author         = 'SYNQ'
   s.homepage       = 'https://directedbyshawn.com/synq'
   s.platforms      = { :ios => '16.4' }

@@ -10,9 +10,9 @@ export const TRANSFER_EXTENSIONS = Object.keys(AUDIO_TYPES);
 export const TRANSFER_VIEW = `
 (() => {
   const allowed = ${JSON.stringify(TRANSFER_EXTENSIONS)};
-  const LOST_MS = 8000;
+  const LOST_MS = 2500;
   const RETRY_MS = 1200;
-  const CHECK_MS = 2000;
+  const CHECK_MS = 1500;
   const RECONNECT_MS = 500;
   const DRAW_MS = 300;
   const MAX_TRIES = 5;
@@ -32,6 +32,7 @@ export const TRANSFER_VIEW = `
   let lastHeard = Date.now();
   let streamSeen = false;
   let checking = false;
+  let away = false;
 
   let queue = [];
   let current = null;
@@ -58,6 +59,7 @@ export const TRANSFER_VIEW = `
 
   function apply(state) {
     if (typeof state !== "object" || state === null) return;
+    if (typeof state.away === "boolean") away = state.away;
     if (typeof state.on === "boolean") live.on = state.on;
     if (typeof state.importing === "boolean") live.importing = state.importing;
     if (typeof state.imported === "number") live.imported = state.imported;

@@ -33,9 +33,9 @@ export const TRANSFER_STYLE = `
 
   header {
     width: 100%; max-width: 720px; display: flex; align-items: center; justify-content: space-between;
-    height: 28px; flex: none;
+    height: 32px; flex: none;
   }
-  .mark { font-size: 13px; font-weight: 700; letter-spacing: .24em; color: rgba(255,255,255,.86); }
+  .mark { display: block; width: 32px; height: 32px; border-radius: 22.37%; box-shadow: 0 0 0 .5px var(--hairline); }
   .status {
     display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted);
   }

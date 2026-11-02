@@ -1,33 +1,39 @@
-/** A short phone's window (iPhone SE) and a tall one's (Pro Max). */
-const SHORT = 667;
-const TALL = 932;
+/** The heart's and the `ellipsis`'s circles. */
+export const PLAYER_CIRCLE = 34;
+export const SKIP_SIZE = 40;
+export const PLAY_SIZE = 50;
+/** Each transport button's square; the row is this tall. */
+export const TRANSPORT_BOX = 72;
+export const TRANSPORT_GAP = 14;
+export const OPTION_SIZE = 24;
+/** Each bottom button's square; the row is this tall. */
+export const OPTION_BOX = 44;
 
-export interface PlayerSpacing {
-  /** From the song's title row down to the scrubber's row. */
-  titleToScrubber: number;
-  /** Between each slider's row and the transport, which sits centered. */
-  sliderToTransport: number;
-  /** From the volume slider's row down to the bottom buttons. */
-  volumeToOptions: number;
-}
+/** The artwork's margin at each side of the screen. */
+const ARTWORK_INSET = 26;
+/** Short phones: the artwork leaves the controls room, at this share of the window. */
+const ARTWORK_MAX_SHARE = 0.46;
 
-function between(short: number, tall: number, position: number) {
-  return Math.round(short + (tall - short) * position);
-}
+/** Grabber to artwork, over the sheet's top padding and the grabber. */
+export const ARTWORK_TOP = 22;
 
 /**
- * The gaps down the player's controls, more of them on a taller phone. The
- * time labels hang under the scrubber's bar and aren't part of any of this,
- * so the transport is centered between the two bars.
+ * What's left under the artwork goes between the rows in these proportions,
+ * measured off Apple Music's player. The times hang inside the gap under the
+ * scrubber, and the two gaps around the transport match, so it's centered
+ * between the bars. A small phone keeps at least `PLAYER_GAP_MIN`.
  */
-export function playerSpacing(windowHeight: number) {
-  const position = Math.min(
-    Math.max((windowHeight - SHORT) / (TALL - SHORT), 0),
-    1,
+export const PLAYER_GAPS = {
+  artworkToTitle: 30,
+  optionsToBottom: 8,
+  sliderToTransport: 46,
+  titleToScrubber: 26,
+  volumeToOptions: 22,
+};
+export const PLAYER_GAP_MIN = 6;
+
+export function playerArtworkSize(windowWidth: number, windowHeight: number) {
+  return Math.round(
+    Math.min(windowWidth - ARTWORK_INSET * 2, windowHeight * ARTWORK_MAX_SHARE),
   );
-  return {
-    sliderToTransport: between(6, 18, position),
-    titleToScrubber: between(12, 22, position),
-    volumeToOptions: between(8, 20, position),
-  } satisfies PlayerSpacing;
 }

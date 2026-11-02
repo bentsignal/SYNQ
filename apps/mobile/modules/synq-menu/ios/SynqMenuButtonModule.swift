@@ -16,9 +16,6 @@ public class SynqMenuButtonModule: Module {
       Prop("color") { (view: MenuButtonView, color: UIColor?) in
         view.color = color
       }
-      Prop("trailingInset") { (view: MenuButtonView, inset: Double) in
-        view.trailingInset = CGFloat(inset)
-      }
     }
   }
 }

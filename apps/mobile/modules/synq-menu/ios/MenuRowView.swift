@@ -43,6 +43,9 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
   private let button = UIButton(type: .system)
 
   private var touching = false
+  private var focusBackdrop: FocusBackdrop?
+  /// What's frontmost in the window before the menu's own views arrive.
+  private weak var focusHost: UIView?
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -141,11 +144,31 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
     if menuJSON.isEmpty { return nil }
     // The lift is the long press's feedback, and the tap no longer counts.
     touching = false
+    focusHost = window?.subviews.last
     // An identifier, so iOS asks for the highlight and dismissal previews.
     return UIContextMenuConfiguration(identifier: "row" as NSString, previewProvider: nil) {
       [weak self] _ in
       UIMenu(children: self?.menuElements() ?? [])
     }
+  }
+
+  func contextMenuInteraction(
+    _ interaction: UIContextMenuInteraction,
+    willDisplayMenuFor configuration: UIContextMenuConfiguration,
+    animator: (any UIContextMenuInteractionAnimating)?
+  ) {
+    focusBackdrop?.hide(alongside: nil)
+    focusBackdrop = focusHost.flatMap { FocusBackdrop(on: $0) }
+    focusBackdrop?.show(alongside: animator)
+  }
+
+  func contextMenuInteraction(
+    _ interaction: UIContextMenuInteraction,
+    willEndFor configuration: UIContextMenuConfiguration,
+    animator: (any UIContextMenuInteractionAnimating)?
+  ) {
+    focusBackdrop?.hide(alongside: animator)
+    focusBackdrop = nil
   }
 
   func contextMenuInteraction(

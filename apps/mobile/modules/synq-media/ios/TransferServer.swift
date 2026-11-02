@@ -36,7 +36,7 @@ struct TransferLiveState {
 /// - `GET /` serves the page, with the live state in place of
 ///   `TransferServer.stateToken` so its first paint is already right.
 /// - `GET /events` is a Server-Sent Events stream: `state` on every change,
-///   and a `ping` every few seconds so the page notices a suspended app.
+///   and a `ping` every second so the page notices a suspended app.
 /// - `GET /uploaded?id=` says whether an upload id arrived in full.
 /// - `POST /upload` takes one file as the raw request body, named by the
 ///   `X-File-Name` header (percent-encoded), with a `Content-Length`, and is
@@ -50,7 +50,7 @@ final class TransferServer {
 
   static let stateToken = "__SYNQ_LIVE_STATE__"
   /// Often enough that a page notices a suspended app within seconds.
-  private static let pingSeconds = 3
+  private static let pingSeconds = 1
   /// An upload with no data for this long lost its browser without saying so.
   private static let stalledSeconds: TimeInterval = 45
 

@@ -157,7 +157,7 @@ const LINK = `
   function heard() {
     lastHeard = Date.now();
     streamSeen = true;
-    changeLink("live");
+    changeLink(away ? "lost" : "live");
   }
 
   function connect() {
@@ -165,18 +165,17 @@ const LINK = `
     source = new EventSource("/events");
     const opened = source;
     opened.addEventListener("state", (event) => {
-      heard();
       try { apply(JSON.parse(event.data)); } catch (e) {}
+      heard();
       pump();
     });
     opened.addEventListener("ping", heard);
     opened.onerror = () => {
       if (opened !== source) return;
-      // The browser retries a dropped stream itself; a refused one it won't.
-      if (opened.readyState === 2) {
-        source = null;
-        check();
-      }
+      // The browser retries a dropped stream itself, but not a refused one.
+      if (opened.readyState === 2) source = null;
+      // Either way, a closed app answers nothing, so say so right away.
+      check();
     };
   }
 
@@ -204,10 +203,9 @@ const LINK = `
   function watch() {
     const quiet = Date.now() - lastHeard;
     if (link === "basic") return check();
-    if (quiet > LOST_MS) {
-      changeLink("lost");
-      check();
-    }
+    // A hiccup on the Wi-Fi shouldn't cost an upload in flight: only a phone
+    // that doesn't answer when asked is gone.
+    if (quiet > LOST_MS) check();
   }
 
   input.addEventListener("change", () => { add(input.files); input.value = ""; });

@@ -23,8 +23,8 @@ import { FadeView } from "./native-fade";
 const MEASURE_WIDTH = 6000;
 /** Points a second, at any length: slow enough to read while it moves. */
 const SPEED = 30;
-const PAUSE_AT_START = 2500;
-const PAUSE_AT_END = 1500;
+const PAUSE_AT_START = 8000;
+const PAUSE_AT_END = 3000;
 /** Less than this past the edge isn't worth moving for (FadeView.swift agrees). */
 const MIN_TRAVEL = 2;
 /** How far in from a clipped edge the text fades out. */

@@ -128,6 +128,46 @@ void describe("losing the phone", () => {
     assert.equal(element("problems").hidden, false);
   });
 
+  void test("the app going away shows at once, and its pings don't undo it", async () => {
+    const { advance, element, root, sources } = loadPage();
+    sources[0]?.fire("state", '{"on":true}');
+    sources[0]?.fire("state", '{"away":true}');
+    await advance(400);
+    assert.equal(root.dataset.face, "lost");
+    assert.equal(element("status").textContent, "Disconnected");
+    sources[0]?.fire("ping");
+    await advance(400);
+    assert.equal(root.dataset.face, "lost");
+    sources[0]?.fire("state", '{"away":false}');
+    await advance(400);
+    assert.equal(root.dataset.face, "ready");
+  });
+
+  void test("a closed app's dropped stream shows at once", async () => {
+    const { advance, root, sources } = loadPage({
+      ping: () => Promise.reject(new Error("gone")),
+    });
+    sources[0]?.fire("state", '{"on":true}');
+    await advance(400);
+    assert.equal(root.dataset.face, "ready");
+    sources[0]?.onerror?.();
+    await advance(400);
+    assert.equal(root.dataset.face, "lost");
+  });
+
+  void test("a Wi-Fi hiccup doesn't cost an upload in flight", async () => {
+    const { advance, choose, requests, root, sources } = loadPage({
+      ping: () =>
+        Promise.resolve({ json: () => Promise.resolve({}), ok: true }),
+    });
+    sources[0]?.fire("state", '{"on":true}');
+    choose(["a.mp3"]);
+    assert.equal(requests.length, 1);
+    await advance(4000);
+    assert.equal(requests[0]?.aborted, false);
+    assert.notEqual(root.dataset.face, "lost");
+  });
+
   void test("falls back when the server has no event stream", async () => {
     const { advance, choose, element, requests, root, sources } = loadPage({
       initial: LIVE_STATE_TOKEN,

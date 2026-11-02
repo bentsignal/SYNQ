@@ -18,11 +18,10 @@ export function TabTitle({ title }: { title: string }) {
  * A root tab's title, on the bar's own row: left-aligned opposite the
  * toolbar's buttons, so the row isn't half empty above a large title, and
  * always in view. The bar is transparent, so at the top of the page there's
- * no bar to see. Content scrolling under it goes through iOS's `hard` scroll
- * edge effect: dark glass ending in a hairline, which keeps the title readable
- * over bright artwork (docs/ui.md → Library). A SwiftUI form asks for the same
- * effect itself (`RootTabForm`). Pushed screens keep `TabTitle`: their top left
- * is Back.
+ * no bar to see. `HeaderGlass`, with the page, fades in dark glass ending in a
+ * hairline once content scrolls under it, which keeps the title readable over
+ * bright artwork (docs/ui.md → Library). Pushed screens keep `TabTitle`: their
+ * top left is Back.
  */
 export function RootTabTitle({ title }: { title: string }) {
   return (
@@ -33,12 +32,6 @@ export function RootTabTitle({ title }: { title: string }) {
           headerShadowVisible: false,
           headerTitle: "",
           headerTransparent: true,
-          scrollEdgeEffects: {
-            bottom: "automatic",
-            left: "automatic",
-            right: "automatic",
-            top: "hard",
-          },
           title,
         }}
       />

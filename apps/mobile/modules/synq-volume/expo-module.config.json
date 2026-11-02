@@ -1,6 +1,6 @@
 {
   "platforms": ["apple"],
   "apple": {
-    "modules": ["SynqVolumeModule"]
+    "modules": ["SynqVolumeModule", "SynqScrubberModule"]
   }
 }

@@ -25,17 +25,31 @@ final class FadeView: ExpoView {
   }
   var phase = 0
 
+  /// Wears the mask and holds the child. React Native rewrites its own view's
+  /// mask whenever it redraws that view's layer, as a new `phase` can make it,
+  /// which took the fade away once the text stopped.
+  private let masked = UIView()
   private let gradient = CAGradientLayer()
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
-    clipsToBounds = true
+    masked.clipsToBounds = true
+    addSubview(masked)
     gradient.startPoint = CGPoint(x: 0, y: 0.5)
     gradient.endPoint = CGPoint(x: 1, y: 0.5)
   }
 
+  override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
+    masked.insertSubview(childComponentView, at: index)
+  }
+
+  override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
+    childComponentView.removeFromSuperview()
+  }
+
   override func layoutSubviews() {
     super.layoutSubviews()
+    masked.frame = bounds
     CATransaction.begin()
     CATransaction.setDisableActions(true)
     gradient.frame = bounds
@@ -48,13 +62,13 @@ final class FadeView: ExpoView {
   }
 
   private var overflows: Bool {
-    guard let text = subviews.first?.subviews.first else { return false }
+    guard let text = masked.subviews.first?.subviews.first else { return false }
     return text.bounds.width - bounds.width >= Self.minimumOverflow
   }
 
   func update(animated: Bool) {
     guard overflows else {
-      layer.mask = nil
+      masked.layer.mask = nil
       return
     }
     let colors = [
@@ -63,12 +77,12 @@ final class FadeView: ExpoView {
       Self.opaque,
       phase == 2 ? Self.opaque : Self.clear,
     ]
-    let wasMasked = layer.mask != nil
+    let wasMasked = masked.layer.mask != nil
     CATransaction.begin()
     CATransaction.setDisableActions(!(animated && wasMasked))
     CATransaction.setAnimationDuration(Self.fadeDuration)
     gradient.colors = colors
     CATransaction.commit()
-    if !wasMasked { layer.mask = gradient }
+    if !wasMasked { masked.layer.mask = gradient }
   }
 }

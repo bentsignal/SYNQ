@@ -81,7 +81,7 @@ void describe("the page's words", () => {
   void test("has a place for the live state, and no outside requests", () => {
     assert.ok(html.includes(LIVE_STATE_TOKEN));
     assert.doesNotMatch(html, /https?:\/\/(?!www\.w3\.org\/2000\/svg)/);
-    assert.doesNotMatch(html, /<link|src=/);
+    assert.doesNotMatch(html, /<link(?![^>]*href="data:)|src="(?!data:)/);
   });
 
   void test("doesn't trust the accent it's given", () => {

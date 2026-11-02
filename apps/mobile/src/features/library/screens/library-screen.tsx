@@ -6,6 +6,7 @@ import { findLikedPlaylistId, listSongs } from "@synq/db";
 
 import { Artwork } from "~/components/artwork";
 import { EmptyState } from "~/components/empty-state";
+import { HeaderGlass } from "~/components/header-glass";
 import { NativeRow } from "~/components/native-row";
 import { ScreenScroll } from "~/components/screen-scroll";
 import { RootTabTitle } from "~/components/tab-title";
@@ -190,6 +191,7 @@ export default function LibraryScreen() {
           </View>
         )}
       </ScreenScroll>
+      <HeaderGlass />
     </>
   );
 }

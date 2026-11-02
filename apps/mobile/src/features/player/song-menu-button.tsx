@@ -1,23 +1,22 @@
+import { View } from "react-native";
+
 import type { SongListItem } from "@synq/db";
 import { isSongLiked } from "@synq/db";
 
 import { MenuButton } from "~/components/menu-button";
 import { useLibraryQuery } from "~/features/library/queries";
 import { songMenu } from "~/features/library/song-menu";
+import { PLAYER_CIRCLE } from "./player-layout";
+
+/** Larger than the circle it sits in, and overlapping nothing that takes touches. */
+const TOUCH_WIDTH = 46;
+const TOUCH_HEIGHT = 60;
 
 /**
- * How far the button reaches past the dots, on the right and in the margin
- * beyond them. The dots' right edge is the scrubber's right end.
+ * The player's `ellipsis` in the same circle as the heart: the same song menu
+ * as a library row's. The button reaches past the circle, so the whole area
+ * around the dots takes the touch.
  */
-const REACH = 15;
-/** Taller than the title row, without taking any more of its height. */
-const HEIGHT = 64;
-const WIDTH = 52;
-const TITLE_ROW = 48;
-/** The clear space the `ellipsis` symbol has on its right, at this size. */
-const SYMBOL_BEARING = 3;
-
-/** The player's `ellipsis`: the same song menu as a library row's. */
 export function SongMenuButton({ song }: { song: SongListItem }) {
   const liked = useLibraryQuery({
     key: ["player", "liked", song.id],
@@ -25,15 +24,20 @@ export function SongMenuButton({ song }: { song: SongListItem }) {
     select: (value) => value,
   });
   return (
-    <MenuButton
-      menu={songMenu(song, { liked })}
-      width={WIDTH}
-      height={HEIGHT}
-      trailingInset={REACH - SYMBOL_BEARING}
-      style={{
-        marginRight: -REACH,
-        marginVertical: (TITLE_ROW - HEIGHT) / 2,
-      }}
-    />
+    <View
+      className="rounded-full bg-white/10"
+      style={{ height: PLAYER_CIRCLE, width: PLAYER_CIRCLE }}
+    >
+      <MenuButton
+        menu={songMenu(song, { liked })}
+        width={TOUCH_WIDTH}
+        height={TOUCH_HEIGHT}
+        style={{
+          left: (PLAYER_CIRCLE - TOUCH_WIDTH) / 2,
+          position: "absolute",
+          top: (PLAYER_CIRCLE - TOUCH_HEIGHT) / 2,
+        }}
+      />
+    </View>
   );
 }

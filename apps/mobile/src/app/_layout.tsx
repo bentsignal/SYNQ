@@ -1,5 +1,6 @@
 import "~/global.css";
 
+import { useWindowDimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -9,6 +10,7 @@ import { useCSSVariable } from "uniwind";
 import { installDevAutomation } from "~/features/dev/automation";
 import { ExportBanner } from "~/features/export/export-banner";
 import { ImportActivity } from "~/features/import/import-activity";
+import { wifiSheetDetent } from "~/features/import/transfer-link";
 import { installWifiTransfer } from "~/features/import/wifi-transfer";
 import { LibraryGate } from "~/features/library/library-gate";
 import { applyStoredPreferences } from "~/features/preferences/store";
@@ -66,6 +68,7 @@ const EDIT_SHEET = { presentation: "modal" } as const;
 
 /** The tabs, with the library's sheets over them (docs/ui.md → Editing). */
 function RootStack() {
+  const { height } = useWindowDimensions();
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
@@ -110,7 +113,7 @@ function RootStack() {
           headerShown: true,
           headerTransparent: true,
           presentation: "formSheet",
-          sheetAllowedDetents: [0.42],
+          sheetAllowedDetents: [wifiSheetDetent(height)],
           sheetGrabberVisible: true,
           title: "Wi-Fi Transfer",
         }}

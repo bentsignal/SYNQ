@@ -6,6 +6,8 @@
 
 /** What the page shows that only the phone knows. */
 export interface LiveState {
+  /** The app is going to the background and won't be answering. */
+  readonly away: boolean;
   /** Whether uploads are allowed. */
   readonly on: boolean;
   /** The theme's accent. */
@@ -58,3 +60,11 @@ export function wantsServer({
  * reconnecting doesn't flicker the sheet's row.
  */
 export const PAGE_GONE_MS = 2500;
+
+/** Wi-Fi Transfer's sheet, in points, which holds its form on any phone. */
+const SHEET_HEIGHT = 336;
+
+/** The sheet's detent: a share of the window, so the same height everywhere. */
+export function wifiSheetDetent(windowHeight: number) {
+  return Math.min(SHEET_HEIGHT / windowHeight, 1);
+}

@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
-import { displayAddress, liveMessage, wantsServer } from "./transfer-link.ts";
+import {
+  displayAddress,
+  liveMessage,
+  wantsServer,
+  wifiSheetDetent,
+} from "./transfer-link.ts";
 
 void describe("wantsServer", () => {
   void test("never starts before someone opens Wi-Fi Transfer", () => {
@@ -41,18 +46,32 @@ void describe("the address", () => {
   });
 });
 
+void describe("wifiSheetDetent", () => {
+  void test("is the same height on every window", () => {
+    assert.equal(Math.round(wifiSheetDetent(667) * 667), 336);
+    assert.equal(Math.round(wifiSheetDetent(956) * 956), 336);
+  });
+});
+
 void describe("liveMessage", () => {
   void test("is the JSON the page reads", () => {
     assert.deepEqual(
       JSON.parse(
         liveMessage({
           accent: "#77adf8",
+          away: false,
           imported: 3,
           importing: true,
           on: true,
         }),
       ),
-      { accent: "#77adf8", imported: 3, importing: true, on: true },
+      {
+        accent: "#77adf8",
+        away: false,
+        imported: 3,
+        importing: true,
+        on: true,
+      },
     );
   });
 });

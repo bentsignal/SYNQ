@@ -68,8 +68,8 @@ library is open) or a play action.
 - `player-screen.tsx` (route `/player`, a modal sheet): backdrop, artwork
   (eases to 85% when paused), title, like and
   menu, `scrubber.tsx`, `player-controls.tsx` (transport, shuffle, repeat,
-  AirPlay via `RoutePickerButton`, queue), `volume-slider.tsx`. The gaps come
-  from `player-layout.ts`.
+  AirPlay via `RoutePickerButton`, queue), `volume-slider.tsx`. The sizes and
+  gaps come from `player-layout.ts`.
 - `queue-screen.tsx` (route `/queue`, a form sheet) and `queue-list.tsx`.
 
 ## Reordering the queue
@@ -178,20 +178,31 @@ measured width itself when it lays out, so a new title has the right mask on its
 first frame and text that fits has no mask at all. JavaScript only tells it where
 the text is (`phase`: at the start, moving, at the end), a few times a cycle, and
 Core Animation fades the edges from there. Nothing runs in JavaScript per frame.
+The mask sits on a plain view inside the native one, because React Native rewrites
+the mask of its own views when it redraws their layers.
 
-## Volume
+## Timeline and volume
 
-`modules/synq-volume` wraps `MPVolumeView`, which follows the hardware buttons
-itself and keeps iOS's volume overlay away while it's on screen. A touch on the
-thumb belongs to the slider inside it. A touch elsewhere on the bar drags relative
-to where it landed, like the scrubber, by setting that inner slider's value. iOS
-has no public way to reach it, but it has been the usual way to do this for years;
-if it ever stops working, only drags that start off the thumb are lost.
+`modules/synq-volume` draws both with `BarSliderView`: two nested `CALayer`
+capsules with no thumb, resized in real geometry so the ends stay round while they
+grow (a scale would squash them), with Core Animation running the growth. A drag
+is relative to where it landed, so touching never jumps, and belongs to the bar
+from the moment it lands, which holds the sheet still.
+
+The timeline (`ScrubberView`) takes the position from JavaScript and seeks on
+release. It reports a drag only when it reaches a new whole second, for the time
+labels.
+
+The volume (`VolumeSliderView`) keeps an `MPVolumeView` on screen with every image
+clear: that's what keeps iOS's overlay away, and its inner slider is the only way
+to set the volume. The bar checks that slider ten times a second while on screen,
+which is how it follows the hardware buttons. iOS has no public way to reach it,
+but it has been the usual way to do this for years; if it ever stops working,
+dragging is lost and the hardware buttons still work.
 
 Simulators have no system volume and `MPVolumeView` only says "No Volume
-Available" there, so a simulator build shows a stand-in slider (`Volume
-(simulator stand-in)` to VoiceOver) to check the layout and the touches. It
-changes nothing.
+Available" there, so a simulator build drives a stand-in slider, which changes
+nothing but checks the layout and the touches.
 
 ## Artwork corners
 

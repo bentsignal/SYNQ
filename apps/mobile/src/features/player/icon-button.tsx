@@ -34,6 +34,8 @@ export function IconButton({
   disabled = false,
   selected,
   hitSlop = 8,
+  box,
+  circle = false,
   className,
   onPress,
 }: {
@@ -46,9 +48,14 @@ export function IconButton({
   /** For toggles (shuffle, repeat, like). */
   selected?: boolean;
   hitSlop?: number | Insets;
+  /** The button's width and height; touches reach `hitSlop` beyond it. */
+  box?: number;
+  /** Sits in a quiet filled circle, which presses with the symbol. */
+  circle?: boolean;
   className?: string;
   onPress: () => void;
 }) {
+  const side = box ?? size * 1.8;
   const pressed = useSharedValue(0);
   const symbolStyle = useAnimatedStyle(() => {
     const amount = pressed.get();
@@ -82,13 +89,19 @@ export function IconButton({
         disabled={disabled}
         hitSlop={hitSlop}
         className={cn("items-center justify-center", className)}
-        style={{ height: size * 1.8, width: size * 1.8 }}
+        style={{ height: side, width: side }}
         onPress={() => {
           lightImpact();
           onPress();
         }}
       >
-        <Animated.View style={symbolStyle}>
+        <Animated.View
+          className={cn(
+            "h-full w-full items-center justify-center",
+            circle && "rounded-full bg-white/10",
+          )}
+          style={symbolStyle}
+        >
           <SymbolIcon
             name={symbol}
             size={size}

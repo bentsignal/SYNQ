@@ -1,16 +1,19 @@
 import ExpoModulesCore
+import UIKit
 
 /// SYNQ's media helpers: reading imported audio (tags, duration, artwork),
 /// writing library covers, retagging exported copies, staging backups, and
 /// the Wi-Fi Transfer server. JavaScript: `src/features/media/native.ts`.
 public class SynqMediaModule: Module {
   private var server: TransferServer?
+  private var transferLive = TransferLiveState()
+  private let finishedUploads = FinishedUploads()
 
   public func definition() -> ModuleDefinition {
     Name("SynqMedia")
 
     Events("onTransferStart", "onTransferProgress", "onTransferFile", "onTransferFailed",
-      "onTransferStopped")
+      "onTransferStopped", "onTransferClients")
 
     AsyncFunction("readAudioFile") { (fileUrl: URL, artworkUrl: URL) async throws -> [String: Any] in
       try await AudioMetadataReader.read(fileURL: fileUrl, artworkURL: artworkUrl)
@@ -42,7 +45,8 @@ public class SynqMediaModule: Module {
       (port: Int, page: String, uploadDirectoryUrl: URL, extensions: [String]) async throws -> Int in
       self.server?.stop()
       let server = TransferServer(
-        page: page, uploadDirectory: uploadDirectoryUrl, allowedExtensions: extensions
+        page: page, uploadDirectory: uploadDirectoryUrl, allowedExtensions: extensions,
+        live: self.transferLive, finished: self.finishedUploads
       ) { [weak self] event, body in
         self?.sendEvent(event, body)
       }
@@ -53,6 +57,20 @@ public class SynqMediaModule: Module {
     Function("stopTransferServer") {
       self.server?.stop()
       self.server = nil
+    }
+
+    // Newer than the server itself: JavaScript checks for these.
+    Function("setTransferState") { (stateJson: String, accepting: Bool) in
+      self.transferLive = TransferLiveState(json: stateJson, accepting: accepting)
+      self.server?.setLive(self.transferLive)
+    }
+
+    AsyncFunction("checkTransferServer") { () async -> Bool in
+      await self.server?.isAlive() ?? false
+    }
+
+    Function("copyText") { (text: String) in
+      UIPasteboard.general.string = text
     }
 
     Function("wifiAddress") { () -> String? in

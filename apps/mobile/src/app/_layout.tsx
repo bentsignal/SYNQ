@@ -9,6 +9,7 @@ import { useCSSVariable } from "uniwind";
 import { installDevAutomation } from "~/features/dev/automation";
 import { ExportBanner } from "~/features/export/export-banner";
 import { ImportActivity } from "~/features/import/import-activity";
+import { installWifiTransfer } from "~/features/import/wifi-transfer";
 import { LibraryGate } from "~/features/library/library-gate";
 import { applyStoredPreferences } from "~/features/preferences/store";
 import { queryClient } from "~/lib/query-client";
@@ -17,6 +18,7 @@ import { queryClient } from "~/lib/query-client";
 SplashScreen.setOptions({ duration: 250, fade: true });
 applyStoredPreferences();
 installDevAutomation();
+installWifiTransfer();
 
 function color<Fallback>(
   value: string | number | undefined,
@@ -103,6 +105,8 @@ function RootStack() {
       <Stack.Screen
         name="import/wifi"
         options={{
+          // Clear, so iOS 26's glass shows through at this partial detent.
+          contentStyle: { backgroundColor: "transparent" },
           headerShown: true,
           headerTransparent: true,
           presentation: "formSheet",

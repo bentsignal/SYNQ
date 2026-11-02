@@ -89,6 +89,7 @@ function RecentlyAdded({ songs }: { songs: readonly SongListItem[] }) {
   const { width } = useWindowDimensions();
   const size = Math.floor((width - GRID_PADDING * 2 - GRID_GAP) / 2);
   const ids = songs.map((song) => song.id);
+  const slots = songs.map((song, slot) => ({ slot, song }));
   return (
     <View className="pt-6">
       <Text className="text-foreground px-4 pb-3 text-[22px] font-bold">
@@ -102,13 +103,15 @@ function RecentlyAdded({ songs }: { songs: readonly SongListItem[] }) {
           rowGap: 20,
         }}
       >
-        {songs.map((song, index) => (
+        {/* By position: when a batch lands, the cards keep their native views
+            and only change what they show, so nothing is built mid-frame. */}
+        {slots.map(({ slot, song }) => (
           <RecentCard
-            key={song.id}
+            key={slot}
             song={song}
             size={size}
             onPress={() =>
-              playSongs(ids, { source: { kind: "library" }, startIndex: index })
+              playSongs(ids, { source: { kind: "library" }, startIndex: slot })
             }
           />
         ))}

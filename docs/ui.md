@@ -214,32 +214,88 @@ A native form (`FieldGroup`):
 ## Import
 
 Everything imports through one background queue
-(`src/features/import/session.ts`), one file at a time. Screens don't own
-it, so the app stays fully usable, and a second import just joins the line.
-The library refreshes at most once a second during an import. Files that
-fail don't interrupt anything: one alert names them when the queue is done.
+(`src/features/import/queue.ts`), one file at a time. Screens don't own it, so
+the app stays fully usable, and a second import just joins the line. Files
+that fail don't interrupt anything: one alert names them when the queue is
+done.
+
+**A batch appears all at once.** Each song is written to the library as it
+finishes, so a batch cut short keeps what it got and shows it on the next
+launch, but library screens refresh only once, when the whole batch is done.
+A library action during a batch (a like, a rename) refreshes as always, so it
+can show the songs written so far; lists hold their position through that.
+
+**Nothing moves when a batch lands.** Scrolled down a list, the rows on screen
+stay exactly where they are and the new ones go in above them
+(`ScreenList`, `isInsertionOnly`). At the very top of a list the new rows push
+down, so they're seen arriving. Library's Recently Added keeps its height once
+it has 12 songs. The capsule floats over the screen and moves nothing.
+
+**The capsule** floats above the mini player during any batch, Files or Wi-Fi,
+on every tab, passing touches through: "Importing 3 of 12", then "12 Songs
+Imported" for 1.8 s, as the songs appear. Files fly through too fast to read
+one by one, so the count moves at most every 350 ms and covers a quarter of the
+remaining distance each time (`stepCapsule`), its total never shrinks during a
+batch, and it stays up at least 0.9 s. Files arriving during the result line
+start a new batch in the same capsule.
+
+**The App Store review prompt** comes 1.8 s after the first batch's songs have
+appeared, once ever, and not after a batch with failures or if another import
+has started by then; the next clean batch asks instead.
 
 - **Files**: Import from Files opens the document picker (audio types,
-  multiple) directly, with no sheet. Songs appear in the library as they
-  finish, with a small glass capsule above the mini player ("Importing 3 of
-  12") on every tab, then "12 Songs Imported" for a moment.
-- **Wi-Fi Transfer**: a short sheet showing the address to open on a computer
-  (selectable) while a local server runs only while the sheet is open; once
-  files arrive, a progress view under it. No song list. The sheet closes
-  itself when the transfer is complete. (The network's name would need
-  location permission and the Wi-Fi Information entitlement, so it isn't
-  shown.)
+  multiple) directly, with no sheet.
+- **Wi-Fi Transfer**: a short glass sheet: an Allow Transfers switch, the
+  address to open on a computer (selectable, with a copy button), and whether a
+  computer is connected. No song list, no progress. Closing it stops nothing:
+  someone can turn transfers on, close the sheet, and go on using the app while
+  they send files. The sheet closes itself when a batch's first file starts
+  arriving, and the capsule takes over. (The network's name would need location
+  permission and the Wi-Fi Information entitlement, so it isn't shown.)
 
-  **Complete** (`completionDelay` in `features/import/progress.ts`) means:
-  something arrived, no upload is in flight, every received file has
-  imported, and the page has nothing left to send. The browser uploads one
-  file at a time, and each upload's `Content-Type` carries how many follow
-  (`synq-remaining`), so the phone knows a gap between files isn't the end.
-  After the last file the sheet stays 1.8 s (so a second drop can still catch
-  it). If the page said more would come and nothing starts for 45 s, the
-  browser went away and the sheet closes. A page that says nothing gets 6 s.
-  If nothing imported at all, the sheet stays open with its address after the
-  alert, to try again.
+  **The switch** starts off on every launch, so a library doesn't go on taking
+  files from the network because someone once flipped it. While it's off, the
+  server stays up and refuses uploads, and the page says so. Turned off during a
+  transfer, the file on its way finishes and the rest wait on the page.
+
+  **The server** (`features/import/wifi-transfer.ts`) starts the first time
+  someone opens Wi-Fi Transfer, since a listener can bring up iOS's Local
+  Network prompt, which must never come at launch. After that it runs while the
+  app does, and starts with the app on later launches, by which time iOS has its
+  answer. iOS can reclaim the listener while the app is suspended, so returning
+  to the foreground checks that it still answers and restarts it if not, on the
+  same port. An older binary's server can't refuse uploads, so there it runs only
+  while the switch is on.
+
+  **The page** (`features/import/transfer-page*.ts`) is one self-contained file,
+  since it has to work with no internet: charcoal, the theme's accent, a big
+  quiet drop area, and one line of copy. It holds a live link to the phone
+  (Server-Sent Events on the same server), which carries whether transfers are
+  on, the accent (a theme change on the phone changes the page right away), and
+  how the import is going. A small level meter shows the link: breathing when
+  connected, moving while sending, flat with "Transfers Off" and "Turn on Wi-Fi
+  Transfer in SYNQ" while off, which never reads as an error, and pulsing gray
+  with "Disconnected" only when the app is backgrounded or the phone is gone
+  (no ping for 8 s). Dropped files wait through any of that and go on by
+  themselves. The sheet being closed changes nothing here.
+
+  In progress, the page shows one line ("Sending 3 of 12", the file's name, and
+  Cancel) and a hairline along the card's edge, then "Adding to your library",
+  then "12 Songs Added". An upload that breaks off goes back to the front of the
+  line; if only its response was lost, the page asks the phone first
+  (`/uploaded`), so nothing arrives twice. A file that keeps failing with the
+  phone there is listed under the card. On the phone, a broken upload isn't a
+  failed import, so it brings no alert.
+
+  **Done** (`completionDelay` in `features/import/progress.ts`) means: no upload
+  is in flight, every received file has imported, and the page has nothing left
+  to send. The browser uploads one file at a time, and each upload's
+  `Content-Type` carries how many follow (`synq-remaining`), so the phone knows
+  a gap between files isn't the end. After the last file the batch waits 1.5 s
+  (so a second drop joins it). If the page said more would come and nothing
+  starts for 8 s, the browser went away or the files were cancelled, and the
+  songs land; anything sent after that is the next batch. A page that says
+  nothing gets 6 s. Transfers going off ends the wait at once.
 - **Export / Share**: tags written into copies, then the share sheet: one
   song as its file; an album, playlist, or artist as one zip named after
   it (`Album Name.zip`, stored rather than compressed, since audio doesn't

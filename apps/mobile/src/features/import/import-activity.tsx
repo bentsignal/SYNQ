@@ -3,6 +3,9 @@ import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Host, HStack, Image, ProgressView, Text } from "@expo/ui/swift-ui";
 import {
+  animation,
+  Animation,
+  contentTransition,
   controlSize,
   font,
   foregroundStyle,
@@ -11,9 +14,9 @@ import {
   padding,
 } from "@expo/ui/swift-ui/modifiers";
 
-import type { ImportState } from "./session";
+import type { ImportState } from "./queue";
 import { SECONDARY_LABEL } from "~/features/settings/form";
-import { batchLine, pendingCount } from "./progress";
+import { capsuleLine, finishedLine, isBatchActive } from "./progress";
 import { useImportState } from "./session";
 
 /** Glass needs iOS 26; before that the capsule gets a solid background. */
@@ -23,24 +26,33 @@ const HAS_GLASS = Number.parseInt(String(Platform.Version), 10) >= 26;
 const ABOVE_TAB_BAR = 113;
 
 /** The line to show, or null while there's nothing to say. */
-function activityLine({ batch, finished, transfer }: ImportState) {
-  if (transfer !== null) return null;
-  if (!finished && pendingCount(batch) === 0) return null;
-  return batchLine(batch);
+function activityLine({ batch, finished, shown, transfer }: ImportState) {
+  if (finished) return finishedLine(batch.imported);
+  if (!isBatchActive(batch, transfer)) return null;
+  // Nothing to count yet, as when an upload broke off with none arrived.
+  return shown.total === 0 ? null : capsuleLine(shown);
 }
 
 function isFinished({ finished }: ImportState) {
   return finished;
 }
 
+/** What the line's numbers animate on. */
+function shownDone({ shown }: ImportState) {
+  return shown.done;
+}
+
 /**
  * A small capsule floating above the mini player while a batch imports in
- * the background: on every tab, passing touches through, and gone when the
- * batch is. Wi-Fi Transfer's sheet shows its own progress instead.
+ * the background, from Files or Wi-Fi: on every tab, passing touches through,
+ * and gone a moment after the batch is. It floats over the screen, so it
+ * can't move anything. Its count follows the batch at its own pace
+ * (`stepCapsule`), so files flying through don't make the numbers flicker.
  */
 export function ImportActivity() {
   const line = useImportState(activityLine);
   const finished = useImportState(isFinished);
+  const done = useImportState(shownDone);
   const { bottom } = useSafeAreaInsets();
   if (line === null) return null;
   return (
@@ -78,6 +90,8 @@ export function ImportActivity() {
                 font({ size: 13, weight: "medium" }),
                 monospacedDigit(),
                 foregroundStyle("#ffffff"),
+                contentTransition("numericText"),
+                animation(Animation.default, done),
               ]}
             >
               {line}

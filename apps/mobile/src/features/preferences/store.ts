@@ -63,12 +63,13 @@ export function getPreference<Key extends keyof Preferences>(key: Key) {
   return current[key];
 }
 
+export function subscribePreferences(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
 export function usePreference<Key extends keyof Preferences>(key: Key) {
-  return useSyncExternalStore(
-    (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    () => current[key],
-  );
+  return useSyncExternalStore(subscribePreferences, () => current[key]);
 }

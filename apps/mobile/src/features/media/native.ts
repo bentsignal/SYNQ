@@ -13,7 +13,13 @@ export interface NativeAudioInfo {
 }
 
 export interface TransferEvents {
-  onTransferStart: (event: { id: string; name: string; size: number }) => void;
+  onTransferStart: (event: {
+    id: string;
+    name: string;
+    size: number;
+    /** Newer than the event: older binaries leave it out. */
+    mimeType?: string;
+  }) => void;
   onTransferProgress: (event: {
     id: string;
     received: number;
@@ -28,6 +34,8 @@ export interface TransferEvents {
   }) => void;
   onTransferFailed: (event: { id: string }) => void;
   onTransferStopped: (event: { reason: string }) => void;
+  /** How many pages hold the live link. Only with `setTransferState`. */
+  onTransferClients: (event: { count: number }) => void;
 }
 
 /** `modules/synq-media` (Swift). */
@@ -65,6 +73,14 @@ interface SynqMediaModule {
     extensions: string[],
   ) => Promise<number>;
   stopTransferServer: () => void;
+  /**
+   * What the page is told, and whether uploads are allowed. Older binaries
+   * lack these three; their server takes uploads whenever it runs.
+   */
+  setTransferState?: (stateJson: string, accepting: boolean) => void;
+  /** Whether the server's listener still answers. */
+  checkTransferServer?: () => Promise<boolean>;
+  copyText?: (text: string) => void;
   wifiAddress: () => string | null;
   addListener: <Name extends keyof TransferEvents>(
     name: Name,

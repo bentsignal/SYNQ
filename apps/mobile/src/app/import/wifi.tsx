@@ -1,190 +1,113 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
-import * as Device from "expo-device";
-import { Directory } from "expo-file-system";
+import { ActivityIndicator, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { useCSSVariable } from "uniwind";
+import { Button, FieldGroup, ListItem, Switch } from "@expo/ui";
+import { Image, Text } from "@expo/ui/swift-ui";
+import {
+  accessibilityLabel,
+  font,
+  foregroundStyle,
+  monospacedDigit,
+  scrollContentBackground,
+  textSelection,
+} from "@expo/ui/swift-ui/modifiers";
 
+import type { WifiTransferState } from "~/features/import/wifi-transfer";
 import { EmptyState } from "~/components/empty-state";
-import { SymbolIcon } from "~/components/symbol-icon";
 import { track } from "~/features/analytics/analytics";
-import { IMPORT_DIRECTORY } from "~/features/import/pipeline";
-import { parseUploadType } from "~/features/import/progress";
+import { onTransferStart } from "~/features/import/session";
+import { displayAddress } from "~/features/import/transfer-link";
 import {
-  closeTransfer,
-  openTransfer,
-  uploadFailed,
-  uploadProgressed,
-  uploadReceived,
-  uploadsStopped,
-  uploadStarted,
-} from "~/features/import/session";
-import {
-  TRANSFER_EXTENSIONS,
-  transferPage,
-} from "~/features/import/transfer-page";
-import { TransferProgress } from "~/features/import/transfer-progress";
-import { synqMedia, synqMediaAvailable } from "~/features/media/native";
+  canCopyAddress,
+  canShowConnected,
+  copyAddress,
+  openWifiTransfer,
+  retryWifiTransfer,
+  setTransfersOn,
+  useWifiTransfer,
+} from "~/features/import/wifi-transfer";
+import { usePreference } from "~/features/preferences/store";
+import { themeAccent } from "~/features/preferences/themes";
+import { FormHost, SECONDARY_LABEL } from "~/features/settings/form";
+import { selectionTick } from "~/lib/haptics";
 
-/** 2.5.2's port, which people may have bookmarked. */
-const PREFERRED_PORT = 3000;
+/** How long Copy shows its checkmark. */
+const COPIED_MS = 1500;
 
-type Server =
-  | { state: "starting" }
-  | { state: "ready"; address: string }
-  | { state: "offline" }
-  | { state: "failed" };
+function serverOf({ server }: WifiTransferState) {
+  return server;
+}
 
-function Address({ address }: { address: string }) {
+function onOf({ on }: WifiTransferState) {
+  return on;
+}
+
+function connectedOf({ connected }: WifiTransferState) {
+  return connected;
+}
+
+function CopyButton({ address }: { address: string }) {
+  const [copied, setCopied] = useState(false);
+  const accent = themeAccent(usePreference("theme"));
+  if (!canCopyAddress()) return null;
   return (
-    <Animated.View
-      entering={FadeIn.duration(220)}
-      className="bg-fill mx-5 mt-2 mb-4 items-center gap-2 rounded-2xl px-5 py-6"
+    <Button
+      variant="text"
+      modifiers={[accessibilityLabel(copied ? "Copied" : "Copy Address")]}
+      onPress={() => {
+        copyAddress(address);
+        selectionTick();
+        setCopied(true);
+        setTimeout(() => setCopied(false), COPIED_MS);
+      }}
     >
-      <View className="flex-row items-center gap-2">
-        <SymbolIcon name="wifi" size={15} tintColorClassName="accent-accent" />
-        <Text className="text-subhead text-muted">
-          Open in a browser on the same Wi-Fi
-        </Text>
-      </View>
-      <Text
-        selectable
-        className="text-title text-foreground font-semibold tabular-nums"
-        accessibilityLabel={`Address: ${address}`}
-      >
-        {address}
-      </Text>
-    </Animated.View>
+      <Image
+        systemName={copied ? "checkmark" : "doc.on.doc"}
+        size={17}
+        color={accent}
+      />
+    </Button>
   );
 }
 
-function Header({ server, onRetry }: { server: Server; onRetry: () => void }) {
-  switch (server.state) {
-    case "starting":
-      return (
-        <View className="items-center py-10">
-          <ActivityIndicator />
-        </View>
-      );
-    case "ready":
-      return <Address address={server.address} />;
-    case "offline":
-      return (
-        <EmptyState
-          compact
-          icon="wifi.slash"
-          title="Connect to Wi-Fi"
-          actions={[{ label: "Try Again", onPress: onRetry }]}
-        />
-      );
-    case "failed":
-      return (
-        <EmptyState
-          compact
-          icon="exclamationmark.triangle"
-          title="Couldn't Start Wi-Fi Transfer"
-          actions={[{ label: "Try Again", onPress: onRetry }]}
-        />
-      );
-  }
-}
-
-/** The device's Wi-Fi address, or null when it isn't on Wi-Fi (or can't serve). */
-function readAddress() {
-  return synqMediaAvailable() ? synqMedia().wifiAddress() : null;
-}
-
-/** What the server is doing, from the address and the latest start's outcome. */
-function serverState(
-  address: string | null,
-  attempt: number,
-  started: { attempt: number; port: number | null } | null,
-) {
-  if (!synqMediaAvailable()) return { state: "failed" } satisfies Server;
-  if (address === null) return { state: "offline" } satisfies Server;
-  if (started?.attempt !== attempt)
-    return { state: "starting" } satisfies Server;
-  if (started.port === null) return { state: "failed" } satisfies Server;
-  return {
-    address:
-      started.port === 80 ? address : `${address}:${String(started.port)}`,
-    state: "ready",
-  } satisfies Server;
+function ComputerRow() {
+  const connected = useWifiTransfer(connectedOf);
+  if (!canShowConnected()) return null;
+  return (
+    <ListItem
+      trailing={
+        <Text
+          modifiers={[
+            font({ size: 17 }),
+            foregroundStyle(connected ? "#ffffff" : SECONDARY_LABEL),
+          ]}
+        >
+          {connected ? "Connected" : "Not Connected"}
+        </Text>
+      }
+    >
+      <Text>Computer</Text>
+    </ListItem>
+  );
 }
 
 /**
- * Wi-Fi Transfer: while this sheet is open, a web server on the local
- * network takes uploads from a computer's browser, and each file imports as
- * it arrives. The sheet shows the address, then the progress, and closes
- * itself when the transfer is complete (`completionDelay`).
+ * Wi-Fi Transfer: the switch that allows uploads, and the address to open on
+ * a computer. The server and the switch outlive this sheet, so someone can
+ * close it and go on using the app while they send files. It closes itself
+ * when files start arriving, and the capsule takes over.
  */
 export default function ImportWifiScreen() {
   const router = useRouter();
-  const accentValue = useCSSVariable("--color-accent");
-  const accent = typeof accentValue === "string" ? accentValue : "#77adf8";
-  const [address, setAddress] = useState(readAddress);
-  const [attempt, setAttempt] = useState(0);
-  const [started, setStarted] = useState<{
-    attempt: number;
-    port: number | null;
-  } | null>(null);
+  const server = useWifiTransfer(serverOf);
+  const on = useWifiTransfer(onOf);
 
-  // eslint-disable-next-line no-restricted-syntax -- The transfer lives exactly as long as this sheet, however the sheet closes.
+  // eslint-disable-next-line no-restricted-syntax -- Opening this sheet is what first starts the server (the prompt mustn't come at launch), and its listener must go when the sheet does, however it closes.
   useEffect(() => {
-    openTransfer(() => router.back());
+    openWifiTransfer();
     track("import_wifi");
-    return closeTransfer;
+    return onTransferStart(() => router.back());
   }, [router]);
-
-  // eslint-disable-next-line no-restricted-syntax -- The web server is an external system that must run exactly while this sheet is open (and restart on Try Again); its uploads arrive as native events.
-  useEffect(() => {
-    if (address === null || !synqMediaAvailable()) return;
-    const media = synqMedia();
-    let live = true;
-    function settle(port: number | null) {
-      if (live) setStarted({ attempt, port });
-    }
-    const subscriptions = [
-      media.addListener("onTransferStart", ({ id, name }) =>
-        uploadStarted(id, name),
-      ),
-      media.addListener("onTransferProgress", ({ id, received, size }) =>
-        uploadProgressed(id, size > 0 ? received / size : 0),
-      ),
-      media.addListener("onTransferFailed", ({ id }) => uploadFailed(id)),
-      media.addListener("onTransferFile", ({ id, mimeType, name, uri }) => {
-        const upload = parseUploadType(mimeType);
-        uploadReceived(
-          { key: id, mimeType: upload.mimeType, name, uri },
-          upload.remaining,
-        );
-      }),
-      media.addListener("onTransferStopped", () => {
-        uploadsStopped();
-        settle(null);
-      }),
-    ];
-    const page = transferPage({
-      accent,
-      deviceName: Device.deviceName ?? "your iPhone",
-    });
-    const uploads = new Directory(IMPORT_DIRECTORY, "wifi");
-    media
-      .startTransferServer(
-        PREFERRED_PORT,
-        page,
-        uploads.uri,
-        TRANSFER_EXTENSIONS,
-      )
-      .then(settle, () => settle(null));
-    return () => {
-      live = false;
-      for (const subscription of subscriptions) subscription.remove();
-      media.stopTransferServer();
-      uploadsStopped();
-    };
-  }, [accent, address, attempt]);
 
   return (
     <>
@@ -195,19 +118,65 @@ export default function ImportWifiScreen() {
           onPress={() => router.back()}
         />
       </Stack.Toolbar>
-      <ScrollView
-        className="bg-background flex-1"
-        contentInsetAdjustmentBehavior="automatic"
-      >
-        <Header
-          server={serverState(address, attempt, started)}
-          onRetry={() => {
-            setAddress(readAddress());
-            setAttempt((n) => n + 1);
-          }}
-        />
-        <TransferProgress />
-      </ScrollView>
+      {server.state === "offline" || server.state === "failed" ? (
+        <View className="flex-1 justify-center">
+          <EmptyState
+            compact
+            icon={
+              server.state === "offline"
+                ? "wifi.slash"
+                : "exclamationmark.triangle"
+            }
+            title={
+              server.state === "offline"
+                ? "Connect to Wi-Fi"
+                : "Couldn't Start Wi-Fi Transfer"
+            }
+            actions={[{ label: "Try Again", onPress: retryWifiTransfer }]}
+          />
+        </View>
+      ) : (
+        <FormHost style={{ flex: 1 }}>
+          <FieldGroup modifiers={[scrollContentBackground("hidden")]}>
+            <FieldGroup.Section>
+              <Switch
+                label="Allow Transfers"
+                value={on}
+                onValueChange={setTransfersOn}
+              />
+            </FieldGroup.Section>
+            {/* An older binary's server runs only while transfers are on. */}
+            {server.state === "idle" && !canShowConnected() ? null : (
+              <FieldGroup.Section title="Open in a browser on the same Wi-Fi">
+                {server.state === "ready" ? (
+                  <ListItem
+                    trailing={<CopyButton address={fullAddress(server)} />}
+                  >
+                    <Text
+                      modifiers={[
+                        font({ size: 17, weight: "medium" }),
+                        monospacedDigit(),
+                        textSelection(true),
+                      ]}
+                    >
+                      {fullAddress(server)}
+                    </Text>
+                  </ListItem>
+                ) : (
+                  <ListItem>
+                    <ActivityIndicator />
+                  </ListItem>
+                )}
+                <ComputerRow />
+              </FieldGroup.Section>
+            )}
+          </FieldGroup>
+        </FormHost>
+      )}
     </>
   );
+}
+
+function fullAddress(server: { address: string; port: number }) {
+  return displayAddress(server.address, server.port);
 }

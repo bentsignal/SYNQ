@@ -24,8 +24,8 @@ interface Task {
   progress: number | null;
 }
 
-function noMeasure(): number | null {
-  return null;
+function measure(value: number | null) {
+  return value;
 }
 
 function failed(
@@ -120,7 +120,7 @@ export function useBackupActions() {
   ) {
     if (running.current) return Promise.resolve(false);
     running.current = true;
-    let progress = noMeasure();
+    let progress = measure(null);
     let visible = false;
     const showTimer = setTimeout(() => {
       visible = true;

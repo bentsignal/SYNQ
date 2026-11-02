@@ -10,11 +10,11 @@ import { SECONDARY_LABEL } from "~/features/settings/form";
 
 const SHOWN_MS = 4000;
 
-function noLine(): string | null {
-  return null;
+function lineOf(value: string | null) {
+  return value;
 }
 
-let line = noLine();
+let line = lineOf(null);
 let timer: ReturnType<typeof setTimeout> | undefined;
 const listeners = new Set<() => void>();
 

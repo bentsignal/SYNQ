@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { processColor, StyleSheet, View } from "react-native";
 
-import type { MenuGroups } from "./menu";
+import type { MenuAction, MenuGroups } from "./menu";
+import { selectionTick } from "~/lib/haptics";
 import { afterMenuCloses, MENU_WIDTH, menuAction, menuJson } from "./menu";
 import { useNativeColor } from "./native-host";
 import { MenuRowView } from "./native-menu-row";
@@ -20,6 +21,8 @@ export interface NativeRowProps {
   menuButton?: boolean;
   /** Artwork over text rather than a list row: a tap doesn't highlight it. */
   card?: boolean;
+  /** What dragging the row sideways does, like Spotify's rows. */
+  swipe?: { left?: MenuAction; right?: MenuAction };
   children: ReactNode;
 }
 
@@ -42,6 +45,19 @@ export function NativeRow(props: NativeRowProps) {
   return <MenuRow {...props} />;
 }
 
+/** What a row's swipe says to the native row. */
+function swipeProps(swipe: NativeRowProps["swipe"]) {
+  return {
+    onRowSwipe: ({
+      nativeEvent,
+    }: {
+      nativeEvent: { direction: "left" | "right" };
+    }) => swipe?.[nativeEvent.direction]?.onPress(),
+    swipeLeftSymbol: swipe?.left?.icon,
+    swipeRightSymbol: swipe?.right?.icon,
+  };
+}
+
 function MenuRow({
   height,
   label,
@@ -50,11 +66,13 @@ function MenuRow({
   separatorInset,
   menuButton = true,
   card = false,
+  swipe,
   children,
 }: NativeRowProps) {
   const buttonWidth = menuButton ? MENU_WIDTH : 0;
   const muted = useNativeColor("--color-muted");
   const fill = useNativeColor("--color-fill");
+  const accent = useNativeColor("--color-accent");
   if (MenuRowView === null) return null;
   return (
     <View style={{ height }}>
@@ -65,7 +83,10 @@ function MenuRow({
         buttonColor={processColor(muted)}
         highlightColor={card ? null : processColor(fill)}
         previewRadius={card ? CARD_PREVIEW_RADIUS : ROW_PREVIEW_RADIUS}
+        {...swipeProps(swipe)}
+        swipeColor={processColor(accent)}
         onRowPress={onPress}
+        onRowSwipeReady={selectionTick}
         onRowMenuAction={({ nativeEvent }) => {
           const action = menuAction(menu, nativeEvent.id);
           if (action !== undefined) afterMenuCloses(action.onPress);

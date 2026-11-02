@@ -16,7 +16,7 @@ import {
   useHeaderTitle,
 } from "../collection-header";
 import { albumMenu } from "../collection-menu";
-import { collectionSummary, dotted, names } from "../format";
+import { collectionSummary, dotted, names, trackNumbers } from "../format";
 import { useIdParam } from "../params";
 import { PlayShuffleButtons } from "../play-shuffle-buttons";
 import { useLibraryQuery } from "../queries";
@@ -49,6 +49,7 @@ function Album({ album }: { album: AlbumListItem }) {
     read: (db) => listAlbumTracks(db, album.id),
     select: (items) => items,
   });
+  const numbers = trackNumbers(tracks);
   const header = useHeaderTitle(album.name, "album");
   const bare = tracks.length === 0 && album.artwork === null;
   const source = { id: album.id, kind: "album" } as const;
@@ -102,7 +103,7 @@ function Album({ album }: { album: AlbumListItem }) {
         renderItem={({ item, index }) => (
           <SongRow
             song={item}
-            track={item.track}
+            track={numbers[index]}
             subtitle={trackSubtitle(item, album)}
             place={{ albumId: album.id }}
             onPress={() => playSongs(ids(), { source, startIndex: index })}

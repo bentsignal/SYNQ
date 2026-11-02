@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 
 import { clearUpNext, cycleRepeat, toggleShuffle } from "./commands";
 import { usePlayer } from "./hooks";
+import { Transport } from "./player-controls";
 import { QueueList } from "./queue-list";
 import { currentIndex } from "./queue-model";
 import { QueueRow } from "./queue-row";
@@ -10,8 +11,8 @@ import { useSourceName } from "./source-name";
 import { usePlayerSongs } from "./use-player-songs";
 
 /**
- * The queue (a form sheet over the player): what it's playing from, the
- * current song, then Up Next: drag a handle to reorder, swipe to remove,
+ * The queue (a form sheet over the player): previous, play/pause, and next,
+ * what it's playing from, the current song, then Up Next: drag a handle to reorder, swipe to remove,
  * tap to play. The toolbar toggles shuffle and repeat and clears Up Next.
  */
 export function QueueScreen() {
@@ -32,6 +33,9 @@ export function QueueScreen() {
         songs={songs}
         header={
           <View>
+            <View className="pt-1">
+              <Transport compact />
+            </View>
             {currentSong !== undefined && (
               <>
                 <SectionTitle

@@ -1,4 +1,5 @@
 import { AUDIO_TYPES } from "./clean-tags.ts";
+import { TRANSFER_LOGO_MASK } from "./transfer-page-logo.ts";
 
 /** The extensions Wi-Fi Transfer accepts (the server checks them too). */
 export const TRANSFER_EXTENSIONS = Object.keys(AUDIO_TYPES);
@@ -57,6 +58,16 @@ export const TRANSFER_VIEW = `
     else delete root.dataset[key];
   }
 
+  /** The tab's icon: the same arrows in the same accent. */
+  function drawFavicon(accent) {
+    el("favicon").href = "data:image/svg+xml," + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">' +
+      '<defs><mask id="m"><image width="96" height="96" href="${TRANSFER_LOGO_MASK}"/></mask></defs>' +
+      '<rect width="96" height="96" rx="21" fill="#222"/>' +
+      '<rect width="96" height="96" fill="' + accent + '" mask="url(#m)"/></svg>',
+    );
+  }
+
   function apply(state) {
     if (typeof state !== "object" || state === null) return;
     if (typeof state.away === "boolean") away = state.away;
@@ -65,6 +76,7 @@ export const TRANSFER_VIEW = `
     if (typeof state.imported === "number") live.imported = state.imported;
     if (typeof state.accent === "string" && /^#[0-9a-f]{6}$/i.test(state.accent)) {
       root.style.setProperty("--accent", state.accent);
+      drawFavicon(state.accent);
     }
     if (live.importing) sawImport = true;
     if (adding && sawImport && !live.importing) finishRun();

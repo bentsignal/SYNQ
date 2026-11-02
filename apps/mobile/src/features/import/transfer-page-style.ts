@@ -35,7 +35,16 @@ export const TRANSFER_STYLE = `
     width: 100%; max-width: 720px; display: flex; align-items: center; justify-content: space-between;
     height: 32px; flex: none;
   }
-  .mark { display: block; width: 32px; height: 32px; border-radius: 22.37%; box-shadow: 0 0 0 .5px var(--hairline); }
+  /* The app icon, its arrows in the accent, so it changes with the theme as the alternate icons do. */
+  .mark {
+    position: relative; display: block; width: 32px; height: 32px; border-radius: 22.37%;
+    background: linear-gradient(#303030, #161616); box-shadow: 0 0 0 .5px var(--hairline);
+  }
+  .mark::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(var(--accent) 22%, color-mix(in srgb, var(--accent) 55%, #fff) 52%, var(--accent) 78%);
+    -webkit-mask: var(--logo) center / 100% no-repeat; mask: var(--logo) center / 100% no-repeat;
+  }
   .status {
     display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted);
   }

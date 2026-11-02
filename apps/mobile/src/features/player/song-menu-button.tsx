@@ -1,5 +1,3 @@
-import { View } from "react-native";
-
 import type { SongListItem } from "@synq/db";
 import { isSongLiked } from "@synq/db";
 
@@ -8,14 +6,14 @@ import { useLibraryQuery } from "~/features/library/queries";
 import { songMenu } from "~/features/library/song-menu";
 import { PLAYER_CIRCLE } from "./player-layout";
 
-/** Larger than the circle it sits in, and overlapping nothing that takes touches. */
-const TOUCH_WIDTH = 46;
-const TOUCH_HEIGHT = 60;
+const CIRCLE_COLOR = "rgba(255, 255, 255, 0.1)";
+/** How far past the circle touches still count, without reaching the heart. */
+const TOUCH_OUTSET = { horizontal: 6, vertical: 13 };
 
 /**
  * The player's `ellipsis` in the same circle as the heart: the same song menu
- * as a library row's. The button reaches past the circle, so the whole area
- * around the dots takes the touch.
+ * as a library row's. The circle is the button, so all of it turns into the
+ * menu, and touches around it count too.
  */
 export function SongMenuButton({ song }: { song: SongListItem }) {
   const liked = useLibraryQuery({
@@ -24,20 +22,12 @@ export function SongMenuButton({ song }: { song: SongListItem }) {
     select: (value) => value,
   });
   return (
-    <View
-      className="rounded-full bg-white/10"
-      style={{ height: PLAYER_CIRCLE, width: PLAYER_CIRCLE }}
-    >
-      <MenuButton
-        menu={songMenu(song, { liked })}
-        width={TOUCH_WIDTH}
-        height={TOUCH_HEIGHT}
-        style={{
-          left: (PLAYER_CIRCLE - TOUCH_WIDTH) / 2,
-          position: "absolute",
-          top: (PLAYER_CIRCLE - TOUCH_HEIGHT) / 2,
-        }}
-      />
-    </View>
+    <MenuButton
+      menu={songMenu(song, { liked })}
+      width={PLAYER_CIRCLE}
+      height={PLAYER_CIRCLE}
+      circleColor={CIRCLE_COLOR}
+      touchOutset={TOUCH_OUTSET}
+    />
   );
 }

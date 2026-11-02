@@ -3,15 +3,27 @@ import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { Stack } from "expo-router";
+import { HStack, Image, Menu, Text as SwiftUIText } from "@expo/ui/swift-ui";
+import {
+  font,
+  foregroundStyle,
+  lineLimit,
+  menuIndicator,
+} from "@expo/ui/swift-ui/modifiers";
 import { LegendList } from "@legendapp/list/react-native";
 
 import type { AlbumListItem, ArtworkRef } from "@synq/db";
 
 import type { ArtworkPlaceholder } from "~/components/artwork";
+import type { MenuAction } from "~/components/menu";
 import { Artwork } from "~/components/artwork";
+import { MenuItems } from "~/components/menu-items";
 import { NativeRow } from "~/components/native-row";
+import { usePreference } from "~/features/preferences/store";
+import { themeAccent } from "~/features/preferences/themes";
+import { FormHost } from "~/features/settings/form";
 import { albumMenu } from "./collection-menu";
-import { dotted } from "./format";
+import { dotted, names } from "./format";
 import { openLibraryScreen } from "./links";
 
 /** Header artwork: 240 pt, or a 180 pt circle for artists. */
@@ -108,30 +120,65 @@ export function HeaderLine({ children }: { children: ReactNode }) {
   );
 }
 
-/** The album's artists in the accent, each opening their page. */
+/**
+ * The album's artist in the accent, opening their page. Several are one link
+ * that opens a native menu of them, since names side by side are hard to hit.
+ */
 export function ArtistLinks({
   artists,
 }: {
   artists: readonly { id: number; name: string }[];
 }) {
-  if (artists.length === 0) return null;
+  const accent = themeAccent(usePreference("theme"));
+  const [only] = artists;
+  if (only === undefined) return null;
+  if (artists.length === 1) {
+    return (
+      <Pressable
+        accessibilityRole="link"
+        hitSlop={6}
+        className="active:opacity-60"
+        onPress={() => openLibraryScreen({ id: only.id, screen: "artist" })}
+      >
+        <Text numberOfLines={1} className="text-body text-accent font-medium">
+          {only.name}
+        </Text>
+      </Pressable>
+    );
+  }
+  const menu = [
+    artists.map(
+      (artist) =>
+        ({
+          icon: "music.microphone",
+          key: `artist-${artist.id}`,
+          label: artist.name,
+          onPress: () => openLibraryScreen({ id: artist.id, screen: "artist" }),
+        }) satisfies MenuAction,
+    ),
+  ];
   return (
-    <View className="flex-row flex-wrap justify-center">
-      {artists.map((artist, index) => (
-        <Pressable
-          key={artist.id}
-          accessibilityRole="link"
-          hitSlop={6}
-          className="active:opacity-60"
-          onPress={() => openLibraryScreen({ id: artist.id, screen: "artist" })}
-        >
-          <Text className="text-body text-accent font-medium">
-            {artist.name}
-            {index < artists.length - 1 ? ", " : ""}
-          </Text>
-        </Pressable>
-      ))}
-    </View>
+    <FormHost matchContents>
+      <Menu
+        label={
+          <HStack spacing={4}>
+            <SwiftUIText
+              modifiers={[
+                font({ size: 17, weight: "medium" }),
+                foregroundStyle(accent),
+                lineLimit(1),
+              ]}
+            >
+              {names(artists)}
+            </SwiftUIText>
+            <Image systemName="chevron.down" size={11} color={accent} />
+          </HStack>
+        }
+        modifiers={[menuIndicator("hidden")]}
+      >
+        <MenuItems groups={menu} />
+      </Menu>
+    </FormHost>
   );
 }
 

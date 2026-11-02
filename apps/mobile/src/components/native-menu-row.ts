@@ -13,7 +13,15 @@ export interface MenuRowViewProps extends ViewProps {
   highlightColor?: ProcessedColorValue | ColorValue | null;
   /** The corners of the shape a long press lifts. */
   previewRadius: number;
+  /** The symbol a swipe to the right reveals; none when left out, and no swipe. */
+  swipeRightSymbol?: string;
+  /** The same for a swipe to the left. */
+  swipeLeftSymbol?: string;
+  /** What a revealed symbol turns once letting go would do it. */
+  swipeColor?: ProcessedColorValue | ColorValue | null;
   onRowPress: () => void;
+  onRowSwipe: (event: { nativeEvent: { direction: "left" | "right" } }) => void;
+  onRowSwipeReady: () => void;
   onRowMenuAction: (event: { nativeEvent: { id: string } }) => void;
 }
 

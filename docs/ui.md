@@ -58,7 +58,12 @@ numbers.
   so only the content rises, in a shape with rounded corners (12 pt on a row,
   10 pt on a card, its artwork's). Behind it the app blurs and dims for as long
   as the menu is open (`FocusBackdrop.swift`), as Vera's message menu does, so
-  the lifted row stands out from whatever was under it. The menu goes to native as
+  the lifted row stands out from whatever was under it. A menu from the
+  `ellipsis` lifts nothing and doesn't blur.
+- **Swipe** (song rows, `RowSwipe.swift`): dragging a row right adds it to the
+  queue, and left opens Add to Playlist. The row follows the finger over a symbol
+  at the edge it left, which turns the accent with a tick at 72 pt, where letting
+  go would do it. A drag from the left edge stays iOS's Back. The menu goes to native as
   JSON and is only built when a menu opens, so a recycled row costs a
   string compare. This replaced a SwiftUI `Host` per row (`ContextMenu`
   around a `Button`, plus a `Menu`): with 3,000 songs and six identical
@@ -198,7 +203,8 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   (`text-title` semibold, one line) over the artist (muted, tappable);
   `heart` toggle and `ellipsis` menu on the right, each small in a quiet 34 pt
   circle, the last circle's right edge at the timeline's right end and the
-  `ellipsis`'s target larger than its circle (46 × 60 pt); a timeline of two
+  `ellipsis`'s touch area 46 × 60 pt around its circle, which is the button, so
+  all of it turns into the menu; a timeline of two
   nested capsules with no thumb, 7 pt tall and 14 pt while dragged, with round
   ends at every height (`BarSliderView.swift`), elapsed left and remaining right
   (`text-caption` tabular), hanging under the bar and taking up no room;
@@ -313,7 +319,9 @@ has started by then; the next clean batch asks instead.
 
   **The page** (`features/import/transfer-page*.ts`) is one self-contained file,
   since it has to work with no internet: charcoal, the theme's accent, the app
-  icon at the top left, a big quiet drop area, and one line of copy. It holds a live link to the phone
+  icon at the top left with its arrows in that accent, like the alternate icons
+  (and the tab's icon too), a big quiet drop area, and one line of copy. It holds
+  a live link to the phone
   (Server-Sent Events on the same server), which carries whether transfers are
   on, the accent (a theme change on the phone changes the page right away), and
   how the import is going. A small level meter shows the link: breathing when

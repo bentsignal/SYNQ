@@ -4,8 +4,9 @@ import UIKit
 /// context menu, so the row stands out from whatever it was lifted over. iOS
 /// only dims.
 ///
-/// It goes on top of what was frontmost in the window when the long press
-/// began. The menu's own views arrive after that, above it, and take every touch.
+/// It goes on top of the part of the window that holds the row: the app, or the
+/// sheet the row is in. A menu's own views sit above that and take every touch,
+/// including the last menu's, still closing after a quick second long press.
 @MainActor
 final class FocusBackdrop {
   private static let dim: CGFloat = 0.15
@@ -13,7 +14,10 @@ final class FocusBackdrop {
   private let blur = UIVisualEffectView(effect: nil)
   private let shade = UIView()
 
-  init(on host: UIView) {
+  init?(for row: UIView) {
+    var host = row
+    while let parent = host.superview, !(parent is UIWindow) { host = parent }
+    guard host.superview is UIWindow else { return nil }
     blur.frame = host.bounds
     blur.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     blur.isUserInteractionEnabled = false

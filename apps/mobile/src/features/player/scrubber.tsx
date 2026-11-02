@@ -29,15 +29,16 @@ const TIME_STYLE = { fontVariant: ["tabular-nums" as const] };
 const ROW_HEIGHT = 20;
 /** The native view's height: this much of it is touch, beyond the row. */
 const TOUCH_HEIGHT = 52;
-/** Under the bar, clear of it even at its full height while dragged. */
-const TIMES_TOP = ROW_HEIGHT - 2;
+/** Where the times start in the native view, under the bar at rest. */
+const TIMES_TOP = TOUCH_HEIGHT / 2 + 8;
 
 /**
  * The player's timeline: two nested bars that grow while dragged, elapsed time
  * on the left and remaining on the right. The drag is relative and native
  * (`BarSliderView.swift`), and the seek happens on release. Disabled while
  * nothing is loaded. Its height is the bar's row: the times hang below it
- * without pushing anything, so what follows is spaced from the bar.
+ * without pushing anything, so what follows is spaced from the bar. They're
+ * the native view's children, so it moves them with the bar as it grows.
  */
 export function Scrubber({
   disabled,
@@ -85,20 +86,21 @@ export function Scrubber({
           }}
           onScrub={({ nativeEvent }) => setDragSeconds(nativeEvent.seconds)}
           onSeek={({ nativeEvent }) => seek(nativeEvent.fraction)}
-        />
+        >
+          <View
+            pointerEvents="none"
+            className="absolute inset-x-0 flex-row justify-between"
+            style={{ top: TIMES_TOP }}
+          >
+            <Text className="text-caption text-muted" style={TIME_STYLE}>
+              {formatTime(shownMs)}
+            </Text>
+            <Text className="text-caption text-muted" style={TIME_STYLE}>
+              −{formatTime(Math.max(0, durationMs - shownMs))}
+            </Text>
+          </View>
+        </NativeScrubber>
       )}
-      <View
-        pointerEvents="none"
-        className="absolute inset-x-0 flex-row justify-between"
-        style={{ top: TIMES_TOP }}
-      >
-        <Text className="text-caption text-muted" style={TIME_STYLE}>
-          {formatTime(shownMs)}
-        </Text>
-        <Text className="text-caption text-muted" style={TIME_STYLE}>
-          −{formatTime(Math.max(0, durationMs - shownMs))}
-        </Text>
-      </View>
     </View>
   );
 }

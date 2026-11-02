@@ -16,6 +16,15 @@ public class SynqMenuButtonModule: Module {
       Prop("color") { (view: MenuButtonView, color: UIColor?) in
         view.color = color
       }
+      Prop("circleColor") { (view: MenuButtonView, color: UIColor?) in
+        view.circleColor = color
+      }
+      Prop("touchOutsetX") { (view: MenuButtonView, outset: Double) in
+        view.touchOutset.width = CGFloat(outset)
+      }
+      Prop("touchOutsetY") { (view: MenuButtonView, outset: Double) in
+        view.touchOutset.height = CGFloat(outset)
+      }
     }
   }
 }

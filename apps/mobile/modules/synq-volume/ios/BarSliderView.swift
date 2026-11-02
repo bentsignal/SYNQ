@@ -10,9 +10,9 @@ import UIKit
 /// moment it lands, which holds the sheet still under it. Subclasses say what a
 /// drag means.
 class BarSliderView: ExpoView {
-  private static let restingHeight: CGFloat = 7
-  private static let grownHeight: CGFloat = 14
-  private static let growDuration: CFTimeInterval = 0.2
+  static let restingHeight: CGFloat = 7
+  static let grownHeight: CGFloat = 14
+  static let growDuration: CFTimeInterval = 0.2
   private static let trackAlpha: CGFloat = 0.2
   private static let fillAlpha: CGFloat = 0.8
 
@@ -101,6 +101,7 @@ class BarSliderView: ExpoView {
     CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: .easeOut))
     applyHeight()
     CATransaction.commit()
+    didGrow(next)
   }
 
   @objc private func pressed(_ recognizer: UILongPressGestureRecognizer) {
@@ -124,6 +125,8 @@ class BarSliderView: ExpoView {
     }
   }
 
+  /// The bar has started growing or shrinking back.
+  func didGrow(_ grown: Bool) {}
   /// Where a drag starts from.
   func dragStart() -> CGFloat { fraction }
   func dragBegan() {}

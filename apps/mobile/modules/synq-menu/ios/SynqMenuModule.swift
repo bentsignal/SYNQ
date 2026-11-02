@@ -8,7 +8,7 @@ public class SynqMenuModule: Module {
     Name("SynqMenu")
 
     View(MenuRowView.self) {
-      Events("onRowPress", "onRowMenuAction")
+      Events("onRowPress", "onRowMenuAction", "onRowSwipe", "onRowSwipeReady")
 
       Prop("menu") { (view: MenuRowView, json: String) in
         view.menuJSON = json
@@ -24,6 +24,15 @@ public class SynqMenuModule: Module {
       }
       Prop("highlightColor") { (view: MenuRowView, color: UIColor?) in
         view.highlightColor = color
+      }
+      Prop("swipeRightSymbol") { (view: MenuRowView, symbol: String?) in
+        view.swipeRightSymbol = symbol
+      }
+      Prop("swipeLeftSymbol") { (view: MenuRowView, symbol: String?) in
+        view.swipeLeftSymbol = symbol
+      }
+      Prop("swipeColor") { (view: MenuRowView, color: UIColor?) in
+        view.swipeColor = color
       }
       Prop("previewRadius") { (view: MenuRowView, radius: Double) in
         view.previewRadius = CGFloat(radius)

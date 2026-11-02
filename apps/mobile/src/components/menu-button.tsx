@@ -18,6 +18,9 @@ import { NativeHost } from "./native-host";
 interface MenuButtonViewProps {
   menu: string;
   color: ReturnType<typeof processColor>;
+  circleColor?: ReturnType<typeof processColor>;
+  touchOutsetX: number;
+  touchOutsetY: number;
   style: StyleProp<ViewStyle>;
   onMenuAction: (event: { nativeEvent: { id: string } }) => void;
 }
@@ -31,19 +34,24 @@ const MenuButtonView =
 /**
  * A native `ellipsis` button that opens `menu`, for places outside a
  * `NativeRow` (the player). All of `width` by `height` takes the touch, with
- * the dots in its center.
+ * the dots in its center, and `touchOutset` more around it. With `circleColor`,
+ * it's a filled circle, which turns into the menu with the dots.
  */
 export function MenuButton({
   menu,
   width,
   height,
   color = "white",
+  circleColor,
+  touchOutset,
   style,
 }: {
   menu: MenuGroups;
   width: number;
   height: number;
   color?: string;
+  circleColor?: string;
+  touchOutset?: { horizontal: number; vertical: number };
   style?: StyleProp<ViewStyle>;
 }) {
   if (MenuButtonView !== null) {
@@ -51,6 +59,11 @@ export function MenuButton({
       <MenuButtonView
         menu={menuJson(menu)}
         color={processColor(color)}
+        circleColor={
+          circleColor === undefined ? undefined : processColor(circleColor)
+        }
+        touchOutsetX={touchOutset?.horizontal ?? 0}
+        touchOutsetY={touchOutset?.vertical ?? 0}
         style={[{ height, width }, style]}
         onMenuAction={({ nativeEvent }) => {
           const action = menuAction(menu, nativeEvent.id);

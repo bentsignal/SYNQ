@@ -58,6 +58,6 @@ for (const phone of PHONES) {
 }
 
 void test("the artwork takes the width, and gives way on a short window", () => {
-  assert.equal(playerArtworkSize(402, 874), 350);
+  assert.equal(playerArtworkSize(402, 874), 342);
   assert.equal(playerArtworkSize(375, 667), 307);
 });

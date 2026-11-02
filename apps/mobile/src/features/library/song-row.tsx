@@ -5,6 +5,7 @@ import { listLikedSongIds } from "@synq/db";
 
 import type { SongMenuPlace } from "./song-menu";
 import { Artwork } from "~/components/artwork";
+import { menuActionByKey } from "~/components/menu";
 import { NativeRow } from "~/components/native-row";
 import { SymbolIcon } from "~/components/symbol-icon";
 import { useNowPlaying } from "~/features/player/now-playing";
@@ -80,7 +81,8 @@ function Leading({
 /**
  * A song in a list (docs/ui.md → Song row): artwork, title over
  * `artist · album`, and the song menu on the trailing ellipsis and on a
- * long press. The playing song's title is in the accent beside an animated
+ * long press. Dragging it right adds it to the queue, and left adds it to a
+ * playlist. The playing song's title is in the accent beside an animated
  * waveform. On album pages, `track` puts the track number where the
  * artwork goes and `subtitle` says only what differs from the album.
  */
@@ -104,14 +106,19 @@ export function SongRow({
   const nowPlaying = useNowPlaying();
   const current = nowPlaying.songId === song.id;
   const detail = subtitle === undefined ? songDetail(song) : subtitle;
+  const menu = songMenu(song, { ...place, liked });
   const textInset =
     LEADING + (track === undefined ? ARTWORK_SIZE : TRACK_WIDTH) + GAP;
   return (
     <NativeRow
       height={SONG_ROW_HEIGHT}
       label={detail === null ? song.title : `${song.title}, ${detail}`}
-      menu={songMenu(song, { ...place, liked })}
+      menu={menu}
       separatorInset={textInset}
+      swipe={{
+        left: menuActionByKey(menu, "add"),
+        right: menuActionByKey(menu, "queue"),
+      }}
       onPress={onPress}
     >
       <View style={{ width: LEADING }} />

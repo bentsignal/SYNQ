@@ -67,3 +67,16 @@ export function songDetail(song: SongListItem) {
 export function albumDetail(album: AlbumListItem) {
   return dotted(names(album.artists), album.year);
 }
+
+/**
+ * The numbers an album page shows: each track's own, and for a track with none
+ * (often a single with no tag), one past the track before it, so no row is left
+ * blank. Only for showing: a track's stored number stays as it is.
+ */
+export function trackNumbers(tracks: readonly { track: number | null }[]) {
+  let previous = 0;
+  return tracks.map(({ track }) => {
+    previous = track ?? previous + 1;
+    return previous;
+  });
+}

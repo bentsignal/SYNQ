@@ -16,6 +16,7 @@ import {
 
 import type { WifiTransferState } from "~/features/import/wifi-transfer";
 import { EmptyState } from "~/components/empty-state";
+import { HeaderGlass } from "~/components/header-glass";
 import { track } from "~/features/analytics/analytics";
 import { onTransferStart } from "~/features/import/session";
 import { displayAddress } from "~/features/import/transfer-link";
@@ -140,51 +141,56 @@ export default function ImportWifiScreen() {
           />
         </View>
       ) : (
-        <FormHost style={{ flex: 1 }}>
-          <FieldGroup
-            modifiers={[
-              scrollContentBackground("hidden"),
-              // It all fits, unless the text is very large.
-              scrollDisabled(PixelRatio.getFontScale() <= MAX_FIXED_FONT_SCALE),
-              // Most of SwiftUI's gap above a form's first section. Negative,
-              // so the form grows upward rather than leaving its bottom behind.
-              padding({ top: -FORM_TOP_TRIM }),
-            ]}
-          >
-            <FieldGroup.Section>
-              <Switch
-                label="Allow Transfers"
-                value={on}
-                onValueChange={setTransfersOn}
-              />
-            </FieldGroup.Section>
-            {/* An older binary's server runs only while transfers are on. */}
-            {server.state === "idle" && !canShowConnected() ? null : (
-              <FieldGroup.Section title="Open in a browser on the same Wi-Fi">
-                {server.state === "ready" ? (
-                  <ListItem
-                    trailing={<CopyButton address={fullAddress(server)} />}
-                  >
-                    <Text
-                      modifiers={[
-                        font({ size: 17, weight: "medium" }),
-                        monospacedDigit(),
-                        textSelection(true),
-                      ]}
-                    >
-                      {fullAddress(server)}
-                    </Text>
-                  </ListItem>
-                ) : (
-                  <ListItem>
-                    <ActivityIndicator />
-                  </ListItem>
-                )}
-                <ComputerRow />
+        <>
+          <FormHost style={{ flex: 1 }}>
+            <FieldGroup
+              modifiers={[
+                scrollContentBackground("hidden"),
+                // It all fits, unless the text is very large.
+                scrollDisabled(
+                  PixelRatio.getFontScale() <= MAX_FIXED_FONT_SCALE,
+                ),
+                // Most of SwiftUI's gap above a form's first section. Negative,
+                // so the form grows upward rather than leaving its bottom behind.
+                padding({ top: -FORM_TOP_TRIM }),
+              ]}
+            >
+              <FieldGroup.Section>
+                <Switch
+                  label="Allow Transfers"
+                  value={on}
+                  onValueChange={setTransfersOn}
+                />
               </FieldGroup.Section>
-            )}
-          </FieldGroup>
-        </FormHost>
+              {/* An older binary's server runs only while transfers are on. */}
+              {server.state === "idle" && !canShowConnected() ? null : (
+                <FieldGroup.Section title="Open in a browser on the same Wi-Fi">
+                  {server.state === "ready" ? (
+                    <ListItem
+                      trailing={<CopyButton address={fullAddress(server)} />}
+                    >
+                      <Text
+                        modifiers={[
+                          font({ size: 17, weight: "medium" }),
+                          monospacedDigit(),
+                          textSelection(true),
+                        ]}
+                      >
+                        {fullAddress(server)}
+                      </Text>
+                    </ListItem>
+                  ) : (
+                    <ListItem>
+                      <ActivityIndicator />
+                    </ListItem>
+                  )}
+                  <ComputerRow />
+                </FieldGroup.Section>
+              )}
+            </FieldGroup>
+          </FormHost>
+          <HeaderGlass glass={false} />
+        </>
       )}
     </>
   );

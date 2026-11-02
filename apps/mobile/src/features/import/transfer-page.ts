@@ -1,4 +1,4 @@
-import { TRANSFER_LOGO } from "./transfer-page-logo.ts";
+import { TRANSFER_LOGO_MASK } from "./transfer-page-logo.ts";
 import { TRANSFER_SCRIPT } from "./transfer-page-script.ts";
 import { TRANSFER_STYLE } from "./transfer-page-style.ts";
 import { TRANSFER_EXTENSIONS } from "./transfer-page-view.ts";
@@ -34,12 +34,12 @@ export function transferPage({ accent }: { accent: string }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SYNQ</title>
-<link rel="icon" href="${TRANSFER_LOGO}">
-<style>${TRANSFER_STYLE} :root { --accent: ${color}; }</style>
+<link id="favicon" rel="icon" href="data:,">
+<style>${TRANSFER_STYLE} :root { --accent: ${color}; --logo: url("${TRANSFER_LOGO_MASK}"); }</style>
 </head>
 <body>
 <header>
-  <img class="mark" src="${TRANSFER_LOGO}" alt="SYNQ" width="32" height="32">
+  <span class="mark" role="img" aria-label="SYNQ"></span>
   <span class="status" role="status"><span class="meter" aria-hidden="true">${METER}</span><span id="status">Connecting</span></span>
 </header>
 <main>

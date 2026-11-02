@@ -23,7 +23,7 @@ export type MenuItem = MenuAction | MenuSubmenu;
 export type MenuGroups = readonly (readonly MenuItem[])[];
 
 /** The trailing `ellipsis` button's width in a row. */
-export const MENU_WIDTH = 44;
+export const MENU_WIDTH = 52;
 
 /**
  * Runs a menu action once the menu has closed, so the change it makes (a
@@ -84,4 +84,14 @@ export function menuAction(groups: MenuGroups, id: string) {
   if (item === undefined) return undefined;
   if ("items" in item) return a === undefined ? undefined : item.items[a];
   return a === undefined ? item : undefined;
+}
+
+/** The action with this `key`, anywhere in a menu's top level. */
+export function menuActionByKey(groups: MenuGroups, key: string) {
+  for (const group of groups) {
+    for (const item of group) {
+      if (item.key === key && !("items" in item)) return item;
+    }
+  }
+  return undefined;
 }

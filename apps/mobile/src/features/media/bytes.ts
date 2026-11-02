@@ -130,3 +130,47 @@ export function uint32LE(value: number) {
     (value >>> 24) & 0xff,
   );
 }
+
+/** Decodes UTF-16 code units; a byte order mark, if any, overrides `bigEndian`. */
+export function utf16Text(bytes: Uint8Array, bigEndian = false) {
+  let start = 0;
+  let big = bigEndian;
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) {
+    start = 2;
+    big = false;
+  } else if (bytes[0] === 0xfe && bytes[1] === 0xff) {
+    start = 2;
+    big = true;
+  }
+  let text = "";
+  for (let index = start; index + 1 < bytes.length; index += 2) {
+    const first = bytes[index] ?? 0;
+    const second = bytes[index + 1] ?? 0;
+    text += String.fromCharCode(
+      big ? (first << 8) | second : (second << 8) | first,
+    );
+  }
+  return text;
+}
+
+export function uint16BE(value: number) {
+  return Uint8Array.of((value >>> 8) & 0xff, value & 0xff);
+}
+
+export function readUint16BE(bytes: Uint8Array, offset: number) {
+  return ((bytes[offset] ?? 0) << 8) + (bytes[offset + 1] ?? 0);
+}
+
+/** A big-endian 64-bit size, as a number (files here are far below 2^53). */
+export function readUint64BE(bytes: Uint8Array, offset: number) {
+  return (
+    readUint32BE(bytes, offset) * 0x100000000 + readUint32BE(bytes, offset + 4)
+  );
+}
+
+/** The whole number a tag value starts with: "3/12" → 3, "2021-05-04" → 2021. */
+export function firstNumber(value: string | null | undefined) {
+  const match =
+    value === null || value === undefined ? null : /^\s*(\d+)/.exec(value);
+  return match?.[1] === undefined ? null : Number(match[1]);
+}

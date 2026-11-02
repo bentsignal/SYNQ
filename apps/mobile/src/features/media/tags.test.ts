@@ -58,6 +58,7 @@ const TAGS = {
   title: "Señorita 🎵",
   artists: ["Shawn Mendes", "Camila Cabello"],
   album: "Romance",
+  albumArtists: [],
   year: 2019,
   track: 3,
   artwork: JPEG,
@@ -238,6 +239,8 @@ void test("reads FLAC tags at import: several ARTIST fields, the front cover", (
     title: "Old",
     artist: "A, B",
     album: null,
+    albumArtist: null,
+    compilation: false,
     year: null,
     track: "07",
   });
@@ -275,6 +278,8 @@ void test("a FLAC export rewrites the comments and cover, keeping the rest", () 
     title: "Señorita 🎵",
     artist: "Shawn Mendes, Camila Cabello",
     album: "Romance",
+    albumArtist: null,
+    compilation: false,
     year: "2019",
     track: "3",
   });

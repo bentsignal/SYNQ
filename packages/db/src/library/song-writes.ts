@@ -1,21 +1,21 @@
-import { eq, max } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import type { ArtworkKind } from "./artwork.ts";
 import type { LibraryTable, WriteOptions } from "./changes.ts";
 import type { AlbumRef, ArtistRef } from "./find-or-create.ts";
-import {
-  albumArtists,
-  albums,
-  albumSongs,
-  songArtists,
-  songs,
-} from "../schema.ts";
+import type { WriteContext } from "./song-albums.ts";
+import { albumSongs, songArtists, songs } from "../schema.ts";
 import { artworkDir } from "./artwork.ts";
 import { changesOf, nowFrom, written } from "./changes.ts";
 import { LibraryError } from "./errors.ts";
 import { EntityResolver, uniqueIds } from "./find-or-create.ts";
-import { dedupeNames, splitArtistNames } from "./matching.ts";
+import {
+  albumForEdit,
+  artistIdsFor,
+  placeOnAlbum,
+  positiveOrNull,
+} from "./song-albums.ts";
 import { safeFileName } from "./song-files.ts";
 import { loadSongItems } from "./song-items.ts";
 
@@ -32,6 +32,13 @@ export interface NewSongInput {
    */
   artists?: string | readonly string[] | null;
   album?: string | null;
+  /**
+   * The raw album artist tag, split like `artists`. It says whose album this
+   * is: see `album-identity.ts`.
+   */
+  albumArtists?: string | null;
+  /** The file says it's part of a compilation (and it may name no album artist). */
+  compilation?: boolean;
   year?: number | null;
   track?: number | null;
   /** The file has embedded artwork the app will write after this call. */
@@ -53,31 +60,33 @@ export interface AddedSong {
   artworkTarget: { kind: ArtworkKind; id: number; dir: string } | null;
 }
 
-/** What one write transaction shares: its handle, the entity matcher, and the tables touched so far. */
-interface WriteContext {
-  tx: LibraryDb;
-  resolver: EntityResolver;
-  changed: Set<LibraryTable>;
-  now: number;
+export interface AddSongsOptions extends WriteOptions {
+  /**
+   * Albums that same-named songs without an album artist can still join. An
+   * import keeps one across a batch, whose songs are added one at a time;
+   * otherwise each call is its own batch. Gains the albums created here.
+   */
+  openAlbums?: Set<number>;
 }
 
 /**
  * Inserts imported songs (one transaction), finding or creating their
- * artists and album, and crediting the song's artists on the album as 2.5.2
- * did. Copy each file to `filePath` afterwards; if a copy fails, delete that
- * song with `deleteSongs`.
+ * artists and album (`album-identity.ts`). The album credits its album
+ * artists, or without any its songs' artists, as 2.5.2 did. Copy each file to
+ * `filePath` afterwards; if a copy fails, delete that song with `deleteSongs`.
  */
 export function addSongs(
   db: LibraryDb,
   inputs: readonly NewSongInput[],
-  options?: WriteOptions,
+  options?: AddSongsOptions,
 ) {
   const now = nowFrom(options);
   const changed = new Set<LibraryTable>(["songs"]);
+  const openAlbums = options?.openAlbums ?? new Set<number>();
   const added = db.transaction((tx): AddedSong[] => {
     const context = { tx, resolver: new EntityResolver(tx, now), changed, now };
     const result = inputs.map((input, index) =>
-      insertSong(context, input, index),
+      insertSong(context, input, index, openAlbums),
     );
     if (context.resolver.createdArtists) changed.add("artists");
     if (context.resolver.createdAlbums) changed.add("albums");
@@ -86,7 +95,12 @@ export function addSongs(
   return written(added, changed);
 }
 
-function insertSong(context: WriteContext, input: NewSongInput, index: number) {
+function insertSong(
+  context: WriteContext,
+  input: NewSongInput,
+  index: number,
+  openAlbums: Set<number>,
+) {
   const { tx, now } = context;
   const { id } = tx
     .insert(songs)
@@ -109,6 +123,7 @@ function insertSong(context: WriteContext, input: NewSongInput, index: number) {
       albumName: input.album,
       artistIds,
       input,
+      openAlbums,
     });
     return { id, filePath, artistIds, albumId, artworkTarget };
   }
@@ -126,13 +141,7 @@ function insertSong(context: WriteContext, input: NewSongInput, index: number) {
 
 function creditArtists(context: WriteContext, id: number, input: NewSongInput) {
   const { tx, resolver, changed } = context;
-  const names =
-    typeof input.artists === "string"
-      ? splitArtistNames(input.artists, (name) =>
-          resolver.artistMatcher.has(name),
-        )
-      : dedupeNames(input.artists ?? []);
-  const artistIds = uniqueIds(names.map((name) => resolver.artist({ name })));
+  const artistIds = artistIdsFor(resolver, input.artists);
   if (artistIds.length > 0) {
     tx.insert(songArtists)
       .values(
@@ -146,79 +155,6 @@ function creditArtists(context: WriteContext, id: number, input: NewSongInput) {
     changed.add("song_artists");
   }
   return artistIds;
-}
-
-/** Adds the song to its album, crediting its artists there; the album takes the song's embedded cover if it has none. */
-function placeOnAlbum(
-  context: WriteContext,
-  placement: {
-    songId: number;
-    albumName: string;
-    artistIds: number[];
-    input: NewSongInput;
-  },
-) {
-  const { tx, resolver, changed, now } = context;
-  const { songId, albumName, artistIds, input } = placement;
-  const albumId = resolver.album({ name: albumName, year: input.year ?? null });
-  tx.insert(albumSongs)
-    .values({
-      albumId,
-      songId,
-      track: positiveOrNull(input.track),
-      position: 0,
-    })
-    .run();
-  appendAlbumArtists(tx, albumId, artistIds);
-  changed.add("album_songs").add("album_artists");
-  let artworkTarget = null;
-  if (input.hasArtwork) {
-    const album = tx
-      .select({ v: albums.artworkVersion })
-      .from(albums)
-      .where(eq(albums.id, albumId))
-      .get();
-    if (album?.v === null) {
-      tx.update(albums)
-        .set({ artworkVersion: now })
-        .where(eq(albums.id, albumId))
-        .run();
-      changed.add("albums");
-      artworkTarget = {
-        kind: "album" as const,
-        id: albumId,
-        dir: artworkDir("album", albumId),
-      };
-    }
-  }
-  return { albumId, artworkTarget };
-}
-
-/** Adds artists to an album's credits (after the existing ones), skipping any already credited. */
-export function appendAlbumArtists(
-  db: LibraryDb,
-  albumId: number,
-  artistIds: readonly number[],
-) {
-  if (artistIds.length === 0) return;
-  const existing = new Set(
-    db
-      .select({ id: albumArtists.artistId })
-      .from(albumArtists)
-      .where(eq(albumArtists.albumId, albumId))
-      .all()
-      .map((r) => r.id),
-  );
-  const last = db
-    .select({ value: max(albumArtists.position) })
-    .from(albumArtists)
-    .where(eq(albumArtists.albumId, albumId))
-    .get();
-  let position = (last?.value ?? -1) + 1;
-  const rows = artistIds
-    .filter((id) => !existing.has(id))
-    .map((artistId) => ({ albumId, artistId, position: position++ }));
-  if (rows.length > 0) db.insert(albumArtists).values(rows).run();
 }
 
 export interface EditSongInput {
@@ -292,7 +228,7 @@ function replaceAlbums(
   id: number,
   entries: NonNullable<EditSongInput["albums"]>,
 ) {
-  const { tx, resolver, changed } = context;
+  const { tx, changed } = context;
   const previous = new Map(
     tx
       .select({ albumId: albumSongs.albumId, track: albumSongs.track })
@@ -304,7 +240,7 @@ function replaceAlbums(
   const seen = new Set<number>();
   const rows = [];
   for (const entry of entries) {
-    const albumId = resolver.album(entry.album);
+    const albumId = albumForEdit(context, id, entry.album);
     if (seen.has(albumId)) continue;
     seen.add(albumId);
     const track =
@@ -318,8 +254,4 @@ function replaceAlbums(
   changed.add("album_songs");
 }
 
-function positiveOrNull(value: number | null | undefined) {
-  return typeof value === "number" && Number.isFinite(value) && value > 0
-    ? Math.trunc(value)
-    : null;
-}
+export { appendAlbumArtists } from "./song-albums.ts";

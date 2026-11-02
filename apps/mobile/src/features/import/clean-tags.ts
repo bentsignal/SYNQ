@@ -88,6 +88,8 @@ export function cleanTags(fileName: string, raw: RawTags) {
     title: title === "" ? stripExtension(fileName).trim() : title,
     artists: present(raw.artist),
     album: present(raw.album),
+    albumArtists: present(raw.albumArtist),
+    compilation: raw.compilation,
     year: parseYear(raw.year),
     track: parseTrack(raw.track) ?? fromTitle?.track ?? fromName.track ?? null,
   };

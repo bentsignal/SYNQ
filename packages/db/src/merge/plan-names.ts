@@ -35,6 +35,8 @@ interface NamedRowsOptions<Row extends Album | Artist> {
   isNeeded: (row: Row) => boolean;
   /** A backup row matched `existing`, whose blanks can fill in. */
   onExisting: (row: Row, existing: Row) => void;
+  /** What makes two new rows one; by default, their name. */
+  identity?: (row: Row) => string;
   /** Another backup row of the same name as a row that's new. */
   onSameName: (row: Row, created: Row) => void;
 }
@@ -53,7 +55,7 @@ export function planNamedRows<Row extends Album | Artist>(
       continue;
     }
     if (!options.isNeeded(row)) continue;
-    const name = cleanName(row.name);
+    const name = options.identity?.(row) ?? cleanName(row.name);
     const same = created.get(name);
     if (same !== undefined) {
       targets.set(row.id, same.id);

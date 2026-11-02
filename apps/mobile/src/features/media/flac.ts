@@ -1,6 +1,7 @@
-import type { RawTags, SongTags } from "./song-tags.ts";
+import type { EmbeddedTags, SongTags } from "./song-tags.ts";
 import {
   concatBytes,
+  firstNumber,
   latin1Bytes,
   latin1Text,
   readUint32BE,
@@ -35,8 +36,20 @@ export const FLAC_BLOCK_HEADER_LENGTH = 4;
 /** Padding left after the blocks, so later edits can grow them in place. */
 const PADDING = 1024;
 
-/** Vorbis comment fields SYNQ writes (compared case-insensitively). */
-const OWN_FIELDS = new Set(["TITLE", "ARTIST", "ALBUM", "DATE", "TRACKNUMBER"]);
+/** The most a block's 24-bit length can say. */
+const MAX_BLOCK_LENGTH = 0xffffff;
+
+/** Vorbis comment fields SYNQ always replaces (compared case-insensitively). */
+const OWN_FIELDS = new Set([
+  "TITLE",
+  "ARTIST",
+  "ALBUM",
+  "ALBUMARTIST",
+  "ALBUM ARTIST",
+]);
+
+/** Picture types a new cover replaces: front cover, and "other" (ffmpeg's). */
+const COVER_TYPES = new Set([0, 3]);
 
 export interface FlacBlock {
   type: number;
@@ -55,6 +68,9 @@ export function parseFlacBlockHeader(header: Uint8Array) {
 
 function blockBytes(block: FlacBlock, last: boolean) {
   const length = block.body.length;
+  if (length > MAX_BLOCK_LENGTH) {
+    throw new RangeError("This block is too large for FLAC.");
+  }
   return concatBytes([
     Uint8Array.of(
       (last ? 0x80 : 0) | block.type,
@@ -80,17 +96,18 @@ export function parseVorbisComment(body: Uint8Array) {
   const vendor = lengthPrefixed(body, 0);
   const count = readUint32LE(body, vendor.next);
   const fields = new Array<string>();
+  const raw = new Array<Uint8Array>();
   let offset = vendor.next + 4;
   for (let index = 0; index < count && offset + 4 <= body.length; index++) {
     const field = lengthPrefixed(body, offset);
     fields.push(utf8Text(field.value));
+    raw.push(field.value);
     offset = field.next;
   }
-  return { fields, vendor: vendor.value };
+  return { fields, raw, vendor: vendor.value };
 }
 
-function vorbisCommentBody(vendor: Uint8Array, fields: readonly string[]) {
-  const encoded = fields.map(utf8Bytes);
+function vorbisCommentBody(vendor: Uint8Array, encoded: readonly Uint8Array[]) {
   return concatBytes([
     uint32LE(vendor.length),
     vendor,
@@ -141,6 +158,9 @@ function pictureBody(jpeg: Uint8Array) {
   ]);
 }
 
+/** Fields whose several values are one list, as ARTIST=A and ARTIST=B are. */
+const LIST_FIELDS = new Set(["ARTIST", "ALBUMARTIST", "ALBUM ARTIST"]);
+
 /** Every Vorbis comment value by upper-cased name; several ARTIST fields join. */
 function vorbisValues(blocks: readonly FlacBlock[]) {
   const values = new Map<string, string>();
@@ -153,7 +173,7 @@ function vorbisValues(blocks: readonly FlacBlock[]) {
     const previous = values.get(name);
     if (value === "") continue;
     if (previous === undefined) values.set(name, value);
-    else if (name === "ARTIST") values.set(name, `${previous}, ${value}`);
+    else if (LIST_FIELDS.has(name)) values.set(name, `${previous}, ${value}`);
   }
   return values;
 }
@@ -178,65 +198,103 @@ function firstValue(values: Map<string, string>, names: readonly string[]) {
 /** The tags and front cover in a file's metadata blocks, for import. */
 export function readFlacTags(blocks: readonly FlacBlock[]) {
   const values = vorbisValues(blocks);
+  const albumArtist = firstValue(values, ["ALBUMARTIST", "ALBUM ARTIST"]);
   return {
     artwork: frontCover(blocks),
     tags: {
       album: firstValue(values, ["ALBUM"]),
-      artist: firstValue(values, ["ARTIST", "ALBUMARTIST"]),
+      albumArtist,
+      artist: firstValue(values, ["ARTIST"]) ?? albumArtist,
+      compilation: firstValue(values, ["COMPILATION"]) === "1",
       title: firstValue(values, ["TITLE"]),
-      track: firstValue(values, ["TRACKNUMBER"]),
+      track: firstValue(values, ["TRACKNUMBER", "TRACK"]),
       year: firstValue(values, ["DATE", "YEAR"]),
-    } satisfies RawTags,
-  };
+    },
+  } satisfies EmbeddedTags;
 }
 
-/** SYNQ's Vorbis comment fields for `tags`. */
-function ownFields(tags: SongTags) {
-  return [
-    tags.title === "" ? null : `TITLE=${tags.title}`,
-    tags.artists.length === 0 ? null : `ARTIST=${tags.artists.join(", ")}`,
-    tags.album === null ? null : `ALBUM=${tags.album}`,
-    tags.year === null ? null : `DATE=${String(tags.year)}`,
-    tags.track === null ? null : `TRACKNUMBER=${String(tags.track)}`,
-  ].filter((field) => field !== null);
+/** Whether a date or track field already says what the library does. */
+function sameNumber(fields: readonly string[], name: string, value: number) {
+  const found = fields.find((field) => fieldName(field) === name);
+  return (
+    found !== undefined &&
+    firstNumber(found.slice(found.indexOf("=") + 1)) === value
+  );
+}
+
+/** A field for a value, or none when there's nothing to say. */
+function ownField(name: string, value: string | number | null) {
+  return value === null || value === "" ? [] : [`${name}=${String(value)}`];
 }
 
 /**
- * Blocks an export keeps as they are: all but comments, padding, and (when
- * SYNQ has a cover) pictures, which players show in file order, so an old
- * cover would win.
+ * The comment's fields for `tags`. A date or track that still says what the
+ * library says stays as it was: "2021-05-04" and "3/12" don't shrink to
+ * "2021" and "3" just because a title changed. The rest of the file's fields
+ * stay byte for byte, even ones that aren't valid UTF-8.
  */
+function commentFields(
+  comments: readonly ReturnType<typeof parseVorbisComment>[],
+  tags: SongTags,
+) {
+  const fields = comments.flatMap((comment) => comment.fields);
+  const raw = comments.flatMap((comment) => comment.raw);
+  const sameYear = tags.year !== null && sameNumber(fields, "DATE", tags.year);
+  const sameTrack =
+    tags.track !== null && sameNumber(fields, "TRACKNUMBER", tags.track);
+  const own = [
+    ...ownField("TITLE", tags.title),
+    ...ownField("ARTIST", tags.artists.join(", ")),
+    ...ownField("ALBUMARTIST", tags.albumArtists.join(", ")),
+    ...ownField("ALBUM", tags.album),
+    ...ownField("DATE", sameYear ? null : tags.year),
+    ...ownField("TRACKNUMBER", sameTrack ? null : tags.track),
+  ];
+  const kept = raw.filter((_, index) => {
+    const name = fieldName(fields[index] ?? "");
+    if (name === "DATE" || name === "YEAR") return sameYear;
+    if (name === "TRACKNUMBER") return sameTrack;
+    return !OWN_FIELDS.has(name);
+  });
+  return [...own.map(utf8Bytes), ...kept];
+}
+
+/** Whether an export keeps a block as it is: all but comments, padding, and the cover it replaces. */
 function keptBlock(block: FlacBlock, replacingCover: boolean) {
   if (block.type === FLAC_BLOCK.vorbisComment) return false;
   if (block.type === FLAC_BLOCK.padding) return false;
-  return !(replacingCover && block.type === FLAC_BLOCK.picture);
+  if (block.type !== FLAC_BLOCK.picture || !replacingCover) return true;
+  return !COVER_TYPES.has(parsePicture(block.body).type);
 }
 
 /**
- * `fLaC` and new metadata blocks for `tags`: STREAMINFO and the file's
- * other blocks as they were, its Vorbis comments with SYNQ's fields
- * replaced, its pictures replaced by the cover when `tags.artwork` is set,
- * and fresh padding.
+ * `fLaC` and new metadata blocks for `tags`: STREAMINFO first, as it must be,
+ * then the comments with SYNQ's fields replaced, the new cover ahead of any
+ * other pictures (players show the first), the file's other blocks as they
+ * were, and fresh padding. Without `tags.artwork`, the file's pictures stay.
  */
 export function buildFlacHead(blocks: readonly FlacBlock[], tags: SongTags) {
-  const comment = blocks.find(
-    (block) => block.type === FLAC_BLOCK.vorbisComment,
+  const comments = blocks
+    .filter((block) => block.type === FLAC_BLOCK.vorbisComment)
+    .map((block) => parseVorbisComment(block.body));
+  const vendor = comments[0]?.vendor ?? utf8Bytes("SYNQ");
+  const kept = blocks.filter((block) =>
+    keptBlock(block, tags.artwork !== null),
   );
-  const parsed =
-    comment === undefined ? null : parseVorbisComment(comment.body);
-  const fields = [
-    ...ownFields(tags),
-    ...(parsed?.fields ?? []).filter(
-      (field) => !OWN_FIELDS.has(fieldName(field)),
-    ),
-  ];
-  const vendor = parsed?.vendor ?? utf8Bytes("SYNQ");
+  const streamInfo = kept.filter(
+    (block) => block.type === FLAC_BLOCK.streamInfo,
+  );
+  const others = kept.filter((block) => block.type !== FLAC_BLOCK.streamInfo);
   const out = [
-    ...blocks.filter((block) => keptBlock(block, tags.artwork !== null)),
-    { body: vorbisCommentBody(vendor, fields), type: FLAC_BLOCK.vorbisComment },
+    ...streamInfo,
+    {
+      body: vorbisCommentBody(vendor, commentFields(comments, tags)),
+      type: FLAC_BLOCK.vorbisComment,
+    },
     ...(tags.artwork === null
       ? []
       : [{ body: pictureBody(tags.artwork), type: FLAC_BLOCK.picture }]),
+    ...others,
     { body: new Uint8Array(PADDING), type: FLAC_BLOCK.padding },
   ];
   return concatBytes([

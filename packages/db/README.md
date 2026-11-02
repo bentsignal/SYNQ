@@ -49,6 +49,9 @@ Only `@synq/db/expo` imports native modules (`expo-sqlite`,
   so 2.5.2's case-variant duplicates keep their songs. Artist tags split
   on commas, except that a run of pieces naming an existing artist
   ("Tyler, The Creator") stays whole.
+- **Albums are a name and artists**: two "Greatest Hits" by different artists
+  are two rows. See `src/library/album-identity.ts` and docs/rewrite.md →
+  Same-named albums.
 
 ## Wiring it into the app
 

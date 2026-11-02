@@ -3,7 +3,7 @@ import { router, Stack } from "expo-router";
 import { FieldGroup } from "@expo/ui";
 
 import type { SongDetail } from "@synq/db";
-import { editSong, getSong, listAlbums } from "@synq/db";
+import { canAddAlbumNamed, editSong, getSong, listAlbums } from "@synq/db";
 
 import type { ArtworkChange } from "./artwork-change";
 import type { Pick } from "./pick";
@@ -154,11 +154,13 @@ export function EditSongAlbumsScreen() {
     read: (db) => listAlbums(db, { order: "asc", sort: "name" }),
     select: (items) =>
       items.map((album) => ({
+        artists: album.artists,
         detail: dotted(names(album.artists), album.year),
         id: album.id,
         name: album.name,
       })),
   });
+  const artistNames = edits.artists.map((artist) => artist.name);
   return (
     <>
       <Stack.Screen options={{ title: "Albums" }} />
@@ -166,6 +168,7 @@ export function EditSongAlbumsScreen() {
         noun="Album"
         options={albums}
         picked={edits.albums}
+        canAddNamed={(name) => canAddAlbumNamed(name, albums, artistNames)}
         onChange={(picked) => draft.update(() => ({ albums: picked }))}
       />
     </>

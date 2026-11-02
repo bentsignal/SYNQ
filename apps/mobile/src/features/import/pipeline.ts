@@ -6,10 +6,10 @@ import { documentFile } from "@synq/db/expo";
 import type { NativeAudioInfo } from "~/features/media/native";
 import type { RawTags } from "~/features/media/song-tags";
 import { libraryDb } from "~/features/library/database";
-import { readFlacTags } from "~/features/media/flac";
-import { readFlacBlocks } from "~/features/media/heads";
+import { withFileSource } from "~/features/media/file-source";
 import { synqMedia } from "~/features/media/native";
-import { audioExtension, audioMimeType, cleanTags } from "./clean-tags";
+import { readEmbeddedTags } from "~/features/media/retag";
+import { audioMimeType, cleanTags } from "./clean-tags";
 
 /** Where imports stage their work; cleared whenever the queue is idle. */
 export const IMPORT_DIRECTORY = new Directory(Paths.cache, "import");
@@ -31,6 +31,9 @@ export interface ReadSong {
   /** The raw artist tag; the library splits it into artists. */
   artists: string | null;
   album: string | null;
+  /** The raw album artist tag, split the same way. */
+  albumArtists: string | null;
+  compilation: boolean;
   year: number | null;
   track: number | null;
   durationMs: number;
@@ -39,6 +42,13 @@ export interface ReadSong {
   covers: Directory | null;
 }
 
+/**
+ * This batch's albums that another same-named song without an album artist
+ * can still join (docs/rewrite.md → Same-named albums). A batch ends when the
+ * queue goes idle, which is when `clearImportStaging` runs.
+ */
+const openAlbums = new Set<number>();
+
 function stagingFor(key: string) {
   return new Directory(IMPORT_DIRECTORY, "items", key);
 }
@@ -46,33 +56,51 @@ function stagingFor(key: string) {
 function rawTags(info: NativeAudioInfo) {
   return {
     album: info.album ?? null,
+    albumArtist: null,
     artist: info.artist ?? null,
+    compilation: false,
     title: info.title ?? null,
     track: info.track ?? null,
     year: info.year ?? null,
   } satisfies RawTags;
 }
 
+/** A tag SYNQ can't parse is no reason to refuse a file that plays. */
+function embeddedTagsOf(source: ImportSource) {
+  try {
+    return withFileSource(new File(source.uri), (bytes) =>
+      readEmbeddedTags(bytes, source.name),
+    );
+  } catch {
+    return null;
+  }
+}
+
 /**
- * FLAC's Vorbis comments, which AVFoundation doesn't read, fill in the
- * tags; its cover is written to `artwork` if AVFoundation found none.
+ * What SYNQ reads from the file itself wins over AVFoundation, which skips
+ * FLAC, ID3v2.2, extended headers, album artists, and the compilation flag,
+ * and takes the first picture rather than the front cover. Its cover is
+ * written to `artwork`. AVFoundation still fills in the rest (ID3v1).
  */
-function withFlacTags(
+function withEmbeddedTags(
   source: ImportSource,
   raw: RawTags,
   artwork: File,
   hasArtwork: boolean,
 ) {
-  const flac = readFlacTags(readFlacBlocks(new File(source.uri)).blocks);
+  const embedded = embeddedTagsOf(source);
+  if (embedded === null) return { hasArtwork, tags: raw };
   const tags = {
-    album: raw.album ?? flac.tags.album,
-    artist: raw.artist ?? flac.tags.artist,
-    title: raw.title ?? flac.tags.title,
-    track: raw.track ?? flac.tags.track,
-    year: raw.year ?? flac.tags.year,
+    album: embedded.tags.album ?? raw.album,
+    albumArtist: embedded.tags.albumArtist,
+    artist: embedded.tags.artist ?? raw.artist,
+    compilation: embedded.tags.compilation,
+    title: embedded.tags.title ?? raw.title,
+    track: embedded.tags.track ?? raw.track,
+    year: embedded.tags.year ?? raw.year,
   } satisfies RawTags;
-  if (hasArtwork || flac.artwork === null) return { hasArtwork, tags };
-  artwork.write(flac.artwork);
+  if (embedded.artwork === null) return { hasArtwork, tags };
+  artwork.write(embedded.artwork);
   return { hasArtwork: true, tags };
 }
 
@@ -96,10 +124,12 @@ export async function readSource(source: ImportSource) {
   staging.create({ idempotent: true, intermediates: true });
   const artwork = new File(staging, "artwork");
   const info = await synqMedia().readAudioFile(source.uri, artwork.uri);
-  const read =
-    audioExtension(source.name) === "flac"
-      ? withFlacTags(source, rawTags(info), artwork, info.hasArtwork)
-      : { hasArtwork: info.hasArtwork, tags: rawTags(info) };
+  const read = withEmbeddedTags(
+    source,
+    rawTags(info),
+    artwork,
+    info.hasArtwork,
+  );
   const covers = read.hasArtwork ? await renderCovers(staging, artwork) : null;
   return {
     ...cleanTags(source.name, read.tags),
@@ -123,19 +153,25 @@ async function moveInto(file: File, destination: File) {
  */
 export async function importSong(source: ImportSource, read: ReadSong) {
   const db = libraryDb();
-  const [added] = addSongs(db, [
-    {
-      album: read.album,
-      artists: read.artists,
-      durationMs: read.durationMs,
-      fileName: source.name,
-      hasArtwork: read.covers !== null,
-      mimeType: read.mimeType,
-      title: read.title,
-      track: read.track,
-      year: read.year,
-    },
-  ]).value;
+  const [added] = addSongs(
+    db,
+    [
+      {
+        album: read.album,
+        albumArtists: read.albumArtists,
+        artists: read.artists,
+        compilation: read.compilation,
+        durationMs: read.durationMs,
+        fileName: source.name,
+        hasArtwork: read.covers !== null,
+        mimeType: read.mimeType,
+        title: read.title,
+        track: read.track,
+        year: read.year,
+      },
+    ],
+    { openAlbums },
+  ).value;
   if (added === undefined) throw new Error("The song wasn't added.");
   try {
     const audio = documentFile(added.filePath);
@@ -177,8 +213,9 @@ export function discardSource(source: ImportSource) {
   }
 }
 
-/** Clears everything imports staged. */
+/** Clears everything imports staged. The next import starts a new batch. */
 export function clearImportStaging() {
+  openAlbums.clear();
   try {
     if (IMPORT_DIRECTORY.exists) IMPORT_DIRECTORY.delete();
   } catch {

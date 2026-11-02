@@ -72,18 +72,21 @@ function ChoiceRow({
  * Picks artists or albums for an edit sheet: the chosen ones first, in
  * credit order (the first album is the song's primary one), then every
  * other, filtered by the bar's search field. Typing a name that isn't
- * there offers it as a new one.
+ * there offers it as a new one; `canAddNamed` can offer one that is, for
+ * albums, where two can share a name.
  */
 export function ChoiceList({
   noun,
   options,
   picked,
+  canAddNamed,
   onChange,
 }: {
   /** "Artist" or "Album", for the search field and the New row. */
   noun: string;
   options: readonly { id: number; name: string; detail?: string }[];
   picked: readonly Pick[];
+  canAddNamed?: (name: string) => boolean;
   onChange: (picked: Pick[]) => void;
 }) {
   const search = useSearchText();
@@ -93,11 +96,20 @@ export function ChoiceList({
     (option) =>
       !pickedKeys.has(pickKey(option)) && matchesSearch(typed, [option.name]),
   );
+  function sameName(option: { name: string }) {
+    return option.name.toLowerCase() === typed.toLowerCase();
+  }
   const exists =
     typed === "" ||
-    [...options, ...picked].some(
-      (option) => option.name.toLowerCase() === typed.toLowerCase(),
-    );
+    picked.some((pick) => !("id" in pick) && sameName(pick)) ||
+    (canAddNamed === undefined
+      ? [...options, ...picked].some(sameName)
+      : !canAddNamed(typed));
+  function detailOf(pick: Pick) {
+    return "id" in pick
+      ? options.find((option) => option.id === pick.id)?.detail
+      : "New";
+  }
   return (
     <>
       <Stack.SearchBar
@@ -122,7 +134,7 @@ export function ChoiceList({
                 <ChoiceRow
                   key={pickKey(pick)}
                   label={pick.name}
-                  detail={"id" in pick ? undefined : "New"}
+                  detail={detailOf(pick)}
                   checked
                   onPress={() =>
                     onChange(

@@ -17,6 +17,7 @@ export type {
 } from "./schema.ts";
 export { libraryMigrations } from "./migrations.ts";
 
+export { canAddAlbumNamed, VARIOUS_ARTISTS } from "./library/album-identity.ts";
 export * from "./library/album-tracks.ts";
 export * from "./library/albums.ts";
 export * from "./library/artists.ts";

@@ -84,16 +84,16 @@ fields need it.
   reads imported audio with AVFoundation (tags, precise duration in ms,
   embedded artwork), writes covers (`cover_full.jpg` ≤1500 px and
   `cover_small.jpg` ≤200 px, center-cropped square), splices new tag blocks
-  into export copies, remuxes M4A with iTunes tags (passthrough export),
+  into export copies, remuxes the M4A files TypeScript can't tag (passthrough
+  export),
   hard-links the library for backups, and runs Wi-Fi Transfer's HTTP server
   (Network.framework; uploads stream to disk). No file passes through
   JavaScript as base64. 2.5.2's JavaScript metadata reader
   (`@missingcore/audio-metadata`) needs the legacy expo-file-system API, and
   its server (`react-native-http-bridge-refurbished`) is an old-architecture
   module that sent files as base64 JSON.
-- ID3 (MP3) and FLAC tag blocks are read and written in TypeScript
-  (`src/features/media`, node-tested); AVFoundation doesn't expose FLAC's
-  Vorbis comments. AAC streams and WAV are exported as they are.
+- Tags are read and written in TypeScript (`src/features/media`, node-tested):
+  ID3, FLAC, M4A's iTunes atoms, and WAV. See [audio-tags.md](audio-tags.md).
 - **react-native-zip-archive** for backups (zip64, SSZipArchive);
   **posthog-react-native** with `expo-application`, `expo-device`, and
   `expo-localization` for its device properties.
@@ -215,6 +215,62 @@ importer). The contract:
    captured from the 2.5.2 app in the simulator, and by an end-to-end
    upgrade test: install 2.5.2, add data, install 3.0 over it.
 
+### Same-named albums
+
+An album is its name and its artists (Shawn, November 2026): two "Greatest
+Hits" by different artists are two albums. Nothing gets renamed: album lists,
+search, the album screen, and the pickers all show the artist beside the name,
+and the database has never required album names to be unique. The rule is
+`packages/db/src/library/album-identity.ts`, with no schema change. A 2.5.2
+album holding songs by several artists stays exactly as it is: the importer
+neither splits nor merges, and this only decides where new songs go.
+
+A file's album artist (TPE2, `aART`, ALBUMARTIST) says whose album it is. A
+compilation flag (TCMP, `cpil`, COMPILATION) with none means Various Artists,
+an artist row like any other. The album credits just these, so a featured
+artist doesn't become an album's artist. It joins, in order:
+
+1. the same-named album sharing an album artist (the same set first), so a
+   compilation stays whole, across batches;
+2. else one with no artists;
+3. else a 2.5.2-style album crediting several artists, this song's among them;
+4. else a new album.
+
+Most files have no album artist, and then only the song's artists and its batch
+can say. A batch is everything imported until the queue goes idle. It joins:
+
+1. the same-named album sharing an artist. A track number clashing doesn't
+   matter here: re-importing an album gives its songs again, and they belong
+   with it;
+2. else one with no artists;
+3. else, within the batch, one started by a song with no album artist, unless
+   that song's track number is taken there. So an untagged compilation's tracks
+   (1 by A, 2 by B, 3 by C) stay one album, while two artists' "Greatest Hits"
+   (both with a track 1) in one import separate;
+4. else a new album. Across batches a new artist with nothing in common starts
+   their own: that's what two different albums look like, and it's the choice
+   that never merges them.
+
+A song with no artist at all has nothing against any album of the name, so it
+joins one (one with no artists first).
+
+What this can't tell apart, since imports read one file at a time: two artists'
+untagged albums in one batch whose first few songs have no clashing track (an
+import sorted by title, say) stay combined, as they do today, because each joins
+on the artist already credited. An untagged compilation imported in two parts
+makes a second album for any artist new in the second part, and an untagged
+two-disc compilation can split on a disc's clashing track numbers.
+
+**Editing.** Picking an album is by id, and the picker shows each one's artist.
+It offers a typed name as new unless these artists have that album (or nobody's
+credited, so they couldn't be told apart). A name that reaches `editSong` means
+the album the song's artists are on, else a new one credited to them. **New
+Album and Edit Album** refuse a name only when another album has it with artists
+in common, or with no artists to tell them apart.
+
+**Exports** write the album artists, so a re-import or another player sees the
+same albums.
+
 ### Restoring a backup
 
 Restoring **adds a backup to the library**; it never removes or overwrites
@@ -246,9 +302,12 @@ nothing the second time.
 - **A song on both sides** keeps its title and credits; the current library
   wins. Only blanks fill in: artwork, artists if it has none, albums if it
   has none, a track number, or its audio if the file is missing.
-- **Artists and albums** match by name the way import does (ignoring case,
-  an exact match first), and combine. Two different albums with the same
-  name combine too, as they would on import. An album gaining songs adds the
+- **Artists** match by name the way import does (ignoring case, an exact match
+  first), and combine. **Albums** match by name and artists, as import does
+  (see "Same-named albums"): two "Greatest Hits" by different artists stay two,
+  in the backup and across it. A song on both sides says two same-named albums
+  are one, whatever their artists say; an album with no artists on either side
+  has nothing to tell it apart, so it combines. An album gaining songs adds the
   backup's album artists after its own; one gaining nothing keeps them unless
   it has none. A backup's artist or album that nothing would use isn't
   created (all its songs matched and kept their own credits: that's the

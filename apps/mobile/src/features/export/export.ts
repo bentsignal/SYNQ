@@ -23,13 +23,15 @@ import {
   getBookkeeping,
   updateBookkeeping,
 } from "~/features/import/bookkeeping";
-import { audioExtension } from "~/features/import/clean-tags";
 import { failed } from "~/features/library/actions";
 import { libraryDb } from "~/features/library/database";
-import { buildFlacHead } from "~/features/media/flac";
-import { readFlacBlocks, readId3Tag } from "~/features/media/heads";
-import { buildId3Tag } from "~/features/media/id3";
+import { applyPatches, withFileSource } from "~/features/media/file-source";
 import { synqMedia } from "~/features/media/native";
+import {
+  matchesExtension,
+  planRetag,
+  sniffAudio,
+} from "~/features/media/retag";
 import { queryClient } from "~/lib/query-client";
 import {
   cleanName,
@@ -44,12 +46,12 @@ const COPY_SHARE = 0.5;
 
 /**
  * Export (Share): copies of songs with the library's current tags (title,
- * artists, album, year, track, artwork) written in, in the share sheet: one
- * song as its file, an album, playlist, or artist as one zip. Library files
- * are never modified, and the copies go when the sheet closes. MP3 gets ID3, FLAC Vorbis comments and
- * a PICTURE block, M4A iTunes atoms (remuxed natively); AAC streams and WAV
- * have no tag format worth writing, so they're shared as they are, as is
- * any file that fails to retag.
+ * artists, album, album artists, year, track, artwork) written in, in the
+ * share sheet: one song as its file, an album, playlist, or artist as one zip.
+ * Library files are never modified (an edit only changes the database), and
+ * the copies go when the sheet closes. `planRetag` works out the tags for the
+ * file's format (docs/audio-tags.md); a file it can't tag is shared as it is,
+ * since the music matters more than the tags.
  */
 
 const EXPORT_DIRECTORY = new Directory(Paths.cache, "export");
@@ -74,19 +76,27 @@ function uniqueFile(folder: Directory, name: string) {
   return candidate;
 }
 
-function tagsFor(song: SongListItem, cover: File | null) {
-  const album = song.albums[0];
-  const year =
-    album === undefined
-      ? null
-      : (getAlbum(libraryDb(), album.id)?.year ?? null);
+/** What a song's tags take from its primary album. */
+function albumTags(song: SongListItem) {
+  const [album] = song.albums;
+  const row = album === undefined ? null : getAlbum(libraryDb(), album.id);
+  if (album === undefined || row === null) {
+    return { album: null, albumArtists: [], track: null, year: null };
+  }
   return {
-    album: album?.name ?? null,
+    album: album.name,
+    albumArtists: row.artists.map((artist) => artist.name),
+    track: album.track,
+    year: row.year,
+  };
+}
+
+function tagsFor(song: SongListItem, cover: File | null) {
+  return {
+    ...albumTags(song),
     artists: song.artists.map((artist) => artist.name),
     artwork: cover === null ? null : cover.bytesSync(),
     title: song.title,
-    track: album?.track ?? null,
-    year,
   } satisfies SongTags;
 }
 
@@ -104,30 +114,8 @@ function coverFile(song: SongListItem) {
   return file.exists ? file : null;
 }
 
-/** MP3: a new ID3 tag in place of the file's, its other frames kept. */
-async function writeMp3(source: File, destination: File, tags: SongTags) {
-  const existing = readId3Tag(source);
-  const head = buildId3Tag(tags, existing);
-  await synqMedia().spliceFile(
-    source.uri,
-    destination.uri,
-    existing?.length ?? 0,
-    head,
-  );
-  return true;
-}
-
-/** FLAC: new metadata blocks in place of the file's. */
-async function writeFlac(source: File, destination: File, tags: SongTags) {
-  const { blocks, end } = readFlacBlocks(source);
-  if (blocks.length === 0) return false;
-  const head = buildFlacHead(blocks, tags);
-  await synqMedia().spliceFile(source.uri, destination.uri, end, head);
-  return true;
-}
-
-/** M4A: iTunes atoms, remuxed natively without re-encoding. */
-async function writeMp4(
+/** AVFoundation's passthrough remux, for the M4A files `planRetag` leaves out. */
+async function writeMp4Natively(
   source: File,
   destination: File,
   tags: SongTags,
@@ -150,26 +138,31 @@ async function writeMp4(
 
 /**
  * Writes `tags` into `destination`, a copy of `source`, in the file's own
- * tag format. False when the format has none worth writing.
+ * tag format. False when it has none SYNQ can write.
  */
-function writeTagged(
+async function writeTagged(
   source: File,
   destination: File,
   tags: SongTags,
   cover: File | null,
 ) {
-  switch (audioExtension(source.name)) {
-    case "mp3":
-      return writeMp3(source, destination, tags);
-    case "flac":
-      return writeFlac(source, destination, tags);
-    case "m4a":
-      return writeMp4(source, destination, tags, cover);
-    case "aac":
-    case "wav":
-    case null:
-      return Promise.resolve(false);
+  const { format, plan } = withFileSource(source, (bytes) => ({
+    format: sniffAudio(bytes, source.name),
+    plan: planRetag(bytes, source.name, tags),
+  }));
+  if (plan === null) {
+    return format === "mp4" && matchesExtension(format, source.name)
+      ? writeMp4Natively(source, destination, tags, cover)
+      : false;
   }
+  await synqMedia().spliceFile(
+    source.uri,
+    destination.uri,
+    plan.skip,
+    plan.head,
+  );
+  applyPatches(destination, plan.patches);
+  return true;
 }
 
 /** Writes a tagged copy of `song` into `folder` as `name`; returns the copy. */
@@ -178,12 +171,9 @@ async function exportCopy(song: SongListItem, folder: Directory, name: string) {
   const destination = uniqueFile(folder, name);
   const cover = coverFile(song);
   // Shared as it is when retagging fails: the music matters more than the tags.
-  const tagged = await writeTagged(
-    source,
-    destination,
-    tagsFor(song, cover),
-    cover,
-  ).catch(() => false);
+  const tagged = await Promise.resolve()
+    .then(() => writeTagged(source, destination, tagsFor(song, cover), cover))
+    .catch(() => false);
   if (!tagged) {
     if (destination.exists) destination.delete();
     // Natively, off the JavaScript thread: a WAV can be hundreds of megabytes.

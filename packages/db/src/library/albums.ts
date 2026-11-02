@@ -1,5 +1,5 @@
 import type { SQL } from "drizzle-orm";
-import { asc, eq, inArray, ne, sql } from "drizzle-orm";
+import { asc, eq, inArray, sql } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import type { ArtworkRef } from "./artwork.ts";
@@ -7,10 +7,14 @@ import type { LibraryTable, WriteOptions } from "./changes.ts";
 import type { ArtistCredit, SongListItem } from "./song-items.ts";
 import type { SortOrder } from "./text.ts";
 import { albumArtists, albums, albumSongs, artists, songs } from "../schema.ts";
+import {
+  assertAlbumEditAllowed,
+  assertUniqueAlbum,
+} from "./album-uniqueness.ts";
 import { artworkDir, artworkRef } from "./artwork.ts";
 import { changesOf, nowFrom, written } from "./changes.ts";
 import { LibraryError } from "./errors.ts";
-import { assertUniqueName, requireName, uniqueIds } from "./find-or-create.ts";
+import { requireName, uniqueIds } from "./find-or-create.ts";
 import { loadSongItems, songSearchFields } from "./song-items.ts";
 import { matchesSearch, sortBy } from "./text.ts";
 
@@ -182,7 +186,10 @@ export interface AlbumInput {
   artistIds?: readonly number[];
 }
 
-/** Creates an album. Names are unique ignoring case (2.5.2 refused exact duplicates). */
+/**
+ * Creates an album. Its name and artists are unique together, ignoring case:
+ * two albums can share a name when they're by different artists.
+ */
 export function createAlbum(
   db: LibraryDb,
   input: AlbumInput,
@@ -190,7 +197,12 @@ export function createAlbum(
 ) {
   const name = requireName(input.name, "Album");
   const id = db.transaction((tx) => {
-    assertUniqueAlbumName(tx, name, undefined, null);
+    assertUniqueAlbum(tx, {
+      artistIds: input.artistIds ?? [],
+      currentName: null,
+      exceptId: undefined,
+      name,
+    });
     const { id } = tx
       .insert(albums)
       .values({ name, year: input.year ?? null, addedAt: nowFrom(options) })
@@ -217,7 +229,12 @@ export function updateAlbum(
     if (!current) throw new LibraryError("not-found", `No album ${id}`);
     const name =
       input.name === undefined ? undefined : requireName(input.name, "Album");
-    if (name !== undefined) assertUniqueAlbumName(tx, name, id, current.name);
+    assertAlbumEditAllowed(tx, {
+      artistIds: input.artistIds,
+      currentName: current.name,
+      id,
+      name,
+    });
     const set = {
       ...(name !== undefined && { name }),
       ...(input.year !== undefined && { year: input.year }),
@@ -278,18 +295,4 @@ function requireAlbum(db: LibraryDb, id: number) {
   const album = getAlbum(db, id);
   if (!album) throw new LibraryError("not-found", `No album ${id}`);
   return album;
-}
-
-function assertUniqueAlbumName(
-  db: LibraryDb,
-  name: string,
-  exceptId: number | undefined,
-  currentName: string | null,
-) {
-  const others = db
-    .select({ name: albums.name })
-    .from(albums)
-    .where(exceptId === undefined ? undefined : ne(albums.id, exceptId))
-    .all();
-  assertUniqueName(others, name, currentName, "An album");
 }

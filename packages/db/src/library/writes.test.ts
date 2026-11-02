@@ -154,6 +154,7 @@ void describe("editSong", () => {
       albums: [{ album: { id: 3 } }, { album: { name: "Live Set" }, track: 2 }],
     });
     assert.deepEqual(result.changed, [
+      "album_artists",
       "album_songs",
       "albums",
       "artists",

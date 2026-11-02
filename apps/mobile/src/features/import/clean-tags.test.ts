@@ -11,6 +11,8 @@ import {
 } from "./clean-tags.ts";
 
 const NO_TAGS = {
+  albumArtist: null,
+  compilation: false,
   title: null,
   artist: null,
   album: null,
@@ -39,6 +41,8 @@ void test("tags win; the title loses a track prefix", () => {
       title: "05 Real Title ",
       artist: " Tyler, The Creator ",
       album: "Igor",
+      albumArtist: " Tyler, The Creator ",
+      compilation: false,
       year: "2019",
       track: null,
     }),
@@ -46,6 +50,8 @@ void test("tags win; the title loses a track prefix", () => {
       title: "Real Title",
       artists: "Tyler, The Creator",
       album: "Igor",
+      albumArtists: "Tyler, The Creator",
+      compilation: false,
       year: 2019,
       track: 5,
     },
@@ -62,6 +68,8 @@ void test("without tags, the file name is the title and gives the track", () => 
     title: "Home",
     artists: null,
     album: null,
+    albumArtists: null,
+    compilation: false,
     year: null,
     track: 4,
   });

@@ -2,10 +2,11 @@
  * Artist and album references in writes: either an existing id or a name to
  * find or create (so a form can mix picked and newly typed artists).
  */
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
-import { albums, artists } from "../schema.ts";
+import type { AlbumCandidate } from "./album-identity.ts";
+import { albumArtists, albums, albumSongs, artists } from "../schema.ts";
 import { LibraryError } from "./errors.ts";
 import { NameMatcher } from "./matching.ts";
 import { cleanName, nameKey } from "./text.ts";
@@ -68,22 +69,49 @@ export class EntityResolver {
     return id;
   }
 
-  album(ref: AlbumRef): number {
-    if ("id" in ref) {
-      const row = this.#db
-        .select({ id: albums.id })
-        .from(albums)
-        .where(eq(albums.id, ref.id))
-        .get();
-      if (!row) throw new LibraryError("not-found", `No album ${ref.id}`);
-      return row.id;
-    }
-    const name = requireName(ref.name, "Album");
-    const existing = this.albumMatcher.find(name);
-    if (existing) return existing.id;
+  /** An album that must already exist. */
+  existingAlbum(id: number): number {
+    const row = this.#db
+      .select({ id: albums.id })
+      .from(albums)
+      .where(eq(albums.id, id))
+      .get();
+    if (!row) throw new LibraryError("not-found", `No album ${id}`);
+    return row.id;
+  }
+
+  /** Every album of this name, as `album-identity.ts` needs to choose between them. */
+  albumCandidates(
+    name: string,
+    open: ReadonlySet<number> = new Set(),
+  ): AlbumCandidate[] {
+    const exact = cleanName(name);
+    return this.albumMatcher.all(name).map((row) => ({
+      artistIds: this.#db
+        .select({ id: albumArtists.artistId })
+        .from(albumArtists)
+        .where(eq(albumArtists.albumId, row.id))
+        .orderBy(asc(albumArtists.position))
+        .all()
+        .map((credit) => credit.id),
+      exactName: cleanName(row.name) === exact,
+      id: row.id,
+      open: open.has(row.id),
+      tracks: this.#db
+        .select({ track: albumSongs.track })
+        .from(albumSongs)
+        .where(eq(albumSongs.albumId, row.id))
+        .all()
+        .map((song) => song.track),
+    }));
+  }
+
+  /** A new album row, even if others have its name. */
+  createAlbum(rawName: string, year: number | null | undefined): number {
+    const name = requireName(rawName, "Album");
     const { id } = this.#db
       .insert(albums)
-      .values({ name, year: ref.year ?? null, addedAt: this.#now })
+      .values({ name, year: year ?? null, addedAt: this.#now })
       .returning({ id: albums.id })
       .get();
     this.albumMatcher.add({ id, name });

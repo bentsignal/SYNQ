@@ -48,6 +48,11 @@ export class NameMatcher<T extends NamedRow> {
   has(name: string): boolean {
     return this.#byKey.has(nameKey(name));
   }
+
+  /** Every row with this name, ignoring case, oldest first. */
+  all(name: string): readonly T[] {
+    return this.#byKey.get(nameKey(name)) ?? [];
+  }
 }
 
 /**

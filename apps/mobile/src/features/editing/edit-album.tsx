@@ -51,11 +51,7 @@ function saveEdits(album: AlbumListItem, saved: ReadonlySet<string>) {
         name: edits.name,
         year: parseYear(edits.year),
       });
-      const { emptied } = setAlbumTracks(
-        tx,
-        album.id,
-        trackIds(edits),
-      ).value;
+      const { emptied } = setAlbumTracks(tx, album.id, trackIds(edits)).value;
       return written({ emptied, id: result.value.id }, [
         "albums",
         "album_songs",

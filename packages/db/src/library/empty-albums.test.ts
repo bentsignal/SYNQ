@@ -44,9 +44,7 @@ void describe("albums left empty", () => {
     const { album, songId } = single("Single");
     const target = newAlbum();
     const result = setAlbumTracks(db, target.id, [songId]);
-    assert.deepEqual(result.value.emptied, [
-      { id: album.id, name: "Single" },
-    ]);
+    assert.deepEqual(result.value.emptied, [{ id: album.id, name: "Single" }]);
     assert.equal(getAlbum(db, album.id)?.songCount, 0);
   });
 

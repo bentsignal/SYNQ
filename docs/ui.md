@@ -233,7 +233,8 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   fades, the left fades in once the text moves, and at the end only the left
   fades. Text that fits stays still and unfaded. Under Reduce Motion it's
   truncated. Binaries without the module clip.
-- **Queue** (form sheet, detents medium and large): "Playing from
+- **Queue** (form sheet, detents medium and large): previous, play/pause, and
+  next, then "Playing from
   <source>", the current song, then "Up Next"; toolbar Shuffle / Repeat
   toggles and Clear. Every Up Next row has a `line.3.horizontal` handle: a
   touch on it picks the row up at once, with no edit mode, and dragging near

@@ -5,10 +5,12 @@ import type { LibraryDb } from "../client.ts";
 import {
   addSongsToAlbum,
   createAlbum,
+  deleteSongs,
   editSong,
   getAlbum,
   listEmptyAlbums,
   listSongs,
+  removeSongsFromAlbum,
   setAlbumTracks,
 } from "../index.ts";
 import { openMigratedLibrary } from "../testing/migrated-library.ts";
@@ -46,6 +48,31 @@ void describe("albums left empty", () => {
     const result = setAlbumTracks(db, target.id, [songId]);
     assert.deepEqual(result.value.emptied, [{ id: album.id, name: "Single" }]);
     assert.equal(getAlbum(db, album.id)?.songCount, 0);
+  });
+
+  void test("taking off an album's last song names it, and keeps it", () => {
+    const { album, songId } = single("Single");
+    const result = removeSongsFromAlbum(db, album.id, [songId]);
+    assert.deepEqual(result.value.emptied, [{ id: album.id, name: "Single" }]);
+    assert.equal(getAlbum(db, album.id)?.songCount, 0);
+  });
+
+  void test("taking off a song with others left names nothing", () => {
+    const { albumId, songId } = songOnAlbum();
+    const result = removeSongsFromAlbum(db, albumId, [songId]);
+    assert.deepEqual(result.value.emptied, []);
+  });
+
+  void test("deleting an album's last song names it, and keeps it", () => {
+    const { album, songId } = single("Single");
+    const result = deleteSongs(db, [songId]);
+    assert.deepEqual(result.value.emptied, [{ id: album.id, name: "Single" }]);
+    assert.equal(getAlbum(db, album.id)?.songCount, 0);
+  });
+
+  void test("deleting a song with others left names nothing", () => {
+    const { songId } = songOnAlbum();
+    assert.deepEqual(deleteSongs(db, [songId]).value.emptied, []);
   });
 
   void test("an album with songs left isn't named", () => {

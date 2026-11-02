@@ -72,9 +72,10 @@ export function removeFromPlaylist(
 }
 
 export function removeFromAlbum(albumId: number, songIds: readonly number[]) {
-  tryWrite("Couldn't Remove from Album", (db) =>
+  const removed = tryWrite("Couldn't Remove from Album", (db) =>
     removeSongsFromAlbum(db, albumId, songIds),
   );
+  if (removed !== undefined) offerToDeleteEmptyAlbums(removed.emptied);
 }
 
 /**
@@ -125,6 +126,7 @@ export function confirmDeleteSongs(
       forgetSongs(deleted.ids);
       deleteLibraryFolders(deleted.deletePaths);
       onDeleted?.();
+      offerToDeleteEmptyAlbums(deleted.emptied);
     },
     title: songs.length === 1 ? "Delete Song?" : "Delete Songs?",
   });

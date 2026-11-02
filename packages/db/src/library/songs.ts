@@ -4,7 +4,8 @@ import type { LibraryDb } from "../client.ts";
 import type { WriteOptions } from "./changes.ts";
 import type { SongListItem } from "./song-items.ts";
 import type { SortOrder } from "./text.ts";
-import { playlists, playlistSongs, songs } from "../schema.ts";
+import { albumSongs, playlists, playlistSongs, songs } from "../schema.ts";
+import { listEmptyAlbums } from "./albums.ts";
 import { artworkDir } from "./artwork.ts";
 import { nowFrom, written } from "./changes.ts";
 import { uniqueIds } from "./find-or-create.ts";
@@ -115,7 +116,13 @@ export function deleteSongs(
   const now = nowFrom(options);
   const deleted = db.transaction((tx) => {
     const unique = uniqueIds(ids);
-    if (unique.length === 0) return [];
+    if (unique.length === 0) return { emptied: [], ids: [] };
+    const albumIds = tx
+      .select({ id: albumSongs.albumId })
+      .from(albumSongs)
+      .where(inArray(albumSongs.songId, unique))
+      .all()
+      .map((r) => r.id);
     const affected = tx
       .selectDistinct({ id: playlistSongs.playlistId })
       .from(playlistSongs)
@@ -132,10 +139,17 @@ export function deleteSongs(
         .set({ updatedAt: now })
         .where(inArray(playlists.id, affected))
         .run();
-    return rows.map((r) => r.id).sort((a, b) => a - b);
+    return {
+      emptied: listEmptyAlbums(tx, albumIds),
+      ids: rows.map((r) => r.id).sort((a, b) => a - b),
+    };
   });
   return written(
-    { ids: deleted, deletePaths: deleted.map((id) => artworkDir("song", id)) },
+    {
+      deletePaths: deleted.ids.map((id) => artworkDir("song", id)),
+      emptied: deleted.emptied,
+      ids: deleted.ids,
+    },
     ["songs", "song_artists", "album_songs", "playlist_songs", "playlists"],
   );
 }

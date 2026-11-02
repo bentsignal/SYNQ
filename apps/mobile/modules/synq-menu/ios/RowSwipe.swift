@@ -4,13 +4,14 @@ import UIKit
 /// at the edge it left, which turns the accent, with a tick, once letting go
 /// would do the action. Letting go springs the row back, and does it past that
 /// point. Only a sideways drag takes the touch, so the list still scrolls, and
-/// one that starts at the left edge stays iOS's own Back.
+/// one to the right that starts in the left fifth stays iOS's own Back.
 @MainActor
 final class RowSwipe: NSObject, UIGestureRecognizerDelegate {
   private static let threshold: CGFloat = 72
   /// How much of the drag past the threshold the row follows.
   private static let pastThreshold: CGFloat = 0.25
-  private static let backEdge: CGFloat = 24
+  /// A drag to the right from this share of the row, at its left, is iOS's Back.
+  private static let backEdgeShare: CGFloat = 0.2
   private static let symbolInset: CGFloat = 24
   private static let symbolSize: CGFloat = 20
   /// Sideways by at least this many times its movement up or down.
@@ -52,7 +53,8 @@ final class RowSwipe: NSObject, UIGestureRecognizerDelegate {
     guard abs(velocity.x) > abs(velocity.y) * Self.sideways else { return false }
     let symbol = velocity.x > 0 ? rightSymbol : leftSymbol
     guard symbol != nil else { return false }
-    return velocity.x < 0 || pan.location(in: row).x > Self.backEdge
+    let startX = pan.location(in: row).x - pan.translation(in: row).x
+    return velocity.x < 0 || startX > row.bounds.width * Self.backEdgeShare
   }
 
   /// iOS's Back from anywhere on the page waits to see if this is a row's drag.

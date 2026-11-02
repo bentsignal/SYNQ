@@ -208,7 +208,7 @@ void describe("removing songs from an album", () => {
     addSongsToAlbum(db, target.id, [a, b, c]);
     markSongsExported(db, [b]);
     const result = removeSongsFromAlbum(db, target.id, [b]);
-    assert.deepEqual(result.value, { removed: 1 });
+    assert.deepEqual(result.value, { emptied: [], removed: 1 });
     assert.deepEqual(tracksOf(target.id), [
       [a, 1],
       [c, 3],

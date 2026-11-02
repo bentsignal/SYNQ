@@ -64,7 +64,7 @@ numbers.
 - **Swipe** (song rows, `RowSwipe.swift`): dragging a row right adds it to the
   queue, and left opens Add to Playlist. The row follows the finger over a symbol
   at the edge it left, which turns the accent with a tick at 72 pt, where letting
-  go would do it. A drag from the left edge stays iOS's Back. Adding to the queue
+  go would do it. A drag to the right from the left fifth of the row stays iOS's Back. Adding to the queue
   from a swipe or a menu shows "Added to Queue" in a capsule above the mini player
   for 4 s (`queue-toast.tsx`), and a tap on it opens the queue. The import capsule
   comes first when both have something to say. The menu goes to native as
@@ -172,11 +172,12 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   opening the song picker, drag to reorder, swipe to remove).
 - **Album**: artwork, name, year, artists (toggle list), Edit Songs (same
   native list). Adding a song moves it here: see docs/rewrite.md → Adding
-  a song to an album. Albums left empty stay, but the edit that empties one
-  offers to delete it, once, in an alert (Keep, then a destructive Delete):
-  coming back from Edit Songs with the last song removed, or after saving an
-  edit that moved another album's last song here or took it off in the song's
-  own Edit Info. An album that was already empty never asks.
+  a song to an album. Albums left empty stay, but whatever empties one offers to
+  delete it, in an alert (Keep, then a destructive Delete), at that moment:
+  removing the last song in Edit Songs, Remove from Album or Delete from Library
+  on its last song, or saving an edit that moved another album's last song here
+  or took it off in the song's own Edit Info. An album that was already empty
+  never asks.
 - **Artist**: artwork, name.
 - **Song**: artwork, title, artists, albums (toggle lists with search).
   Setting a cover on a song with an album sets the album's cover (2.5.2).

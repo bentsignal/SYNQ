@@ -89,7 +89,10 @@ export function addSongsToAlbum(
   );
 }
 
-/** Takes songs off an album; they stay in the library. */
+/**
+ * Takes songs off an album; they stay in the library. `emptied` has the album if
+ * that was its last song.
+ */
 export function removeSongsFromAlbum(
   db: LibraryDb,
   albumId: number,
@@ -112,9 +115,12 @@ export function removeSongsFromAlbum(
       );
     }
     if (count > 0) markModified(tx, ids);
-    return count;
+    return { count, emptied: count > 0 ? listEmptyAlbums(tx, [albumId]) : [] };
   });
-  return written({ removed }, removed > 0 ? ["album_songs", "songs"] : []);
+  return written(
+    { emptied: removed.emptied, removed: removed.count },
+    removed.count > 0 ? ["album_songs", "songs"] : [],
+  );
 }
 
 /**

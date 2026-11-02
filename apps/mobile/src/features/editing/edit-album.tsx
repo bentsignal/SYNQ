@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { router, Stack, useFocusEffect } from "expo-router";
+import { router, Stack } from "expo-router";
 import { FieldGroup } from "@expo/ui";
 
 import type { AlbumListItem } from "@synq/db";
@@ -171,18 +171,6 @@ function EditForm({ album }: { album: AlbumListItem }) {
     }),
   );
   const edits = draft.useValue();
-  // Back from Edit Songs with the last song gone. Nothing is saved yet, so
-  // Delete closes the sheet and Keep carries on with the form. An album that
-  // opened empty never asks.
-  const asked = useRef(false);
-  useFocusEffect(() => {
-    if (edits.tracks.length > 0) {
-      asked.current = false;
-    } else if (saved.size > 0 && !asked.current) {
-      asked.current = true;
-      offerToDeleteEmptyAlbums([album], () => router.back());
-    }
-  });
   return (
     <>
       <SheetToolbar
@@ -274,6 +262,25 @@ export function EditAlbumArtistsScreen() {
  */
 export function EditAlbumTracksScreen() {
   const edits = draft.useValue();
+  const id = useIdParam();
+  const album = useLibraryQuery({
+    key: ["album", id],
+    read: (db) => getAlbum(db, id),
+    select: (found) => found,
+  });
+  const hadSongs = useLibraryQuery({
+    key: ["album-tracks", id],
+    read: (db) => listAlbumTracks(db, id),
+    select: (tracks) => tracks.length > 0,
+  });
+  /**
+   * The last song just came off. Nothing is saved yet, so Delete closes the
+   * sheet and Keep carries on with it. An album that opened empty never asks.
+   */
+  function offerIfEmptied(remaining: number) {
+    if (remaining > 0 || !hadSongs || album === null) return;
+    offerToDeleteEmptyAlbums([album], () => router.dismiss(2));
+  }
   return (
     <>
       <Stack.Screen options={{ title: "Edit Songs" }} />
@@ -285,11 +292,11 @@ export function EditAlbumTracksScreen() {
             tracks: moveItems(current.tracks, from, to),
           }))
         }
-        onDelete={(indices) =>
-          draft.update((current) => ({
-            tracks: removeItems(current.tracks, indices),
-          }))
-        }
+        onDelete={(indices) => {
+          const tracks = removeItems(edits.tracks, indices);
+          draft.update(() => ({ tracks }));
+          offerIfEmptied(tracks.length);
+        }}
       />
     </>
   );

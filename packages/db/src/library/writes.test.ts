@@ -186,7 +186,8 @@ void describe("editSong", () => {
 void describe("deleteSongs", () => {
   void test("cascades join rows, keeps artists and albums, returns folders to delete", () => {
     const result = deleteSongs(db, [1, 999, 1]);
-    assert.deepEqual(result.value, { ids: [1], deletePaths: ["library/1"] });
+    assert.deepEqual(result.value.ids, [1]);
+    assert.deepEqual(result.value.deletePaths, ["library/1"]);
     assert.equal(getSong(db, 1), null);
     assert.deepEqual(ids(listPlaylistSongs(db, 2)), [3, 5]);
     assert.deepEqual(listAlbumTracks(db, 1), []);

@@ -9,19 +9,11 @@ import { playSongs } from "~/features/player/actions";
 import { albumMenu, artistMenu, playlistMenu } from "./collection-menu";
 import { libraryDb } from "./database";
 import { names, UNKNOWN_ARTIST } from "./format";
+import { cardHeight } from "./home-layout";
 import { openLibraryScreen } from "./links";
 import { songMenu } from "./song-menu";
 import { useIsLiked } from "./song-row";
 import { songSort } from "./sort";
-
-export const CARD_GAP = 16;
-export const CARD_PADDING = 16;
-/** Two lines of footnote text and the gap above them, under a card's artwork. */
-const CARD_TEXT_HEIGHT = 44;
-
-export function cardHeight(size: number) {
-  return size + CARD_TEXT_HEIGHT;
-}
 
 /** Plays the whole library from this song, as a tap in Songs does. */
 function playFromLibrary(songId: number) {

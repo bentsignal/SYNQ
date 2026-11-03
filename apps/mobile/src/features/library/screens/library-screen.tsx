@@ -15,7 +15,8 @@ import { HeaderGlass } from "~/components/header-glass";
 import { ScreenList } from "~/components/screen-list";
 import { ScreenScroll } from "~/components/screen-scroll";
 import { RootTabTitle } from "~/components/tab-title";
-import { CARD_GAP, CARD_PADDING, cardHeight, HomeCard } from "../home-card";
+import { HomeCard } from "../home-card";
+import { CARD_GAP, CARD_PADDING, cardHeight } from "../home-layout";
 import { RECENTS_KEY } from "../home-queries";
 import { LibraryLinkRow } from "../library-link-row";
 import {

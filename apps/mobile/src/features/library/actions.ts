@@ -57,7 +57,7 @@ export function setLiked(songId: number, liked: boolean) {
   );
 }
 
-export function setItemPinned(item: HomeRef, pinned: boolean) {
+function setItemPinned(item: HomeRef, pinned: boolean) {
   selectionTick();
   tryWrite(pinned ? "Couldn't Pin" : "Couldn't Unpin", (db) =>
     setPinned(db, item, pinned),

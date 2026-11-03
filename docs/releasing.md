@@ -52,6 +52,17 @@ type set to manual so nothing goes live on approval until Shawn releases it.
 
 ## Website
 
-`apps/site` is the static site behind the App Store's support and privacy
-links. It's deployed with Vercel from that folder, and has no build step.
+`apps/site` is the static site at [synq.bentsignal.com](https://synq.bentsignal.com),
+behind the App Store's marketing, support (`/help`) and privacy (`/privacy`) links.
+It has no build step, and pushes don't deploy it. Deploy it by hand:
+
+```sh
+cd apps/site
+vercel deploy --prod --yes --scope bsx-sh
+```
+
 Update its privacy policy whenever what the app collects changes.
+
+## Design files
+
+[design-assets.md](design-assets.md) says where the App Store art and its sources live.

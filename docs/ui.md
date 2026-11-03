@@ -269,6 +269,10 @@ hold, so they're page sheets, and Done saves everything the sheet changed
 (Playlists, Artists, Albums, Songs). Results in sections (Songs, Albums,
 Artists, Playlists), songs playable in place, the others navigating.
 
+The keyboard stays up while you type, through every search that settles. It
+closes when you drag or tap anywhere on the page, press the keyboard's Search
+key, or leave the screen.
+
 ## Settings
 
 A native form (`FieldGroup`):

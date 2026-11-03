@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Text, View } from "react-native";
 import { Stack, useFocusEffect } from "expo-router";
 
@@ -170,6 +171,7 @@ function Browse() {
  */
 export default function SearchScreen() {
   const { clear, onChangeText, query } = useSearchText();
+  const typed = useRef("");
   const found = useSearchQuery({
     options: {
       ...libraryQueryOptions(["search", query], (db) =>
@@ -183,10 +185,15 @@ export default function SearchScreen() {
 
   // Selecting the tab opens the search field over the keyboard. The frame
   // waits for the native search bar to attach on the first visit. Coming
-  // back from a result leaves the results up, without the keyboard.
+  // back from a result leaves the results up, without the keyboard. This
+  // reads a ref, not the query: a focus effect that depends on the query
+  // cleans up whenever a search settles, which took the keyboard away
+  // mid-typing.
   useFocusEffect(() => {
     const frame =
-      query === "" ? requestAnimationFrame(focusNativeSearch) : undefined;
+      typed.current === ""
+        ? requestAnimationFrame(focusNativeSearch)
+        : undefined;
     return () => {
       if (frame !== undefined) cancelAnimationFrame(frame);
       blurNativeSearch();
@@ -202,19 +209,35 @@ export default function SearchScreen() {
         hideWhenScrolling={false}
         obscureBackground={false}
         placement="automatic"
-        onChangeText={(event) => onChangeText(event.nativeEvent.text)}
-        onCancelButtonPress={clear}
+        onChangeText={(event) => {
+          typed.current = event.nativeEvent.text;
+          onChangeText(event.nativeEvent.text);
+        }}
+        onCancelButtonPress={() => {
+          typed.current = "";
+          clear();
+        }}
       />
-      <ScreenList
-        data={found.query === "" ? [] : (found.data ?? [])}
-        keyExtractor={(item) => item.key}
-        getItemType={(item) => item.type}
-        getFixedItemSize={itemSize}
-        ListEmptyComponent={
-          found.query === "" ? <Browse /> : <NoResults query={found.query} />
-        }
-        renderItem={({ item }) => <ResultRow item={item} />}
-      />
+      {/* The list's own `keyboardDismissMode` only sees drags that start on a
+          row: React Native's scroll view doesn't take touches on the blank
+          space past its content. Its tap handling can't dismiss this field
+          either, since it only knows about its own text inputs. */}
+      <View
+        className="flex-1"
+        onTouchMove={blurNativeSearch}
+        onTouchEnd={blurNativeSearch}
+      >
+        <ScreenList
+          data={found.query === "" ? [] : (found.data ?? [])}
+          keyExtractor={(item) => item.key}
+          getItemType={(item) => item.type}
+          getFixedItemSize={itemSize}
+          ListEmptyComponent={
+            found.query === "" ? <Browse /> : <NoResults query={found.query} />
+          }
+          renderItem={({ item }) => <ResultRow item={item} />}
+        />
+      </View>
     </>
   );
 }

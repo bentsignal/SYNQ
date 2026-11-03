@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.description    = 'AVQueuePlayer-based playback engine with Now Playing and remote commands, exposed as an Expo module.'
   s.author         = 'SYNQ'
   s.homepage       = 'https://github.com/bentsignal/SYNQ'
-  s.license        = 'GPL-3.0-only'
+  s.license        = 'MPL-2.0'
   s.platforms      = { :ios => '16.4' }
   s.source         = { git: 'https://github.com/bentsignal/SYNQ.git' }
   s.static_framework = true

@@ -48,3 +48,6 @@ dist/
 
 # Reassure measurements (`pnpm perf`)
 .reassure/
+
+# Vercel CLI
+.vercel

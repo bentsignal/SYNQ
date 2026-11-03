@@ -72,7 +72,7 @@ Shawn starts each feature or fix in its own T3 Code worktree and thread
   put them in the PR description. Never commit PR assets.
 - Keep each pull request to one coherent change, with a description
   covering the summary, the evidence, and the validation that was run.
-  Until 3.0 ships, PRs target `rewrite-3`.
+  PRs target `main`.
 - Open the PR, review your own diff, wait for CI to pass, start the dev
   server (`scripts/phone.sh up`), then tell Shawn it is ready to test and
   **stop**. Shawn tests every change on his phone before it merges, and
@@ -80,22 +80,20 @@ Shawn starts each feature or fix in its own T3 Code worktree and thread
 - Merge only after Shawn approves that PR in the thread ("merge it", "ship
   it", "approved"), following the `merge` skill. Approval of one PR is not
   approval of another.
-- Never commit directly to `main` or `rewrite-3`. Do not leave work
+- Never commit directly to `main`. Do not leave work
   uncommitted between sessions; push it and note its state in the PR.
 
 ## Releases
 
-**To do.** The 3.0 release process (store builds, TestFlight, over-the-air
-updates, version and build numbers) is not written yet; it will be a
-`synq-release` skill and a `docs/releasing.md`, modeled on Vera's. Until
-then, don't release anything: no store builds, no `eas update`, no
-submissions, unless Shawn asks for one by name.
+Follow the `synq-release` skill and [docs/releasing.md](docs/releasing.md).
+Don't release anything (store builds, `eas update`, submissions) unless Shawn
+asks for that step by name.
 
-What's settled: over-the-air updates reach only binaries with the same
-runtime version (`RUNTIME_VERSION` in `apps/mobile/app.config.ts`); raise it
-only when the JavaScript needs native code older binaries lack. Version
-3.0.0; build numbers continue above 99 (EAS keeps them, `appVersionSource:
-remote`). Store builds use release Xcode (`/Applications/Xcode-27.app`).
+Over-the-air updates reach only binaries with the same runtime version
+(`RUNTIME_VERSION` in `apps/mobile/app.config.ts`); raise it only when the
+JavaScript needs native code older binaries lack. Build numbers continue above
+99 (EAS keeps them, `appVersionSource: remote`). Store builds use release Xcode
+(`/Applications/Xcode-27.app`).
 
 ## Phone builds
 

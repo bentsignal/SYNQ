@@ -13,8 +13,9 @@ import { HStack, Image, Menu, Text as SwiftUIText } from "@expo/ui/swift-ui";
 import {
   font,
   foregroundStyle,
-  lineLimit,
+  frame,
   menuIndicator,
+  multilineTextAlignment,
 } from "@expo/ui/swift-ui/modifiers";
 import { LegendList } from "@legendapp/list/react-native";
 
@@ -152,7 +153,7 @@ export function CollectionHeader({
         >
           {name}
         </Text>
-        <View className="mt-1 items-center gap-0.5">{lines}</View>
+        <View className="mt-1 items-center gap-0.5 self-stretch">{lines}</View>
       </View>
       <View className="pt-4">{children}</View>
     </View>
@@ -188,7 +189,7 @@ export function ArtistLinks({
         className="active:opacity-60"
         onPress={() => openLibraryScreen({ id: only.id, screen: "artist" })}
       >
-        <Text numberOfLines={1} className="text-body text-accent font-medium">
+        <Text className="text-body text-accent text-center font-medium">
           {only.name}
         </Text>
       </Pressable>
@@ -206,7 +207,10 @@ export function ArtistLinks({
     ),
   ];
   return (
-    <FormHost matchContents>
+    <FormHost
+      matchContents={{ vertical: true }}
+      style={{ alignSelf: "stretch" }}
+    >
       <Menu
         label={
           <HStack spacing={4}>
@@ -214,7 +218,7 @@ export function ArtistLinks({
               modifiers={[
                 font({ size: 17, weight: "medium" }),
                 foregroundStyle(accent),
-                lineLimit(1),
+                multilineTextAlignment("center"),
               ]}
             >
               {names(artists)}
@@ -222,7 +226,7 @@ export function ArtistLinks({
             <Image systemName="chevron.down" size={11} color={accent} />
           </HStack>
         }
-        modifiers={[menuIndicator("hidden")]}
+        modifiers={[menuIndicator("hidden"), frame({ maxWidth: Infinity })]}
       >
         <MenuItems groups={menu} />
       </Menu>

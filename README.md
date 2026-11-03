@@ -1,34 +1,19 @@
-# SYNQ
+<p align="center">
+  <img src="docs/images/readme-header.jpg" alt="SYNQ on iPhone: Now Playing, Library, Queue, Playlists, and importing music" width="100%">
+</p>
 
-An offline music player for iOS: import your own audio files and play them.
-On the App Store as SYNQ (`com.directedbyshawn.synq`).
+<br>
 
-This branch is the 3.0 rewrite. The plan is
-[docs/rewrite.md](docs/rewrite.md); how agents work here is in
-[AGENTS.md](AGENTS.md).
+<p align="center">
+  <a href="https://apps.apple.com/app/id6624313712">
+    <img src="apps/site/app-store-badge.svg" alt="Download on the App Store" height="54">
+  </a>
+</p>
 
-## Workspace
+<br>
 
-- `apps/mobile` (`@synq/mobile`): the Expo app. See its
-  [README](apps/mobile/README.md).
-- `packages/db` (`@synq/db`): the library database and the 2.5.2 importer.
-- `packages/audio` (`@synq/audio`): native playback.
-- `tooling/{eslint,prettier,typescript,github}`: shared config, from Vera.
-- `scripts/`: the simulator (`sim.sh`, and `simq.ts`, the simulator queue
-  shared with Vera), the phone dev client (`phone.sh`), PR evidence
-  (`evidence.sh`), and the heavy-work lock (`bench/with-lock.sh`).
-
-## Commands
-
-```sh
-pnpm install
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm run react-doctor --base origin/rewrite-3
-pnpm perf               # Reassure render timings
-scripts/sim.sh up       # this worktree's simulator (see the synq-simulator skill)
-scripts/phone.sh up     # SYNQ Dev on Shawn's phone
-```
-
-Node 24 (`.nvmrc`) and pnpm 10.32.1.
+<p align="center">
+  <strong>Own your music</strong>
+  <br>
+  A music player for the files you own. It works offline, for free, with no account and no ads.
+</p>

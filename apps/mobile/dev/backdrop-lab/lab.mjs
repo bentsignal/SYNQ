@@ -37,15 +37,18 @@ execFileSync("swiftc", [
 ]);
 
 const coverDir = path.join(lab, "covers");
-const wanted = values.covers?.split(",");
+// Name to place on the command line, so the sheet follows the order asked for.
+const wanted =
+  values.covers === undefined
+    ? undefined
+    : new Map(values.covers.split(",").map((name, index) => [name, index]));
+function placeOf(file) {
+  return wanted?.get(path.parse(file).name) ?? 0;
+}
 const files = readdirSync(coverDir)
   .filter((file) => /\.(png|jpe?g)$/.test(file))
-  .filter((file) => wanted?.includes(path.parse(file).name) ?? true)
-  .sort((a, b) =>
-    wanted === undefined
-      ? a.localeCompare(b)
-      : wanted.indexOf(path.parse(a).name) - wanted.indexOf(path.parse(b).name),
-  );
+  .filter((file) => wanted?.has(path.parse(file).name) ?? true)
+  .sort((a, b) => placeOf(a) - placeOf(b) || a.localeCompare(b));
 const variants = VARIANTS.filter(
   (variant) => values.variants?.split(",").includes(variant.id) ?? true,
 );

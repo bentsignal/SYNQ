@@ -1,4 +1,4 @@
-import { Alert, Linking, View } from "react-native";
+import { Linking, View } from "react-native";
 import * as Application from "expo-application";
 import { useRouter } from "expo-router";
 import {
@@ -20,6 +20,7 @@ import { SymbolIcon } from "~/components/symbol-icon";
 import { track } from "~/features/analytics/analytics";
 import { setPreference, usePreference } from "~/features/preferences/store";
 import { THEMES } from "~/features/preferences/themes";
+import { contactSupport } from "~/features/support/contact-support";
 import { selectionTick } from "~/lib/haptics";
 import { Row, SECONDARY_LABEL } from "./form";
 import { useAppIcon } from "./use-app-icon";
@@ -28,7 +29,6 @@ const LINKS = {
   discord: "https://discord.gg/KwC24St29g",
   instagram: "https://instagram.com/bentsignal",
   review: "https://apps.apple.com/app/id6624313712?action=write-review",
-  support: "help@bentsignal.com",
   x: "https://x.com/bentsignal",
 };
 
@@ -142,14 +142,6 @@ export function LibrarySection() {
 function openSocial(url: string) {
   track("social_press", { url });
   void Linking.openURL(url);
-}
-
-/** Opens Mail; without a mail account set up, shows the address instead. */
-function contactSupport() {
-  track("social_press", { url: `mailto:${LINKS.support}` });
-  Linking.openURL(`mailto:${LINKS.support}`).catch(() =>
-    Alert.alert("Contact Support", LINKS.support),
-  );
 }
 
 function version() {

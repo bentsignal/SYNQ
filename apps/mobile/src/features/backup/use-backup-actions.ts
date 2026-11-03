@@ -1,16 +1,15 @@
 import { useRef, useState } from "react";
-import { Alert, Linking } from "react-native";
+import { Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 
 import type { MergeSummary } from "@synq/db/merge";
 
 import { synqMedia, synqMediaAvailable } from "~/features/media/native";
+import { contactSupport } from "~/features/support/contact-support";
 import { errorFeedback, successFeedback } from "~/lib/haptics";
 import { backUpLibrary, eraseLibrary, inspectBackup } from "./backup";
 import { RestoreError, restoreLibrary } from "./restore";
 import { restoreSummary } from "./restore-summary";
-
-const SUPPORT_URL = "mailto:help@bentsignal.com";
 
 /** A task that finishes sooner shows nothing, so it can't flicker. */
 const SHOW_AFTER_MS = 500;
@@ -36,7 +35,7 @@ function failed(
   Alert.alert(title, message, [
     { style: "cancel", text: "OK" },
     {
-      onPress: () => void Linking.openURL(SUPPORT_URL),
+      onPress: contactSupport,
       text: "Contact Support",
     },
   ]);

@@ -13,7 +13,5 @@
 <br>
 
 <p align="center">
-  <strong>Own your music</strong>
-  <br>
   A music player for the files you own. It works offline, for free, with no account and no ads.
 </p>

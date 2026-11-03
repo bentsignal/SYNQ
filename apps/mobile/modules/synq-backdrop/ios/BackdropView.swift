@@ -15,6 +15,14 @@ struct BackdropSwatch: Record, Equatable {
   }
 }
 
+/// How the pools mix, from `backdrop-variants.ts`.
+struct BackdropLook: Record {
+  @Field var falloff: Double = 1.5
+  @Field var oklab: Bool = false
+  @Field var saturation: Double = 1
+  @Field var restore: Double = 0
+}
+
 /// The player's backdrop: colors from the cover, drifting slowly, drawn by a
 /// fragment shader into a Metal layer at one pixel per point, 30 times a
 /// second. All the work is here on the GPU, with no JavaScript per frame.
@@ -30,6 +38,14 @@ final class BackdropView: ExpoView {
 
   var animating = true {
     didSet { updateRunning() }
+  }
+
+  var look = BackdropShader.Look() {
+    didSet {
+      guard look != oldValue else { return }
+      needsDraw = true
+      drawIfStill()
+    }
   }
 
   private let metal = MetalView()
@@ -216,12 +232,9 @@ final class BackdropView: ExpoView {
       return
     }
     let frame = current
-    var uniforms = BackdropShader.Uniforms()
-    uniforms.time = Float(time)
-    uniforms.aspect = Float(bounds.width / bounds.height)
-    uniforms.count = UInt32(frame.colors.count)
-    uniforms.colors.replaceSubrange(0..<frame.colors.count, with: frame.colors)
-    uniforms.pools.replaceSubrange(0..<frame.pools.count, with: frame.pools)
+    let uniforms = BackdropShader.Uniforms(
+      time: Float(time), aspect: Float(bounds.width / bounds.height), look: look,
+      colors: frame.colors, pools: frame.pools)
     BackdropShader.encode(uniforms, pipeline: pipeline, into: encoder)
     commands.present(drawable)
     commands.addCompletedHandler { buffer in
@@ -283,7 +296,7 @@ private struct Frame: Equatable {
 
   init(swatches: [BackdropSwatch]) {
     let shown = swatches.prefix(BackdropShader.maxSwatches)
-    colors = shown.map { Self.rgba($0.color) }
+    colors = shown.map { BackdropShader.rgba($0.color) }
     pools = shown.map { SIMD4(Float($0.x), Float($0.y), Float($0.weight), 0) }
   }
 
@@ -297,16 +310,6 @@ private struct Frame: Equatable {
     return Frame(
       colors: (0..<count).map { simd_mix(slot(colors, $0), slot(next.colors, $0), SIMD4(repeating: amount)) },
       pools: (0..<count).map { simd_mix(slot(pools, $0), slot(next.pools, $0), SIMD4(repeating: amount)) })
-  }
-
-  private static func rgba(_ hex: String) -> SIMD4<Float> {
-    let digits = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
-    guard digits.count == 6, let value = UInt32(digits, radix: 16) else {
-      return SIMD4(0, 0, 0, 1)
-    }
-    return SIMD4(
-      Float((value >> 16) & 255) / 255, Float((value >> 8) & 255) / 255,
-      Float(value & 255) / 255, 1)
   }
 }
 

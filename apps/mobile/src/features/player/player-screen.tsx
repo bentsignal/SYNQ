@@ -4,6 +4,7 @@ import { useIsFocused } from "expo-router";
 
 import type { SongListItem } from "@synq/db";
 
+import { BackdropVariantPill } from "./backdrop-variant-pill";
 import { usePlayer } from "./hooks";
 import { LikeButton } from "./like-button";
 import { MarqueeText } from "./marquee-text";
@@ -44,6 +45,7 @@ export function PlayerScreen() {
   return (
     <View className="flex-1">
       <PlayerBackdrop artwork={artwork} />
+      {__DEV__ && <BackdropVariantPill />}
       <View className="flex-1 pt-3" style={{ paddingBottom: insets.bottom }}>
         <View className="h-1.5 w-10 self-center rounded-full bg-white/30" />
         <View className="items-center" style={{ marginTop: ARTWORK_TOP }}>

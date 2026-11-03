@@ -33,7 +33,7 @@ export interface BackdropSwatch {
 export const MAX_LUMINANCE = 0.1;
 
 /** Below this chroma (Oklab), a color reads as grey. */
-const MIN_CHROMA = 0.03;
+export const MIN_CHROMA = 0.03;
 /** Clusters smaller than this are noise, not part of the art. */
 const MIN_POPULATION = 0.002;
 const MAX_ACCENTS = 4;
@@ -50,7 +50,7 @@ const SLOTS = [
   { x: 0.96, y: 0.86 },
 ] as const;
 
-interface Lch {
+export interface Lch {
   l: number;
   c: number;
   /** Radians. */
@@ -81,7 +81,7 @@ function parseHex(hex: string) {
   ] as const;
 }
 
-function toLch(hex: string) {
+export function toLch(hex: string) {
   const srgb = parseHex(hex);
   if (srgb === null) return null;
   const [r, g, b] = srgb;
@@ -98,7 +98,7 @@ function toLch(hex: string) {
 }
 
 /** Linear sRGB; components outside 0–1 are out of gamut. */
-function toLinearRgb({ l: lightness, c, h }: Lch) {
+export function toLinearRgb({ l: lightness, c, h }: Lch) {
   const a = c * Math.cos(h);
   const b = c * Math.sin(h);
   const l = (lightness + 0.396_337_78 * a + 0.215_803_76 * b) ** 3;
@@ -121,7 +121,7 @@ export function luminanceOf(hex: string) {
   return srgb === null ? 0 : linearLuminance(srgb);
 }
 
-function inGamut(rgb: readonly number[]) {
+export function inGamut(rgb: readonly number[]) {
   return rgb.every((channel) => channel >= -0.000_1 && channel <= 1.000_1);
 }
 
@@ -129,12 +129,12 @@ function inGamut(rgb: readonly number[]) {
  * The color as `#rrggbb`, in gamut and under `MAX_LUMINANCE`: chroma gives
  * way first to stay in gamut, keeping the hue, and lightness to stay readable.
  */
-function toHex(color: Lch) {
+export function toHex(color: Lch, maxLuminance = MAX_LUMINANCE) {
   let { l, c } = color;
   for (;;) {
     const rgb = toLinearRgb({ c, h: color.h, l });
     if (c > 0 && !inGamut(rgb)) c = Math.max(0, c - 0.004);
-    else if (l > 0 && linearLuminance(rgb) > MAX_LUMINANCE) l -= 0.004;
+    else if (l > 0 && linearLuminance(rgb) > maxLuminance) l -= 0.004;
     else break;
   }
   const channels = toLinearRgb({ c, h: color.h, l }).map((channel) =>
@@ -145,22 +145,22 @@ function toHex(color: Lch) {
   return `#${channels.join("")}`;
 }
 
-function clamp(value: number, low: number, high: number) {
+export function clamp(value: number, low: number, high: number) {
   return Math.max(low, Math.min(high, value));
 }
 
-function hueDistance(a: number, b: number) {
+export function hueDistance(a: number, b: number) {
   const delta = Math.abs(a - b) % (2 * Math.PI);
   return delta > Math.PI ? 2 * Math.PI - delta : delta;
 }
 
-interface Seen extends Lch {
+export interface Seen extends Lch {
   x: number;
   y: number;
   population: number;
 }
 
-function read(clusters: readonly ArtworkCluster[]) {
+export function read(clusters: readonly ArtworkCluster[]) {
   return clusters.flatMap((cluster) => {
     const lch = toLch(cluster.color);
     if (lch === null || cluster.population < MIN_POPULATION) return [];
@@ -198,7 +198,7 @@ function accentsOf(seen: readonly Seen[]) {
   return accents;
 }
 
-interface Stop extends Lch {
+export interface Stop extends Lch {
   /** Where on the cover it comes from, to choose a slot. */
   x: number;
   y: number;
@@ -272,7 +272,7 @@ function colorStops(accents: readonly Seen[], seen: readonly Seen[]) {
  * centered on how light the cover is, wider when the cover itself has range,
  * with whatever faint tint it has.
  */
-function toneStops(seen: readonly Seen[]) {
+export function toneStops(seen: readonly Seen[]) {
   const total = seen.reduce((sum, color) => sum + color.population, 0) || 1;
   const mean =
     seen.reduce((sum, color) => sum + color.l * color.population, 0) / total;
@@ -300,7 +300,7 @@ function toneStops(seen: readonly Seen[]) {
 }
 
 /** Gives each stop, in order, the free slot nearest where it sits on the cover. */
-function placed(stops: readonly Stop[]) {
+export function placed(stops: readonly Stop[]) {
   const free = [...SLOTS];
   return stops.flatMap((stop) => {
     const nearest = free.reduce(

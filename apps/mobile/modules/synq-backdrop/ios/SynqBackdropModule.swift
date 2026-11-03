@@ -18,6 +18,7 @@ public class SynqBackdropModule: Module {
             "population": cluster.population,
           ]
         },
+        "grid": result.grid,
         "cornerInset": result.cornerInset,
       ]
     }.runOnQueue(.global(qos: .userInitiated))
@@ -34,6 +35,11 @@ public class SynqBackdropModule: Module {
     View(BackdropView.self) {
       Prop("swatches") { (view: BackdropView, swatches: [BackdropSwatch]) in
         view.setSwatches(swatches)
+      }
+      Prop("look") { (view: BackdropView, look: BackdropLook) in
+        view.look = BackdropShader.Look(
+          falloff: Float(look.falloff), oklab: look.oklab,
+          saturation: Float(look.saturation), restore: Float(look.restore))
       }
       Prop("animating") { (view: BackdropView, animating: Bool) in
         view.animating = animating

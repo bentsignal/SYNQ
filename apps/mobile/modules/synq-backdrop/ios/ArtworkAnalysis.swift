@@ -19,6 +19,10 @@ enum ArtworkAnalysis {
 
   struct Result {
     let clusters: [Cluster]
+    /// The cover's colors where they sit: `gridSide`×`gridSide` cells as
+    /// `#rrggbb`, row by row from the top. Each cell is a mean weighted the
+    /// same way as the clusters, so a thin line of color survives it.
+    let grid: [String]
     /// How far in the art's corners start along each axis, as a share of
     /// the side; 0 for a cover that reaches its corners.
     let cornerInset: Double
@@ -26,6 +30,7 @@ enum ArtworkAnalysis {
 
   /// Fine enough to find a corner's edge; clustering takes every other pixel.
   private static let side = 128
+  private static let gridSide = 5
   private static let clusterCount = 8
   private static let iterations = 8
   /// How much more a fully saturated pixel counts than a grey one. A small
@@ -39,6 +44,7 @@ enum ArtworkAnalysis {
       clusters: clusters(of: pixels.indices.compactMap { index in
         index % 2 == 0 && (index / side) % 2 == 0 ? pixels[index] : nil
       }),
+      grid: grid(of: pixels),
       cornerInset: cornerInset(of: pixels))
   }
 
@@ -91,6 +97,20 @@ enum ArtworkAnalysis {
           (Float(index % side) + 0.5) / Float(side), (Float(index / side) + 0.5) / Float(side)),
         weight: 1 + chromaPull * chroma)
     }
+  }
+
+  // MARK: Grid
+
+  private static func grid(of pixels: [Pixel?]) -> [String] {
+    var sums = [SIMD3<Float>](repeating: .zero, count: gridSide * gridSide)
+    var weights = [Float](repeating: 0, count: gridSide * gridSide)
+    for (index, pixel) in pixels.enumerated() {
+      guard let pixel else { continue }
+      let cell = (index / side) * gridSide / side * gridSide + (index % side) * gridSide / side
+      sums[cell] += pixel.lab * pixel.weight
+      weights[cell] += pixel.weight
+    }
+    return sums.indices.map { hex(weights[$0] > 0 ? sums[$0] / weights[$0] : .zero) }
   }
 
   // MARK: Clusters

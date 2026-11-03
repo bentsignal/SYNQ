@@ -137,6 +137,42 @@ colors it chooses instead, so the ring carries the backdrop.
 - Binaries without the module keep `GradientBackdrop`, the gradient of the
   cover's average colors (`backdrop-colors.ts`, `ArtworkColors.swift`).
 
+### Backdrop experiments
+
+Some covers came out in clashing, muddy colors. Three causes, all visible in the
+old `backdropPalette`: it let up to four unrelated hues lead, by chroma, so a
+logo counted as much as the art; it boosted faint colors until they stopped
+being in the cover (dusty pink became maroon); and it held everything at one
+middling lightness, where a dim yellow is olive and hues that are opposite mix
+to brown.
+
+`backdrop-variants.ts` holds the candidates, which a dev build switches between
+with the label at the player's top corner:
+
+- **Current**: the palette above, unchanged.
+- **Family**: one hue family, from a deep ground to a glow.
+- **Glow**: the family, lit from above. Only the text has to sit on a dark
+  backdrop, so the top may be bright enough to be gold.
+- **Duo**: the family, and a second hue the cover really has, darker and in the
+  far corner so they meet through the dark.
+- **Cover**: the cover's own colors where they sit, as a 5×5 grid of pools,
+  closest to what Apple is known to do (blurred, oversaturated copies of the art).
+
+They share a few rules: nearby hues pool their area when choosing a lead, so
+area counts as much as chroma; chroma is a share of what that lightness and hue
+can show, so no hue looks duller than another; shadows lean toward violet; and
+dim yellows go to amber or green, never olive. They mix in Oklab and put back
+some of the chroma that opposite hues cancel (`BackdropShader.Look`). Release
+builds stay on Current until one wins.
+
+`dev/backdrop-lab` runs the real analysis, palette code, and shader on the Mac
+over a folder of covers (`.cache/backdrop-lab/covers`, never committed), draws a
+contact sheet, and reports white text's worst contrast from the title down:
+
+```sh
+node --experimental-strip-types apps/mobile/dev/backdrop-lab/lab.mjs --covers a,b,c
+```
+
 `SynqBackdrop.frameStats()` (`scripts/sim.sh eval
 "expo.modules.SynqBackdrop.frameStats()"`) reports frames drawn and what they
 cost, to check that it stops when it should.

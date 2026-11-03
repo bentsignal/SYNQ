@@ -17,6 +17,12 @@ const DRAW_DISTANCE = 1000;
 /** Within this of the top, in points, a list counts as at the top. */
 const AT_TOP_SLOP = 12;
 
+/**
+ * With `holdThroughMoves`, how far a row can go and still count as staying: a
+ * section's heading and a card arriving above it push it down by two.
+ */
+const MOVED_BY_MORE_THAN = 2;
+
 /** A list slot (header, empty state) as Legend List takes it: an element or a component. */
 function Slot({
   slot,
@@ -45,8 +51,13 @@ function Slot({
  */
 export function ScreenList<Item>({
   ref,
+  holdThroughMoves = false,
   ...props
-}: LegendListProps<Item> & { ref?: Ref<LegendListRef> }) {
+}: LegendListProps<Item> & {
+  ref?: Ref<LegendListRef>;
+  /** Keep what's on screen in place when rows move too, not just when they're added. */
+  holdThroughMoves?: boolean;
+}) {
   const background = useCSSVariable("--color-background");
   const backgroundColor =
     typeof background === "string" ? background : undefined;
@@ -54,24 +65,42 @@ export function ScreenList<Item>({
   const topOffset = useRef<number | null>(null);
   const known = useRef(props.data ?? []);
   const insertion = useRef(false);
-  function shouldHold(_item: Item, _index: number, data: readonly Item[]) {
+  const lastIndex = useRef(new Map<string, number>());
+  function shouldHold(item: Item, index: number, data: readonly Item[]) {
+    const { keyExtractor } = props;
     // Called for each row in view when the data changes; the first decides.
     if (data !== known.current) {
-      const { keyExtractor } = props;
       insertion.current =
         keyExtractor !== undefined &&
         isInsertionOnly(known.current, data, keyExtractor);
+      if (holdThroughMoves && keyExtractor !== undefined) {
+        lastIndex.current = new Map(
+          known.current.map((row, at) => [keyExtractor(row, at), at]),
+        );
+      }
       known.current = data;
     }
-    return insertion.current && !atTop.current;
+    if (atTop.current) return false;
+    if (!holdThroughMoves || keyExtractor === undefined) {
+      return insertion.current;
+    }
+    // Hold on to what stayed: holding on to something that moved takes the
+    // list along with it.
+    const last = lastIndex.current.get(keyExtractor(item, index));
+    return last === undefined || Math.abs(last - index) <= MOVED_BY_MORE_THAN;
+  }
+  function onScrollBeginDrag(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    // The top is below zero under a native header, by an inset the event
+    // doesn't report. Before the first drag the list is at rest at the top. An
+    // earlier scroll event won't do: layout changes send them too.
+    topOffset.current ??= event.nativeEvent.contentOffset.y;
+    props.onScrollBeginDrag?.(event);
   }
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
-    // The top is below zero under a native header, by an inset the event
-    // doesn't report. A list starts at the top, so the first offset is it.
-    const offset = event.nativeEvent.contentOffset.y;
-    const top = topOffset.current ?? offset;
-    topOffset.current = top;
-    atTop.current = offset <= top + AT_TOP_SLOP;
+    if (topOffset.current !== null) {
+      atTop.current =
+        event.nativeEvent.contentOffset.y <= topOffset.current + AT_TOP_SLOP;
+    }
     props.onScroll?.(event);
   }
   // With no rows, Legend List cut its header short (an empty playlist lost
@@ -110,6 +139,7 @@ export function ScreenList<Item>({
       }}
       {...props}
       onScroll={onScroll}
+      onScrollBeginDrag={onScrollBeginDrag}
       style={[{ backgroundColor, flex: 1 }, props.style]}
     />
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Text, useWindowDimensions, View } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, useFocusEffect } from "expo-router";
 
 import type { HomeItem } from "@synq/db";
 import {
@@ -15,6 +15,7 @@ import { HeaderGlass } from "~/components/header-glass";
 import { ScreenList } from "~/components/screen-list";
 import { ScreenScroll } from "~/components/screen-scroll";
 import { RootTabTitle } from "~/components/tab-title";
+import { holdPlays, releasePlays } from "~/features/player/record-play";
 import { HomeCard } from "../home-card";
 import { CARD_GAP, CARD_PADDING, cardHeight } from "../home-layout";
 import { RECENTS_KEY } from "../home-queries";
@@ -37,24 +38,24 @@ const CARD_ROW_GAP = 20;
 
 type HomeRow =
   | { type: "heading"; key: string; title: string }
-  | { type: "cards"; key: string; items: readonly HomeItem[] };
+  | { type: "card"; key: string; item: HomeItem; column: number };
 
-/** A titled section as list rows: its heading, then two cards to a row. */
+/**
+ * A titled section as list rows: its heading across both columns, then its
+ * cards. Keyed by what each card is, so when something moves, the cards around
+ * it keep their views and their artwork rather than loading each other's.
+ */
 function sectionRows(name: string, title: string, items: readonly HomeItem[]) {
   if (items.length === 0) return [];
   const heading = { key: name, title, type: "heading" } satisfies HomeRow;
-  // By position: as the list changes, cards keep their native views and only
-  // change what they show, so nothing is built mid-frame.
-  const cards = items.flatMap((_, start) =>
-    start % 2 === 0
-      ? [
-          {
-            items: items.slice(start, start + 2),
-            key: `${name}-${String(start)}`,
-            type: "cards",
-          } satisfies HomeRow,
-        ]
-      : [],
+  const cards = items.map(
+    (item, index) =>
+      ({
+        column: index % 2,
+        item,
+        key: `${item.kind}:${String(item.id)}`,
+        type: "card",
+      }) satisfies HomeRow,
   );
   return [heading, ...cards];
 }
@@ -138,6 +139,12 @@ function LibraryHome() {
     read: (db) => listRecents(db, { limit }),
     select: (window) => window,
   });
+  // What's played from here waits until this page is off screen, so it's in
+  // place on the way back rather than reordering under someone's finger.
+  useFocusEffect(() => {
+    holdPlays();
+    return releasePlays;
+  });
   const rows = [
     ...sectionRows("pinned", "Pinned", pinned),
     ...sectionRows("recents", "Recents", recents.items),
@@ -145,8 +152,13 @@ function LibraryHome() {
   return (
     <ScreenList
       data={rows}
+      numColumns={2}
+      holdThroughMoves
       keyExtractor={(row) => row.key}
       getItemType={(row) => row.type}
+      overrideItemLayout={(layout, row) => {
+        layout.span = row.type === "heading" ? 2 : 1;
+      }}
       getFixedItemSize={(row) =>
         row.type === "heading"
           ? HEADING_HEIGHT
@@ -170,13 +182,14 @@ function LibraryHome() {
             </Text>
           </View>
         ) : (
+          // Half the screen each: the outer edges take the padding, and the
+          // gap is shared between the two.
           <View
-            className="flex-row"
-            style={{ columnGap: CARD_GAP, paddingHorizontal: CARD_PADDING }}
+            style={{
+              paddingLeft: row.column === 0 ? CARD_PADDING : CARD_GAP / 2,
+            }}
           >
-            {row.items.map((item, slot) => (
-              <HomeCard key={slot} item={item} size={size} />
-            ))}
+            <HomeCard item={row.item} size={size} />
           </View>
         )
       }

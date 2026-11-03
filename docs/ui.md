@@ -137,6 +137,11 @@ numbers.
 - **Recents**: everything else, by when it was last played, or added if it never
   has been (docs/rewrite.md → Home). More loads as the list scrolls, until it has
   shown the whole library.
+- **Nothing jumps.** A play moves its card only once the tab has been left, and a
+  pin moves one card at once. Away from the top of the page, what's on screen stays
+  where it is (`holdThroughMoves`, which won't hold on to a card that itself moved,
+  or the list goes with it). Cards are keyed by what they show, so the ones around a
+  move keep their artwork rather than fading in each other's.
 - Both are the same two-column grid: artwork with two lines below. A tap opens a
   playlist, album, or artist, and plays a song, carrying on through the library
   as a tap in Songs does.

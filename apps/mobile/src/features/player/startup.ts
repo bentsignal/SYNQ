@@ -17,6 +17,7 @@ import {
   restoreSession,
   saveFromNative,
 } from "./persistence";
+import { flushPlays } from "./record-play";
 import { isSettingSongs, PLAYER_SONGS_QUERY } from "./songs";
 import {
   getPlayerState,
@@ -100,6 +101,8 @@ function startPlayer() {
   AppState.addEventListener("change", (next) => {
     if (next === "active") prefetchAroundCurrent();
     else saveFromNative();
+    // Saved in case the app doesn't come back; off screen, Recents can reorder.
+    if (next === "background") flushPlays();
   });
   setInterval(() => {
     if (getPlayerState().status === "playing") saveFromNative();

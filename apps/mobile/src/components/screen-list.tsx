@@ -62,7 +62,8 @@ export function ScreenList<Item>({
   const backgroundColor =
     typeof background === "string" ? background : undefined;
   const atTop = useRef(true);
-  const topOffset = useRef<number | null>(null);
+  // Infinite until the first drag, so everything counts as the top until then.
+  const topOffset = useRef(Number.POSITIVE_INFINITY);
   const known = useRef(props.data ?? []);
   const insertion = useRef(false);
   const lastIndex = useRef(new Map<string, number>());
@@ -93,16 +94,14 @@ export function ScreenList<Item>({
     // The top is below zero under a native header, by an inset the event
     // doesn't report. Before the first drag the list is at rest at the top. An
     // earlier scroll event won't do: layout changes send them too.
-    if (topOffset.current === null) {
+    if (!Number.isFinite(topOffset.current)) {
       topOffset.current = event.nativeEvent.contentOffset.y;
     }
     props.onScrollBeginDrag?.(event);
   }
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
-    if (topOffset.current !== null) {
-      atTop.current =
-        event.nativeEvent.contentOffset.y <= topOffset.current + AT_TOP_SLOP;
-    }
+    atTop.current =
+      event.nativeEvent.contentOffset.y <= topOffset.current + AT_TOP_SLOP;
     props.onScroll?.(event);
   }
   // With no rows, Legend List cut its header short (an empty playlist lost

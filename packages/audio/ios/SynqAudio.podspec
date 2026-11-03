@@ -4,10 +4,10 @@ Pod::Spec.new do |s|
   s.summary        = 'Native queue playback for SYNQ'
   s.description    = 'AVQueuePlayer-based playback engine with Now Playing and remote commands, exposed as an Expo module.'
   s.author         = 'SYNQ'
-  s.homepage       = 'https://github.com/bentsignal/SYNQ'
-  s.license        = 'MPL-2.0'
+  s.homepage       = 'https://github.com/bentsignal/SYNQ.app'
+  s.license        = 'MIT'
   s.platforms      = { :ios => '16.4' }
-  s.source         = { git: 'https://github.com/bentsignal/SYNQ.git' }
+  s.source         = { git: 'https://github.com/bentsignal/SYNQ.app.git' }
   s.static_framework = true
   # The engine is checked in Swift 6 mode by the Swift package (swift build /
   # swift test); the pod uses 5.9 so Expo API annotations can't turn

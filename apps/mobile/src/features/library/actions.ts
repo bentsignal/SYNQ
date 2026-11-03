@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 
-import type { LibraryDb, WriteResult } from "@synq/db";
+import type { HomeRef, LibraryDb, WriteResult } from "@synq/db";
 import {
   addSongsToPlaylist,
   deleteAlbum,
@@ -10,10 +10,12 @@ import {
   LibraryError,
   removeSongsFromAlbum,
   removeSongsFromPlaylist,
+  setPinned,
   setSongLiked,
   written,
 } from "@synq/db";
 
+import type { MenuAction } from "~/components/menu";
 import { forgetSongs } from "~/features/player/actions";
 import { selectionTick } from "~/lib/haptics";
 import { emptyAlbumPrompt } from "./empty-album-prompt";
@@ -53,6 +55,24 @@ export function setLiked(songId: number, liked: boolean) {
     liked ? "Couldn't Add to Liked" : "Couldn't Remove from Liked",
     (db) => setSongLiked(db, songId, liked),
   );
+}
+
+export function setItemPinned(item: HomeRef, pinned: boolean) {
+  selectionTick();
+  tryWrite(pinned ? "Couldn't Pin" : "Couldn't Unpin", (db) =>
+    setPinned(db, item, pinned),
+  );
+}
+
+/** Pin or Unpin for a playlist, album, artist, or song's menu. */
+export function pinAction(item: HomeRef, pinnedAt: number | null) {
+  const pinned = pinnedAt !== null;
+  return {
+    icon: pinned ? "pin.slash" : "pin",
+    key: "pin",
+    label: pinned ? "Unpin" : "Pin",
+    onPress: () => setItemPinned(item, !pinned),
+  } satisfies MenuAction;
 }
 
 export function addToPlaylist(playlistId: number, songIds: readonly number[]) {

@@ -43,6 +43,11 @@ export function libraryQueryOptions<Data>(
   };
 }
 
+/** Refreshes one library read, for a write nothing else shows. */
+export function refreshLibraryQuery(key: readonly unknown[]) {
+  void queryClient.invalidateQueries({ queryKey: [LIBRARY, ...key] });
+}
+
 /**
  * Runs a library write and refreshes every library query. Writes are
  * synchronous, so the change is on screen by the next frame, with no

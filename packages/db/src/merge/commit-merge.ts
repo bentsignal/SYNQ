@@ -42,23 +42,56 @@ function insertRows(
   db.run(sql`${insert}${JSON.stringify(rows)})${sql.raw(filter)}`);
 }
 
-function insertEntities(db: LibraryDb, plan: MergePlan) {
+function insertAlbumsAndArtists(db: LibraryDb, plan: MergePlan) {
   insertRows(
     db,
     {
-      columns: ["id", "name", "artwork_version", "added_at"],
+      columns: [
+        "id",
+        "name",
+        "artwork_version",
+        "added_at",
+        "last_played_at",
+        "pinned_at",
+      ],
       table: "artists",
     },
-    plan.artists.map((a) => [a.id, a.name, a.artworkVersion, a.addedAt]),
+    plan.artists.map((a) => [
+      a.id,
+      a.name,
+      a.artworkVersion,
+      a.addedAt,
+      a.lastPlayedAt,
+      a.pinnedAt,
+    ]),
   );
   insertRows(
     db,
     {
-      columns: ["id", "name", "year", "artwork_version", "added_at"],
+      columns: [
+        "id",
+        "name",
+        "year",
+        "artwork_version",
+        "added_at",
+        "last_played_at",
+        "pinned_at",
+      ],
       table: "albums",
     },
-    plan.albums.map((a) => [a.id, a.name, a.year, a.artworkVersion, a.addedAt]),
+    plan.albums.map((a) => [
+      a.id,
+      a.name,
+      a.year,
+      a.artworkVersion,
+      a.addedAt,
+      a.lastPlayedAt,
+      a.pinnedAt,
+    ]),
   );
+}
+
+function insertSongsAndPlaylists(db: LibraryDb, plan: MergePlan) {
   insertRows(
     db,
     {
@@ -71,6 +104,8 @@ function insertEntities(db: LibraryDb, plan: MergePlan) {
         "artwork_version",
         "added_at",
         "modified_since_export",
+        "last_played_at",
+        "pinned_at",
       ],
       table: "songs",
     },
@@ -83,6 +118,8 @@ function insertEntities(db: LibraryDb, plan: MergePlan) {
       s.artworkVersion,
       s.addedAt,
       s.modifiedSinceExport ? 1 : 0,
+      s.lastPlayedAt,
+      s.pinnedAt,
     ]),
   );
   insertRows(
@@ -95,6 +132,8 @@ function insertEntities(db: LibraryDb, plan: MergePlan) {
         "artwork_version",
         "created_at",
         "updated_at",
+        "last_played_at",
+        "pinned_at",
       ],
       table: "playlists",
     },
@@ -105,6 +144,8 @@ function insertEntities(db: LibraryDb, plan: MergePlan) {
       p.artworkVersion,
       p.createdAt,
       p.updatedAt,
+      p.lastPlayedAt,
+      p.pinnedAt,
     ]),
   );
 }
@@ -244,7 +285,8 @@ export function commitMerge(
   now: number,
 ) {
   db.transaction((tx) => {
-    insertEntities(tx, plan);
+    insertAlbumsAndArtists(tx, plan);
+    insertSongsAndPlaylists(tx, plan);
     insertJoins(tx, plan);
     appendToPlaylists(tx, plan, now);
     fillBlanks(tx, plan, now);

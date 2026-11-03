@@ -18,6 +18,7 @@ import {
   unshuffleQueue,
   upNextMove,
 } from "./queue-model";
+import { recordPlay } from "./record-play";
 import { addSongs, cachedSongs, loadSongs, setSongs } from "./songs";
 import { ensureStarted, getPlayerState, setPlayerState } from "./store";
 
@@ -53,6 +54,12 @@ export function playSongs(songIds: readonly number[], options: PlayOptions) {
     }),
   );
   persist();
+  recordPlay(
+    options.source,
+    options.startIndex === undefined || options.shuffle === true
+      ? undefined
+      : songIds[options.startIndex],
+  );
 }
 
 function insert(songIds: readonly number[], queued: boolean) {

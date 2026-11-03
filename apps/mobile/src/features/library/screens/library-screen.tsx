@@ -1,17 +1,22 @@
+import { useState } from "react";
 import { Text, useWindowDimensions, View } from "react-native";
 import { Stack } from "expo-router";
 
-import type { SongListItem } from "@synq/db";
-import { findLikedPlaylistId, listSongs } from "@synq/db";
+import type { HomeItem } from "@synq/db";
+import {
+  findLikedPlaylistId,
+  hasSongs,
+  listPinned,
+  listRecents,
+} from "@synq/db";
 
-import { Artwork } from "~/components/artwork";
 import { EmptyState } from "~/components/empty-state";
 import { HeaderGlass } from "~/components/header-glass";
-import { NativeRow } from "~/components/native-row";
+import { ScreenList } from "~/components/screen-list";
 import { ScreenScroll } from "~/components/screen-scroll";
 import { RootTabTitle } from "~/components/tab-title";
-import { playSongs } from "~/features/player/actions";
-import { names, UNKNOWN_ARTIST } from "../format";
+import { CARD_GAP, CARD_PADDING, cardHeight, HomeCard } from "../home-card";
+import { RECENTS_KEY } from "../home-queries";
 import { LibraryLinkRow } from "../library-link-row";
 import {
   IMPORT_ACTIONS,
@@ -21,16 +26,37 @@ import {
   openNewPlaylist,
 } from "../links";
 import { useLibraryQuery } from "../queries";
-import { songMenu } from "../song-menu";
-import { useIsLiked } from "../song-row";
-import { songSort } from "../sort";
 
-/** How many of the newest songs Recently Added shows. */
-const RECENT_COUNT = 12;
-const GRID_GAP = 16;
-const GRID_PADDING = 16;
-/** Two lines of footnote text and the gap above them, under a card's artwork. */
-const CARD_TEXT_HEIGHT = 44;
+/** How many more of Recents load each time the list nears its end. */
+const RECENTS_PAGE = 40;
+/** The heading's text and the space around it. */
+const HEADING_HEIGHT = 64;
+/** The space under a row of cards. */
+const CARD_ROW_GAP = 20;
+
+type HomeRow =
+  | { type: "heading"; key: string; title: string }
+  | { type: "cards"; key: string; items: readonly HomeItem[] };
+
+/** A titled section as list rows: its heading, then two cards to a row. */
+function sectionRows(name: string, title: string, items: readonly HomeItem[]) {
+  if (items.length === 0) return [];
+  const heading = { key: name, title, type: "heading" } satisfies HomeRow;
+  // By position: as the list changes, cards keep their native views and only
+  // change what they show, so nothing is built mid-frame.
+  const cards = items.flatMap((_, start) =>
+    start % 2 === 0
+      ? [
+          {
+            items: items.slice(start, start + 2),
+            key: `${name}-${String(start)}`,
+            type: "cards",
+          } satisfies HomeRow,
+        ]
+      : [],
+  );
+  return [heading, ...cards];
+}
 
 function LikedSongsRow() {
   const likedId = useLibraryQuery({
@@ -48,76 +74,18 @@ function LikedSongsRow() {
   );
 }
 
-function RecentCard({
-  song,
-  size,
-  onPress,
-}: {
-  song: SongListItem;
-  size: number;
-  onPress: () => void;
-}) {
-  const artist = names(song.artists) || UNKNOWN_ARTIST;
-  const liked = useIsLiked(song.id);
+function LibraryLinks() {
   return (
-    <View style={{ width: size }}>
-      <NativeRow
-        card
-        height={size + CARD_TEXT_HEIGHT}
-        label={`${song.title}, ${artist}`}
-        menu={songMenu(song, { liked })}
-        menuButton={false}
-        onPress={onPress}
-      >
-        <View style={{ width: size }}>
-          <Artwork artwork={song.artwork} placeholder="song" size={size} />
-          <Text
-            numberOfLines={1}
-            className="text-footnote text-foreground mt-1.5 font-medium"
-          >
-            {song.title}
-          </Text>
-          <Text numberOfLines={1} className="text-footnote text-muted">
-            {artist}
-          </Text>
-        </View>
-      </NativeRow>
-    </View>
-  );
-}
-
-/** The newest songs' artwork in two columns; a tap plays from there. */
-function RecentlyAdded({ songs }: { songs: readonly SongListItem[] }) {
-  const { width } = useWindowDimensions();
-  const size = Math.floor((width - GRID_PADDING * 2 - GRID_GAP) / 2);
-  const ids = songs.map((song) => song.id);
-  const slots = songs.map((song, slot) => ({ slot, song }));
-  return (
-    <View className="pt-6">
-      <Text className="text-foreground px-4 pb-3 text-[22px] font-bold">
-        Recently Added
-      </Text>
-      <View
-        className="flex-row flex-wrap"
-        style={{
-          columnGap: GRID_GAP,
-          paddingHorizontal: GRID_PADDING,
-          rowGap: 20,
-        }}
-      >
-        {/* By position: when a batch lands, the cards keep their native views
-            and only change what they show, so nothing is built mid-frame. */}
-        {slots.map(({ slot, song }) => (
-          <RecentCard
-            key={slot}
-            song={song}
-            size={size}
-            onPress={() =>
-              playSongs(ids, { source: { kind: "library" }, startIndex: slot })
-            }
-          />
-        ))}
-      </View>
+    <View className="pt-2">
+      <LikedSongsRow />
+      {LIBRARY_ROWS.map((row) => (
+        <LibraryLinkRow
+          key={row.screen}
+          icon={row.icon}
+          label={row.label}
+          onPress={() => openLibraryScreen({ screen: row.screen })}
+        />
+      ))}
     </View>
   );
 }
@@ -151,46 +119,95 @@ function LibraryToolbar() {
   );
 }
 
+/** Liked Songs and the library's lists, then Pinned, then Recents, loading as it scrolls. */
+function LibraryHome() {
+  const { width } = useWindowDimensions();
+  const size = Math.floor((width - CARD_PADDING * 2 - CARD_GAP) / 2);
+  // How much of Recents to show. It's one read of the whole window rather than
+  // pages kept side by side, so something played moves up without a duplicate
+  // or a gap.
+  const [limit, setLimit] = useState(RECENTS_PAGE);
+  const pinned = useLibraryQuery({
+    key: ["pinned"],
+    read: listPinned,
+    select: (items) => items,
+  });
+  const recents = useLibraryQuery({
+    key: [...RECENTS_KEY, limit],
+    read: (db) => listRecents(db, { limit }),
+    select: (window) => window,
+  });
+  const rows = [
+    ...sectionRows("pinned", "Pinned", pinned),
+    ...sectionRows("recents", "Recents", recents.items),
+  ];
+  return (
+    <ScreenList
+      data={rows}
+      keyExtractor={(row) => row.key}
+      getItemType={(row) => row.type}
+      getFixedItemSize={(row) =>
+        row.type === "heading"
+          ? HEADING_HEIGHT
+          : cardHeight(size) + CARD_ROW_GAP
+      }
+      estimatedItemSize={cardHeight(size) + CARD_ROW_GAP}
+      ListHeaderComponent={<LibraryLinks />}
+      ListFooterComponent={<View className="h-8" />}
+      onEndReached={() => {
+        if (recents.hasMore) setLimit(limit + RECENTS_PAGE);
+      }}
+      onEndReachedThreshold={1}
+      renderItem={({ item: row }) =>
+        row.type === "heading" ? (
+          <View
+            className="justify-end px-4 pb-3"
+            style={{ height: HEADING_HEIGHT }}
+          >
+            <Text className="text-foreground text-[22px] font-bold">
+              {row.title}
+            </Text>
+          </View>
+        ) : (
+          <View
+            className="flex-row"
+            style={{ columnGap: CARD_GAP, paddingHorizontal: CARD_PADDING }}
+          >
+            {row.items.map((item, slot) => (
+              <HomeCard key={slot} item={item} size={size} />
+            ))}
+          </View>
+        )
+      }
+    />
+  );
+}
+
 /**
- * The Library tab (docs/ui.md → Library): Liked Songs and the library's
- * lists, then Recently Added; with no music yet, an invitation to import.
+ * The Library tab (docs/ui.md → Library). With no music yet, an invitation to
+ * import.
  */
 export default function LibraryScreen() {
-  const sort = songSort.initial;
-  const recent = useLibraryQuery({
-    // The Songs list's default read, so the two share one cache entry.
-    key: ["songs", sort.key, sort.order],
-    read: (db) => listSongs(db, { order: sort.order, sort: sort.key }),
-    select: (songs) => songs.slice(0, RECENT_COUNT),
+  const hasMusic = useLibraryQuery({
+    key: ["has-songs"],
+    read: hasSongs,
+    select: (has) => has,
   });
   return (
     <>
       <RootTabTitle title="Library" />
       <LibraryToolbar />
-      <ScreenScroll>
-        {recent.length === 0 ? (
+      {hasMusic ? (
+        <LibraryHome />
+      ) : (
+        <ScreenScroll>
           <EmptyState
             icon="music.note.house"
             title="No Music Yet"
             actions={IMPORT_ACTIONS}
           />
-        ) : (
-          <View className="pb-8">
-            <View className="pt-2">
-              <LikedSongsRow />
-              {LIBRARY_ROWS.map((row) => (
-                <LibraryLinkRow
-                  key={row.screen}
-                  icon={row.icon}
-                  label={row.label}
-                  onPress={() => openLibraryScreen({ screen: row.screen })}
-                />
-              ))}
-            </View>
-            <RecentlyAdded songs={recent} />
-          </View>
-        )}
-      </ScreenScroll>
+        </ScreenScroll>
+      )}
       <HeaderGlass />
     </>
   );

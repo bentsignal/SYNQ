@@ -24,6 +24,7 @@ export * from "./library/artists.ts";
 export * from "./library/artwork.ts";
 export * from "./library/changes.ts";
 export * from "./library/errors.ts";
+export * from "./library/home.ts";
 export type { AlbumRef, ArtistRef } from "./library/find-or-create.ts";
 export { splitArtistNames } from "./library/matching.ts";
 export * from "./library/playlist-songs.ts";

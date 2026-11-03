@@ -1,3 +1,4 @@
+import type { SQL } from "drizzle-orm";
 import { asc, eq, inArray, ne, sql } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
@@ -31,6 +32,8 @@ export interface ArtistListItem {
   addedAt: number;
   songCount: number;
   albumCount: number;
+  /** When it was pinned to the Library tab; null when it isn't. */
+  pinnedAt: number | null;
 }
 
 export type ArtistSort = "name" | "addedAt";
@@ -80,10 +83,11 @@ function filterArtists(db: LibraryDb, items: ArtistListItem[], search: string) {
 }
 
 export function getArtist(db: LibraryDb, id: number) {
-  return loadArtistItems(db, id)[0] ?? null;
+  return loadArtistItems(db, eq(artists.id, id))[0] ?? null;
 }
 
-function loadArtistItems(db: LibraryDb, id?: number) {
+/** Artists matching `where` (a condition on `artists`) with counts. */
+export function loadArtistItems(db: LibraryDb, where?: SQL) {
   const songCount = db
     .select({
       artistId: songArtists.artistId,
@@ -106,13 +110,14 @@ function loadArtistItems(db: LibraryDb, id?: number) {
       name: artists.name,
       artworkVersion: artists.artworkVersion,
       addedAt: artists.addedAt,
+      pinnedAt: artists.pinnedAt,
       songCount: sql<number>`coalesce(${songCount.count}, 0)`,
       albumCount: sql<number>`coalesce(${albumCount.count}, 0)`,
     })
     .from(artists)
     .leftJoin(songCount, eq(songCount.artistId, artists.id))
     .leftJoin(albumCount, eq(albumCount.artistId, artists.id))
-    .where(id === undefined ? undefined : eq(artists.id, id))
+    .where(where)
     .orderBy(asc(artists.id))
     .all()
     .map(({ artworkVersion, ...row }) => ({

@@ -27,6 +27,7 @@ import {
   confirmDeleteAlbum,
   confirmDeleteArtist,
   confirmDeletePlaylist,
+  pinAction,
 } from "./actions";
 import { libraryDb } from "./database";
 import { openLibraryScreen } from "./links";
@@ -66,6 +67,7 @@ function collectionMenu({
   edit,
   share,
   remove,
+  pin,
 }: {
   place: CollectionMenuPlace;
   songCount: number;
@@ -75,6 +77,7 @@ function collectionMenu({
   edit: () => void;
   share: () => void;
   remove?: MenuAction;
+  pin: MenuAction;
 }) {
   const hasSongs = songCount > 0;
   const play = [
@@ -111,18 +114,18 @@ function collectionMenu({
       },
     },
   ] satisfies MenuItem[];
-  const keep = [
-    {
-      icon: "text.badge.plus",
-      key: "add",
-      label: "Add to Playlist…",
-      onPress: () =>
-        router.push({
-          params: { songs: songIds().join(",") },
-          pathname: "/add-to-playlist",
-        }),
-    },
-  ] satisfies MenuItem[];
+  const addToPlaylist = {
+    icon: "text.badge.plus",
+    key: "add",
+    label: "Add to Playlist…",
+    onPress: () =>
+      router.push({
+        params: { songs: songIds().join(",") },
+        pathname: "/add-to-playlist",
+      }),
+  } satisfies MenuAction;
+  // Pin stays when the last song goes, so what's pinned can always be unpinned.
+  const keep = (hasSongs ? [addToPlaylist, pin] : [pin]) satisfies MenuItem[];
   const manage = [
     { icon: "pencil", key: "edit", label: "Edit", onPress: edit },
     ...(hasSongs
@@ -139,7 +142,7 @@ function collectionMenu({
   return [
     hasSongs && place.onPage !== true ? play : [],
     hasSongs ? queue : [],
-    hasSongs ? keep : [],
+    keep,
     go,
     manage,
     remove === undefined ? [] : [remove],
@@ -160,6 +163,7 @@ export function albumMenu(
         pathname: "/edit-album/[id]",
       }),
     go: goToArtists(artists, place),
+    pin: pinAction({ id: album.id, kind: "album" }, album.pinnedAt),
     place,
     remove: {
       destructive: true,
@@ -226,6 +230,7 @@ export function playlistMenu(
         params: { id: String(playlist.id) },
         pathname: "/edit-playlist/[id]",
       }),
+    pin: pinAction({ id: playlist.id, kind: "playlist" }, playlist.pinnedAt),
     place,
     remove: liked
       ? undefined
@@ -269,6 +274,7 @@ export function artistMenu(
         params: { id: String(artist.id) },
         pathname: "/edit-artist/[id]",
       }),
+    pin: pinAction({ id: artist.id, kind: "artist" }, artist.pinnedAt),
     place,
     remove: {
       destructive: true,

@@ -9,12 +9,14 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { Stack } from "expo-router";
-import { HStack, Image, Menu, Text as SwiftUIText } from "@expo/ui/swift-ui";
+import { Menu, Text as SwiftUIText } from "@expo/ui/swift-ui";
 import {
   font,
   foregroundStyle,
+  frame,
   lineLimit,
   menuIndicator,
+  multilineTextAlignment,
 } from "@expo/ui/swift-ui/modifiers";
 import { LegendList } from "@legendapp/list/react-native";
 
@@ -39,6 +41,8 @@ const TOP_PADDING = 12;
 const TITLE_FADE = { duration: 220 };
 /** Leaves the bar's buttons their room, however long the name. */
 const TITLE_MAX_WIDTH = 220;
+/** The album's artists wrap this far, then truncate; the menu lists them all. */
+const ARTIST_LINES = 2;
 
 /**
  * The scroll offset (below the bars) at which a header's name has gone
@@ -152,7 +156,7 @@ export function CollectionHeader({
         >
           {name}
         </Text>
-        <View className="mt-1 items-center gap-0.5">{lines}</View>
+        <View className="mt-1 items-center gap-0.5 self-stretch">{lines}</View>
       </View>
       <View className="pt-4">{children}</View>
     </View>
@@ -188,7 +192,10 @@ export function ArtistLinks({
         className="active:opacity-60"
         onPress={() => openLibraryScreen({ id: only.id, screen: "artist" })}
       >
-        <Text numberOfLines={1} className="text-body text-accent font-medium">
+        <Text
+          numberOfLines={ARTIST_LINES}
+          className="text-body text-accent text-center font-medium"
+        >
           {only.name}
         </Text>
       </Pressable>
@@ -206,23 +213,24 @@ export function ArtistLinks({
     ),
   ];
   return (
-    <FormHost matchContents>
+    <FormHost
+      matchContents={{ vertical: true }}
+      style={{ alignSelf: "stretch" }}
+    >
       <Menu
         label={
-          <HStack spacing={4}>
-            <SwiftUIText
-              modifiers={[
-                font({ size: 17, weight: "medium" }),
-                foregroundStyle(accent),
-                lineLimit(1),
-              ]}
-            >
-              {names(artists)}
-            </SwiftUIText>
-            <Image systemName="chevron.down" size={11} color={accent} />
-          </HStack>
+          <SwiftUIText
+            modifiers={[
+              font({ size: 17, weight: "medium" }),
+              foregroundStyle(accent),
+              lineLimit(ARTIST_LINES),
+              multilineTextAlignment("center"),
+            ]}
+          >
+            {names(artists)}
+          </SwiftUIText>
         }
-        modifiers={[menuIndicator("hidden")]}
+        modifiers={[menuIndicator("hidden"), frame({ maxWidth: Infinity })]}
       >
         <MenuItems groups={menu} />
       </Menu>

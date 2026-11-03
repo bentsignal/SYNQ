@@ -83,7 +83,7 @@ void describe("the built page", () => {
     assert.ok(
       existsSync(TRANSFER_PAGE_OUTPUT) &&
         readFileSync(TRANSFER_PAGE_OUTPUT, "utf8") === buildTransferPage(),
-      "transfer-page.generated.ts is out of date: run `pnpm -F @synq/mobile build:transfer-page` and commit it",
+      "transfer-page.generated.ts is out of date: run `pnpm build:transfer-page` and commit it",
     );
   });
 

@@ -354,7 +354,7 @@ has started by then; the next clean batch asks instead.
   hiccup doesn't cost an upload in flight. Dropped files wait through any of that and go on by
   themselves. The sheet being closed changes nothing here.
 
-  `pnpm -F @synq/mobile build:transfer-page` writes the built page to
+  `pnpm build:transfer-page` writes the built page to
   `transfer-page.generated.ts`, which is committed, so Metro, `eas update`, EAS
   builds, and tests all use it with no build step of their own. `pnpm test` fails
   if it doesn't match its sources. It reaches binaries over the air like any other

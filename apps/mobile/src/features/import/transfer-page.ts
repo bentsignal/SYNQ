@@ -20,7 +20,7 @@ const ACCENT_TOKEN = "__SYNQ_ACCENT__";
  * body, so the phone streams each to disk. A single self-contained file,
  * since it has to work with no internet. Near-black with the person's accent,
  * which follows the phone's theme. Built from `transfer-page-source/`
- * (`pnpm -F @synq/mobile build:transfer-page`).
+ * (`pnpm build:transfer-page`).
  */
 export function transferPage({ accent }: { accent: string }) {
   const color = /^#[0-9a-f]{6}$/i.test(accent) ? accent : "#77adf8";

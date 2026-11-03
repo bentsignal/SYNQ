@@ -130,8 +130,10 @@ profile (the team's registered iPhones).
   ([docs/analytics.md](../../docs/analytics.md)).
 - `src/features/import/transfer-page-source`: Wi-Fi Transfer's web page, in HTML,
   CSS, and browser TypeScript. After changing it, run
-  `pnpm -F @synq/mobile build:transfer-page` and commit
-  `transfer-page.generated.ts`; `pnpm test` fails until you do.
+  `pnpm build:transfer-page` and commit
+  `transfer-page.generated.ts`; `pnpm test` fails until you do. The script is in
+  the root `package.json`, because every script in this package's counts toward
+  the native fingerprint.
 - `src/components`, `src/lib`: shared components and helpers.
   `lib/query-client.ts` is the one TanStack Query cache the library reads
   through.

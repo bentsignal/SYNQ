@@ -104,7 +104,8 @@ function askThenSend(item: Upload) {
   state.attempt += 1;
   const asked = state.attempt;
   fetch(`/uploaded?id=${encodeURIComponent(item.id)}`, { cache: "no-store" })
-    .then((response) => response.json())
+    // A server that can't say hasn't got it, so the file goes again.
+    .then((response) => (response.ok ? response.json() : {}))
     .then((reply: unknown) => {
       if (asked !== state.attempt) return;
       if (toRecord(reply).received) delivered(item);

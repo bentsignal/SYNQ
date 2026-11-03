@@ -129,6 +129,7 @@ export function loadPage({
   initial = '{"on":true}',
   ping = () => okResponse({}),
   uploaded = false,
+  uploadedOk = true,
 } = {}) {
   FakeRequest.sent = [];
   FakeSource.opened = [];
@@ -162,9 +163,13 @@ export function loadPage({
     encodeURIComponent,
     fetch: (url: string) => {
       fetched.push(url);
-      return url.startsWith("/uploaded")
+      if (!url.startsWith("/uploaded")) return ping();
+      return uploadedOk
         ? okResponse({ received: uploaded })
-        : ping();
+        : Promise.resolve({
+            json: () => Promise.resolve({ error: "Not found." }),
+            ok: false,
+          });
     },
     window: { addEventListener: noop },
   });

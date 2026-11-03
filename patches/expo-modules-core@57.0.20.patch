@@ -1,0 +1,20 @@
+diff --git a/ios/Core/Arguments/Convertibles.swift b/ios/Core/Arguments/Convertibles.swift
+index 4a63a50..d413eb4 100644
+--- a/ios/Core/Arguments/Convertibles.swift
++++ b/ios/Core/Arguments/Convertibles.swift
+@@ -19,6 +19,15 @@ extension URL: Convertible {
+       throw Conversions.ConvertingException<URL>(value)
+     }
+ 
++    // SYNQ patch: on iOS 17, URL(string:) "repairs" a string with a character
++    // it doesn't allow, such as `[`, `{`, or `é`, which expo-file-system leaves
++    // as they are, by encoding all of it again. `%20` turns into `%2520`, and
++    // the URL then names a file that doesn't exist. A file URL's path can be
++    // read directly instead.
++    if value.hasPrefix("file://"), let path = String(value.dropFirst(7)).removingPercentEncoding {
++      return URL(fileURLWithPath: path)
++    }
++
+     // First we try to create a URL without extra encoding, as it came.
+     if let url = convertToUrl(string: value) {
+       return url

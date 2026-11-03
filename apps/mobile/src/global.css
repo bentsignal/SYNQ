@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@import "uniwind";
+
+/*
+ * SYNQ is always dark: a near-black background (2.5.2's #141414), iOS dark
+ * system grays for grouped and elevated surfaces, and one pastel accent,
+ * the person's theme color (blue by default), used sparingly.
+ */
+@layer theme {
+  :root {
+    /* The app's appearance is always dark (app.config.ts). Uniwind always
+       has light and dark themes and needs the same tokens in both, so
+       light repeats dark's values. */
+    @variant dark {
+      --color-background: #141414;
+      --color-background-grouped: #141414;
+      --color-background-elevated: #1c1c1e;
+      --color-background-elevated-2: #2c2c2e;
+      --color-foreground: #ffffff;
+      --color-muted: rgba(235, 235, 245, 0.6);
+      --color-subtle: rgba(235, 235, 245, 0.3);
+      --color-separator: rgba(84, 84, 88, 0.65);
+      --color-fill: rgba(118, 118, 128, 0.24);
+      --color-accent: #77adf8;
+      --color-on-accent: #141414;
+      --color-destructive: #ff453a;
+    }
+    @variant light {
+      --color-background: #141414;
+      --color-background-grouped: #141414;
+      --color-background-elevated: #1c1c1e;
+      --color-background-elevated-2: #2c2c2e;
+      --color-foreground: #ffffff;
+      --color-muted: rgba(235, 235, 245, 0.6);
+      --color-subtle: rgba(235, 235, 245, 0.3);
+      --color-separator: rgba(84, 84, 88, 0.65);
+      --color-fill: rgba(118, 118, 128, 0.24);
+      --color-accent: #77adf8;
+      --color-on-accent: #141414;
+      --color-destructive: #ff453a;
+    }
+  }
+}
+
+/* Apple Human Interface Guidelines text styles at the default size. */
+@theme {
+  --text-large-title: 34px;
+  --text-title: 28px;
+  --text-title-2: 22px;
+  --text-title-3: 20px;
+  --text-headline: 17px;
+  --text-body: 17px;
+  --text-callout: 16px;
+  --text-subhead: 15px;
+  --text-footnote: 13px;
+  --text-caption: 12px;
+}
+
+@utility border-hairline {
+  border-width: hairlineWidth();
+}
+
+@utility border-b-hairline {
+  border-bottom-width: hairlineWidth();
+}

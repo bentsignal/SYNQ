@@ -1,1 +1,0 @@
-ALTER TABLE `albumSongs` ADD `track` integer;

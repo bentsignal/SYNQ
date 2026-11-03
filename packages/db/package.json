@@ -1,0 +1,51 @@
+{
+  "name": "@synq/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts",
+    "./legacy": "./src/legacy/index.ts",
+    "./merge": "./src/merge/index.ts",
+    "./expo": "./src/expo.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules",
+    "db:generate": "drizzle-kit generate && node scripts/bundle-migrations.ts",
+    "lint": "eslint --flag unstable_native_nodejs_ts_config && node scripts/bundle-migrations.ts --check",
+    "test": "node --disable-warning=ExperimentalWarning --test 'src/**/*.test.ts'",
+    "typecheck": "tsgo --noEmit",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
+    "format:fix": "prettier --write . --ignore-path ../../.gitignore --ignore-path .prettierignore"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.4"
+  },
+  "devDependencies": {
+    "@synq/eslint-config": "workspace:*",
+    "@synq/prettier-config": "workspace:*",
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "drizzle-kit": "0.31.11",
+    "eslint": "catalog:",
+    "expo-file-system": "~57.0.7",
+    "expo-sqlite": "~57.0.4",
+    "prettier": "catalog:",
+    "react": "catalog:react19",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "expo-file-system": "*",
+    "expo-sqlite": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-file-system": {
+      "optional": true
+    },
+    "expo-sqlite": {
+      "optional": true
+    }
+  },
+  "prettier": "@synq/prettier-config"
+}

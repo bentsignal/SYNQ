@@ -52,8 +52,12 @@ const files = readdirSync(coverDir)
   .filter((file) => /\.(png|jpe?g)$/.test(file))
   .filter((file) => wanted?.has(path.parse(file).name) ?? true)
   .sort((a, b) => placeOf(a) - placeOf(b) || a.localeCompare(b));
+const wantedVariants =
+  values.variants === undefined
+    ? undefined
+    : new Set(values.variants.split(","));
 const variants = [CURRENT_VARIANT, ...VARIANTS].filter(
-  (variant) => values.variants?.split(",").includes(variant.id) ?? true,
+  (variant) => wantedVariants?.has(variant.id) ?? true,
 );
 
 const renders = path.join(lab, "renders");

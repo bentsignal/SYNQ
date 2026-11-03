@@ -1,0 +1,192 @@
+:root {
+  color-scheme: dark;
+  --background: #141414;
+  --text: #ededed;
+  --secondary: #9a9a9a;
+  --tertiary: #6f6f6f;
+  --hairline: rgb(255 255 255 / 0.1);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  background: var(--background);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  color: var(--text);
+  font: 400 17px/1.5 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--tertiary);
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 3px;
+}
+
+/* Home: a soft light behind the icon, as if the app were lit from within. */
+.home {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 100dvh;
+  padding: 32px 24px;
+  background: radial-gradient(
+    560px 420px at 50% calc(50% - 130px),
+    rgb(255 255 255 / 0.055),
+    transparent 70%
+  );
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 40px;
+  text-align: center;
+  animation: rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.icon {
+  display: block;
+  width: 112px;
+  height: 112px;
+  border-radius: 25px;
+  box-shadow:
+    0 0 0 0.5px var(--hairline),
+    0 18px 50px rgb(0 0 0 / 0.5);
+}
+
+h1 {
+  margin-top: 26px;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  /* Letter spacing trails the last letter; this keeps the word centered. */
+  text-indent: 0.14em;
+}
+
+.line {
+  max-width: 21em;
+  margin-top: 10px;
+  color: var(--secondary);
+}
+
+.store {
+  margin-top: 30px;
+  padding: 13px 24px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.16);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 160ms ease;
+}
+
+.store:hover {
+  background: rgb(255 255 255 / 0.14);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 22px;
+  color: var(--secondary);
+  font-size: 14px;
+  animation: rise 700ms 120ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.links a {
+  text-decoration: none;
+}
+
+.links a:hover {
+  color: var(--text);
+}
+
+/* Privacy */
+.page {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 44px 24px 72px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--secondary);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.back:hover {
+  color: var(--text);
+}
+
+.back img {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+}
+
+.page h1 {
+  margin-top: 40px;
+  font-size: 30px;
+  letter-spacing: 0;
+  text-indent: 0;
+}
+
+.date {
+  margin-top: 4px;
+  color: var(--tertiary);
+  font-size: 14px;
+}
+
+h2 {
+  margin-top: 34px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.page p,
+.page ul {
+  margin-top: 8px;
+  color: #bcbcbc;
+}
+
+.page ul {
+  padding-left: 20px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .links {
+    animation: none;
+  }
+}

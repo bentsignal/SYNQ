@@ -10,7 +10,7 @@ import { backUpLibrary, eraseLibrary, inspectBackup } from "./backup";
 import { RestoreError, restoreLibrary } from "./restore";
 import { restoreSummary } from "./restore-summary";
 
-const SUPPORT_URL = "https://directedbyshawn.com/synq-support";
+const SUPPORT_URL = "mailto:help@bentsignal.com";
 
 /** A task that finishes sooner shows nothing, so it can't flicker. */
 const SHOW_AFTER_MS = 500;

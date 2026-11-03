@@ -3,59 +3,14 @@ import simd
 
 /// The field behind the player. Each swatch is a soft pool of color drifting
 /// slowly around its anchor; every pixel is a normalized blend of the pools,
-/// so the backdrop is never brighter than its brightest swatch. That's what
-/// keeps white text readable. Sampling the blend through a slowly warping
+/// so the backdrop is never lighter than its lightest swatch. That's what
+/// keeps white text readable. They mix in Oklab, where a mix keeps its lightness. Sampling the blend through a slowly warping
 /// domain makes the pools' edges flow instead of sliding like circles.
 enum BackdropShader {
-  static let maxSwatches = 25
+  static let maxSwatches = 6
 
-  /// How the pools mix. The defaults are the original look.
-  struct Look: Equatable {
-    /// How fast a pool fades with distance: higher keeps colors apart.
-    var falloff: Float = 1.5
-    /// Mix in Oklab, not in gamma-encoded sRGB.
-    var oklab = false
-    /// Chroma multiplier after mixing, for `oklab`.
-    var saturation: Float = 1
-    /// How much of the chroma that cancels in a mix to put back, 0–1, for
-    /// `oklab`. At 1, a mix is as vivid as the colors that went into it.
-    var restore: Float = 0
-  }
-
-  /// Matches `Uniforms` below, one `SIMD4` for each `float4`.
-  struct Uniforms {
-    var time: Float = 0
-    var aspect: Float = 1
-    var look = Look()
-    /// sRGB, 0–1.
-    var colors: [SIMD4<Float>] = []
-    /// Anchor x and y, and the pool's strength.
-    var pools: [SIMD4<Float>] = []
-
-    var bytes: [SIMD4<Float>] {
-      // The header is 16 bytes, the size of one element.
-      let header = SIMD4<Float>(
-        time, aspect, Float(bitPattern: UInt32(colors.count)), 0)
-      let shading = SIMD4<Float>(
-        look.falloff, look.oklab ? 1 : 0, look.saturation, look.restore)
-      let empty = [SIMD4<Float>](repeating: .zero, count: maxSwatches - colors.count)
-      return [header, shading]
-        + (look.oklab ? colors.map(BackdropShader.oklab) : colors) + empty + pools + empty
-    }
-  }
-
-  /// `#rrggbb` as sRGB, 0–1, with alpha 1.
-  static func rgba(_ hex: String) -> SIMD4<Float> {
-    let digits = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
-    guard digits.count == 6, let value = UInt32(digits, radix: 16) else {
-      return SIMD4(0, 0, 0, 1)
-    }
-    return SIMD4(
-      Float((value >> 16) & 255) / 255, Float((value >> 8) & 255) / 255,
-      Float(value & 255) / 255, 1)
-  }
-
-  /// sRGB as Oklab L, a, b, with its chroma where the alpha was.
+  /// sRGB as Oklab L, a, b, with its chroma where the alpha was, as `colors` in
+  /// `Uniforms` takes it.
   static func oklab(_ color: SIMD4<Float>) -> SIMD4<Float> {
     func linear(_ c: Float) -> Float {
       c <= 0.040_45 ? c / 12.92 : powf((c + 0.055) / 1.055, 2.4)
@@ -73,6 +28,25 @@ enum BackdropShader {
       (labA * labA + labB * labB).squareRoot())
   }
 
+  /// Matches `Uniforms` below, one `SIMD4` for each `float4`.
+  struct Uniforms {
+    var time: Float = 0
+    var aspect: Float = 1
+    var count: UInt32 = 0
+    var padding: Float = 0
+    /// Oklab, from `oklab(_:)`.
+    var colors = [SIMD4<Float>](repeating: .zero, count: maxSwatches)
+    /// Anchor x and y, and the pool's strength.
+    var pools = [SIMD4<Float>](repeating: .zero, count: maxSwatches)
+
+    var bytes: [SIMD4<Float>] {
+      // The header is 16 bytes, the size of one element.
+      let header = SIMD4<Float>(
+        time, aspect, Float(bitPattern: count), padding)
+      return [header] + colors + pools
+    }
+  }
+
   static let source = """
     #include <metal_stdlib>
     using namespace metal;
@@ -82,10 +56,6 @@ enum BackdropShader {
       float aspect;
       uint count;
       float padding;
-      float falloff;
-      float oklab;
-      float saturation;
-      float restore;
       float4 colors[\(maxSwatches)];
       float4 pools[\(maxSwatches)];
     };
@@ -143,20 +113,19 @@ enum BackdropShader {
         float2 d = q - (u.pools[i].xy + 0.14 * drift) * scale;
         // Softer than a Gaussian: pools fade into each other with no edges.
         float falloff = dot(d, d) + 0.03;
-        float weight = u.pools[i].z / pow(falloff, u.falloff);
+        float weight = u.pools[i].z / (falloff * sqrt(falloff));
         sum += u.colors[i].rgb * weight;
         chroma += u.colors[i].a * weight;
         total += weight;
       }
-      float3 color = sum / max(total, 1e-5);
-      if (u.oklab > 0.5) {
-        // Hues cancel in a mix, which is what makes opposite colors go grey.
-        float mixed = length(color.yz);
-        float lost = mixed > 1e-4
-          ? min(chroma / max(total, 1e-5) / mixed, 3.0) : 1.0;
-        color.yz *= mix(1.0, lost, u.restore) * u.saturation;
-        color = oklabToSrgb(color);
-      }
+      float3 lab = sum / max(total, 1e-5);
+
+      // Hues cancel in a mix, which is what turns neighbors grey; most of the
+      // chroma they lost goes back.
+      float mixed = length(lab.yz);
+      float lost = mixed > 1e-4 ? min(chroma / max(total, 1e-5) / mixed, 3.0) : 1.0;
+      lab.yz *= mix(1.0, lost, 0.6);
+      float3 color = oklabToSrgb(lab);
 
       // A little darker behind the controls.
       color *= mix(1.0, 0.8, smoothstep(0.45, 1.0, in.uv.y));

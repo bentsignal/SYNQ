@@ -10,9 +10,7 @@ import type { ArtworkRef } from "@synq/db";
 import { synqMedia, synqMediaAvailable } from "~/features/media/native";
 import { coverFileUri, useArtworkAnalysis } from "./artwork-analysis";
 import { backdropColors } from "./backdrop-colors";
-import { CHARCOAL } from "./backdrop-palette";
-import { useBackdropVariant } from "./backdrop-variant-store";
-import { ORIGINAL_LOOK } from "./backdrop-variants";
+import { backdropPalette, CHARCOAL } from "./backdrop-palette";
 import { BackdropView } from "./native-backdrop";
 
 /** A cover's dimmed average colors, top and bottom (null: no art, or a build without the reader). */
@@ -52,20 +50,18 @@ function MovingBackdrop({
   artwork: ArtworkRef | null;
   View: NonNullable<typeof BackdropView>;
 }) {
-  const analysis = useArtworkAnalysis(artwork).data;
-  const variant = useBackdropVariant();
+  const clusters = useArtworkAnalysis(artwork).data?.clusters;
   const animating = useIsFocused();
-  const design =
-    artwork === null || analysis == null
-      ? { look: ORIGINAL_LOOK, swatches: CHARCOAL }
-      : variant.design(analysis);
   return (
     <View className="bg-background absolute inset-0" pointerEvents="none">
       <NativeBackdrop
         animating={animating}
-        look={design.look}
         style={{ flex: 1 }}
-        swatches={design.swatches}
+        swatches={
+          artwork === null || clusters === undefined
+            ? CHARCOAL
+            : backdropPalette(clusters)
+        }
       />
     </View>
   );

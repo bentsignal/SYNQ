@@ -120,14 +120,16 @@ colors it chooses instead, so the ring carries the backdrop.
   (`ArtworkAnalysis.swift`, off the main thread, once per cover): weighted
   k-means in Oklab, where saturated pixels pull harder, seeded farthest-first
   so a small area gets a cluster of its own. It's deterministic.
-- `backdrop-palette.ts` picks five colors from the clusters. Chroma counts
-  more than area. A cover with no color at all gets a spread of its own
-  tones. Everything is capped at `MAX_LUMINANCE`, and this is JavaScript so
-  it's tested (`backdrop-palette.test.ts`) and updates over the air.
+- `backdrop-palette.ts` picks five colors from the clusters, all in one family
+  of hues, from a deep ground up to a glow. See [Choosing colors](#choosing-colors).
+  A cover with no color at all gets a spread of its own tones. Everything is
+  capped at `MAX_LUMINANCE`, and this is JavaScript so it's tested
+  (`backdrop-palette.test.ts`) and updates over the air.
 - `BackdropView.swift` draws them with a Metal fragment shader
-  (`BackdropShader.swift`): each pixel is a normalized blend of the pools, so
-  no pixel can be brighter than the brightest color and white text always
-  reads. It renders at one pixel per point at 30 fps; a new song blends the
+  (`BackdropShader.swift`): each pixel is a normalized blend of the pools, mixed
+  in Oklab, so no pixel can be lighter than the lightest color and white text
+  always reads. Mixing cancels some chroma where hues differ, and the shader puts
+  most of it back. It renders at one pixel per point at 30 fps; a new song blends the
   colors in place (0.9 s), which is a crossfade of the two fields without
   drawing both. No JavaScript runs per frame. It stops off screen, while the
   app is inactive or backgrounded, while something covers the player
@@ -137,50 +139,29 @@ colors it chooses instead, so the ring carries the backdrop.
 - Binaries without the module keep `GradientBackdrop`, the gradient of the
   cover's average colors (`backdrop-colors.ts`, `ArtworkColors.swift`).
 
-### Backdrop experiments
+### Choosing colors
 
-Some covers came out in clashing, muddy colors. Three causes, all visible in the
-old `backdropPalette`: it let up to four unrelated hues lead, by chroma, so a
-logo counted as much as the art; it boosted faint colors until they stopped
-being in the cover (dusty pink became maroon); and it held everything at one
-middling lightness, where a dim yellow is olive and hues that are opposite mix
-to brown.
+An earlier palette let up to four hues lead by chroma and held them all at one
+middling lightness. Covers came out clashing and muddy: a logo counted as much as
+the art, faint colors were boosted until they weren't in the cover anymore, a dim
+yellow is olive, and opposite hues mix to brown. So:
 
-`backdrop-variants.ts` holds the candidates. Testing on the phone ruled out a
-second hue (Duo), a grid of the cover's own colors (Cover), and a bright top
-(Glow): one hue family looked best, closest to Apple Music, if strong on some
-covers. A dev build now switches between versions of that family with the label
-at the player's top corner:
+- **One family of hues.** Nearby hues pool their area when choosing the lead, so
+  area counts as much as chroma and a line of type can't lead.
+- **Lightness does the work.** The family runs from a deep ground to a glow, and
+  shadows lean toward violet.
+- **A share of what the screen can show.** Chroma is 72% of the most that
+  lightness and hue can have, capped at `MAX_CHROMA`, so no hue looks duller than
+  another. Testing on a phone settled this: at 100% it looked best overall but
+  too strong on some covers.
+- **Never olive.** Dim yellows go to amber, and the yellow-greens of grass and
+  leaves go to green.
 
-- **Family**: one hue family, from a deep ground to a glow. Every color sits near
-  the most vivid its lightness and hue can show.
-- **Soft**: the same, about a quarter less saturated everywhere.
-- **Matched**: as saturated as the cover is, so a muted cover gets a muted
-  backdrop and a vivid one stays vivid.
-- **Pure**: the same strength, with shadows and glow staying on the cover's own
-  hue instead of leaning toward violet.
-- **Deep**: the same colors, darker.
-
-Each changes one thing, so a preference points at the cause.
-
-They share a few rules: nearby hues pool their area when choosing a lead, so
-area counts as much as chroma; chroma is a share of what that lightness and hue
-can show, so no hue looks duller than another; shadows lean toward violet; and
-dim yellows go to amber or green, never olive. They mix in Oklab and put back
-some of the chroma that opposite hues cancel (`BackdropShader.Look`). Release
-builds stay on the old palette until one wins.
-
-The native side still has what the dropped candidates needed: the analysis's
-`grid` and room for 25 pools. They come out with the winner, in one more dev
-client, so this round needs no reinstall.
-
-`dev/backdrop-lab` runs the real analysis, palette code, and shader on the Mac
-over a folder of covers (`.cache/backdrop-lab/covers`, never committed), draws a
-contact sheet, and reports white text's worst contrast from the title down:
-
-```sh
-node --experimental-strip-types apps/mobile/dev/backdrop-lab/lab.mjs --covers a,b,c
-```
+Testing on a phone ruled out a second hue, a grid of the cover's own colors
+(closest to what Apple is known to do), a bright top, more darkness, chroma that
+follows the cover's, and hues that stay put. PR #46 has the code for all of them
+and a Mac tool (`dev/backdrop-lab`) that runs the real analysis and shader over a
+folder of covers.
 
 `SynqBackdrop.frameStats()` (`scripts/sim.sh eval
 "expo.modules.SynqBackdrop.frameStats()"`) reports frames drawn and what they

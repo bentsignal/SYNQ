@@ -93,7 +93,9 @@ export function ScreenList<Item>({
     // The top is below zero under a native header, by an inset the event
     // doesn't report. Before the first drag the list is at rest at the top. An
     // earlier scroll event won't do: layout changes send them too.
-    topOffset.current ??= event.nativeEvent.contentOffset.y;
+    if (topOffset.current === null) {
+      topOffset.current = event.nativeEvent.contentOffset.y;
+    }
     props.onScrollBeginDrag?.(event);
   }
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {

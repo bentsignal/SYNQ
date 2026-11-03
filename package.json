@@ -34,6 +34,7 @@
   "prettier": "@synq/prettier-config",
   "pnpm": {
     "patchedDependencies": {
+      "expo-modules-core@57.0.20": "patches/expo-modules-core@57.0.20.patch",
       "react-native-screens@4.26.2": "patches/react-native-screens@4.26.2.patch"
     }
   }

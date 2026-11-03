@@ -11,6 +11,7 @@ import { migrate } from "drizzle-orm/expo-sqlite/migrator";
 import type { LibrarySchema } from "./client.ts";
 import type { LegacyDatabase, LegacyTextFileSystem } from "./legacy/types.ts";
 import { LEGACY_DB_PATH } from "./legacy/index.ts";
+import { encodedPath } from "./library/file-uri.ts";
 import { libraryMigrations } from "./migrations.ts";
 import * as schema from "./schema.ts";
 
@@ -46,7 +47,7 @@ export async function migrateLibraryDb(db: ExpoSQLiteDatabase<LibrarySchema>) {
 
 /** Whether `Documents/SQLite/synq.db` (a 2.5.2 install) exists. */
 export function hasLegacyDatabase() {
-  return new File(Paths.document, LEGACY_DB_PATH).exists;
+  return documentFile(LEGACY_DB_PATH).exists;
 }
 
 /**
@@ -80,13 +81,29 @@ export async function openLegacyDatabaseCopy(
 
 /**
  * A file inside `Documents/` from a stored relative path (`file_path`,
- * `artworkPath()`). Pass segments, never one concatenated string:
- * expo-file-system percent-encodes each segment it joins, but parses a single
- * string as a URL, so a 2.5.2 file named `Song #2 & more.m4a` would be cut
- * at the `#`.
+ * `artworkPath()`). The URI is encoded here, every segment, and handed over
+ * whole. Don't pass names as segments to `new File(dir, name)`: its join encodes
+ * only some characters, and a name with `[` then comes out encoded twice (`%2520`),
+ * which is a file that doesn't exist. 2.5.2 kept people's file names as they were,
+ * so `Song #2 [live] é & more.m4a` is what a real library looks like.
  */
 export function documentFile(relativePath: string) {
-  return new File(Paths.document, ...relativePath.split("/").filter(Boolean));
+  return fileIn(Paths.document, relativePath);
+}
+
+/** The base's URI with a relative path after it, every segment encoded. */
+function uriIn(base: Directory, relativePath: string) {
+  return `${base.uri.replace(/\/?$/, "/")}${encodedPath(relativePath)}`;
+}
+
+/** A file under a directory, from a relative path (see `documentFile`). */
+export function fileIn(base: Directory, relativePath: string) {
+  return new File(uriIn(base, relativePath));
+}
+
+/** A directory under a directory, from a relative path (see `documentFile`). */
+export function directoryIn(base: Directory, relativePath: string) {
+  return new Directory(uriIn(base, relativePath));
 }
 
 /** 2.5.2's AsyncStorage directory: `Library/Application Support/{bundleId}/RCTAsyncLocalStorage_V1`. */
@@ -105,8 +122,7 @@ export function legacyAsyncStorageDirectory(bundleId: string) {
  * `LegacyTextFileSystem` over expo-file-system. The importer builds paths as
  * `{root}/{name}/{name}...`; each must start with one of `roots`' URIs
  * (pass `Paths.document` or the extracted backup folder, and the AsyncStorage
- * directory), and the remainder is split into raw name segments so
- * expo-file-system encodes them (see `documentFile`).
+ * directory), and the remainder is encoded by name (see `documentFile`).
  */
 export function createExpoLegacyFileSystem(roots: readonly Directory[]) {
   const bases = roots.map((dir) => ({
@@ -125,11 +141,11 @@ export function createExpoLegacyFileSystem(roots: readonly Directory[]) {
   }
   function asDirectory(path: string) {
     const [dir, segments] = resolve(path);
-    return segments.length === 0 ? dir : new Directory(dir, ...segments);
+    return segments.length === 0 ? dir : directoryIn(dir, segments.join("/"));
   }
   function asFile(path: string) {
     const [dir, segments] = resolve(path);
-    return new File(dir, ...segments);
+    return fileIn(dir, segments.join("/"));
   }
   return {
     exists: (path) => asDirectory(path).exists || asFile(path).exists,

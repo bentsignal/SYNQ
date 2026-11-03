@@ -16,7 +16,7 @@
 #                                     corrupt (a copy; the fixture is never
 #                                     touched); 3.0 must show its error. This
 #                                     copy also renames song 9's file to
-#                                     "Interlude #7.mp3", to play a `#` name
+#                                     "Interlude #7 [live] {take 2} é.mp3", to play a name that's easy to get wrong
 #   scripts/upgrade-test.sh recover   put the good synq.db back; then tap
 #                                     Try Again and run the `verify` it prints
 #   scripts/upgrade-test.sh verify <label> [--theme <id>] [--fresh-session]
@@ -206,7 +206,7 @@ relaunch() {
 
 # The fixture with song 9's file renamed to have a `#` (the committed
 # library has none), in synq.db too, as if 2.5.2 had imported it so.
-HASH_NAME="Interlude #7.mp3"
+HASH_NAME="Interlude #7 [live] {take 2} é.mp3"
 stage_variant() {
   local variant="$RUN/variant"
   [ -d "$STAGE" ] || stage_fixture

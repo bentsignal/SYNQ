@@ -6,10 +6,9 @@ public class SynqBackdropModule: Module {
   public func definition() -> ModuleDefinition {
     Name("SynqBackdrop")
 
-    AsyncFunction("analyzeArtwork") { (imageUri: String) -> [String: Any]? in
-      guard let url = URL(string: imageUri),
-        let result = ArtworkAnalysis.read(imageURL: url)
-      else { return nil }
+    // A URL, so Expo reads it (its conversion handles any file name).
+    AsyncFunction("analyzeArtwork") { (url: URL) -> [String: Any]? in
+      guard let result = ArtworkAnalysis.read(imageURL: url) else { return nil }
       return [
         "clusters": result.clusters.map { cluster -> [String: Any] in
           [

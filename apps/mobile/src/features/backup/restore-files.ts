@@ -1,4 +1,4 @@
-import { Directory, File, Paths } from "expo-file-system";
+import { Directory, Paths } from "expo-file-system";
 import { deleteAsync } from "expo-file-system/legacy";
 
 import type { LibraryDb } from "@synq/db";
@@ -8,6 +8,7 @@ import type {
   MergeJournalStore,
   MergeSide,
 } from "@synq/db/merge";
+import { directoryIn, documentFile, fileIn } from "@synq/db/expo";
 import { recoverInterruptedMerge } from "@synq/db/merge";
 
 import { readJson, removeKey, writeJson } from "~/lib/kv";
@@ -55,16 +56,12 @@ export const restoreJournal = {
   },
 } satisfies MergeJournalStore;
 
-function segments(path: string) {
-  return path.split("/").filter(Boolean);
-}
-
 function libraryFile(path: string) {
-  return new File(Paths.document, ...segments(path));
+  return documentFile(path);
 }
 
 function libraryFolder(path: string) {
-  return new Directory(Paths.document, ...segments(path));
+  return directoryIn(Paths.document, path);
 }
 
 /** The last segment of an entry's file:// URI, with the exact bytes on disk. */
@@ -86,14 +83,10 @@ function removeFolder(path: string) {
 /** A merge's files: a backup extracted to `root`, and the library in Documents. */
 export function restoreFileSystem(root: Directory) {
   function fileOn(side: MergeSide, path: string) {
-    return side === "backup"
-      ? new File(root, ...segments(path))
-      : libraryFile(path);
+    return side === "backup" ? fileIn(root, path) : libraryFile(path);
   }
   function folderOn(side: MergeSide, path: string) {
-    return side === "backup"
-      ? new Directory(root, ...segments(path))
-      : libraryFolder(path);
+    return side === "backup" ? directoryIn(root, path) : libraryFolder(path);
   }
   return {
     list: (side, path) => {
@@ -117,7 +110,7 @@ export function restoreFileSystem(root: Directory) {
       if (target.exists) throw new Error("A file is already there.");
       target.parentDirectory.create({ idempotent: true, intermediates: true });
       // Same volume as the cache, so this renames rather than copies.
-      await new File(root, ...segments(fromBackup)).move(target);
+      await fileIn(root, fromBackup).move(target);
     },
     removeFile,
     removeFolder,

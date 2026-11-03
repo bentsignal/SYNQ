@@ -172,9 +172,7 @@ public final class SynqAudioModule: Module {
 
   /// Accepts `file://` URLs and absolute paths.
   private static func fileURL(_ string: String) -> URL? {
-    if string.hasPrefix("/") { return URL(fileURLWithPath: string) }
-    guard let url = URL(string: string), url.isFileURL else { return nil }
-    return url
+    FileLocation.url(from: string)
   }
 
   private static func payload(_ track: Track) -> [String: Any?] {

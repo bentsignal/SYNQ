@@ -14,7 +14,7 @@ import {
   listPlaylistSongs,
   markSongsExported,
 } from "@synq/db";
-import { documentFile } from "@synq/db/expo";
+import { documentFile, fileIn } from "@synq/db/expo";
 
 import type { SongTags } from "~/features/media/song-tags";
 import { track } from "~/features/analytics/analytics";
@@ -69,9 +69,9 @@ export function exportFailed(title: string) {
 /** A name unused in `folder`: "Song.mp3", then "Song 2.mp3". */
 function uniqueFile(folder: Directory, name: string) {
   const { stem, extension } = splitExtension(name);
-  let candidate = new File(folder, name);
+  let candidate = fileIn(folder, name);
   for (let n = 2; candidate.exists; n++) {
-    candidate = new File(folder, `${stem} ${String(n)}${extension}`);
+    candidate = fileIn(folder, `${stem} ${String(n)}${extension}`);
   }
   return candidate;
 }
@@ -287,7 +287,7 @@ async function shareZip(
     }
     if (exported.length === 0) throw new Error("No songs could be exported.");
     job.update(songs.length, COPY_SHARE);
-    const archive = new File(EXPORT_DIRECTORY, `${cleanName(name)}.zip`);
+    const archive = fileIn(EXPORT_DIRECTORY, `${cleanName(name)}.zip`);
     // Audio doesn't compress; storing keeps a big album quick.
     await withZipProgress(
       (fraction) =>

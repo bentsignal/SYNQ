@@ -90,6 +90,7 @@ h1.plain {
 
 .line {
   max-width: 21em;
+  text-wrap: balance;
   margin-top: 10px;
   color: var(--secondary);
 }

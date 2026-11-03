@@ -1,8 +1,18 @@
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, test } from "node:test";
 
+import {
+  buildTransferPage,
+  TRANSFER_PAGE_OUTPUT,
+} from "../../../scripts/build-transfer-page.ts";
 import { loadPage, remainingOf, typeOf } from "./transfer-page.fixture.ts";
-import { LIVE_STATE_TOKEN, transferPage } from "./transfer-page.ts";
+import {
+  LIVE_STATE_TOKEN,
+  TRANSFER_EXTENSIONS,
+  transferPage,
+} from "./transfer-page.ts";
 
 void describe("the transfer page's uploads", () => {
   void test("tells the phone how many files follow each one", () => {
@@ -65,6 +75,48 @@ void describe("the transfer page's uploads", () => {
     await advance(400);
     assert.equal(requests.length, 1);
     assert.equal(element("line").textContent, "");
+  });
+});
+
+void describe("the built page", () => {
+  void test("is what its sources build", () => {
+    assert.ok(
+      existsSync(TRANSFER_PAGE_OUTPUT) &&
+        readFileSync(TRANSFER_PAGE_OUTPUT, "utf8") === buildTransferPage(),
+      "transfer-page.generated.ts is out of date: run `pnpm -F @synq/mobile build:transfer-page` and commit it",
+    );
+  });
+
+  void test("takes the accent, and leaves nothing for the build to fill in", () => {
+    const html = transferPage({ accent: "#ff8585" });
+    assert.match(html, /--accent:\s*#ff8585;/);
+    assert.doesNotMatch(html, /__SYNQ_ACCENT__|__SYNQ_ACCEPT__/);
+    assert.doesNotMatch(html, /TRANSFER_EXTENSIONS|TRANSFER_LOGO/);
+  });
+
+  void test("falls back on the blue accent", () => {
+    assert.match(transferPage({ accent: "red" }), /--accent:\s*#77adf8;/);
+  });
+
+  void test("carries the logo inline, for the page and for the tab", () => {
+    const logo = readFileSync(
+      path.join(import.meta.dirname, "transfer-page-source/logo.png"),
+    ).toString("base64");
+    const parts = transferPage({ accent: "#77adf8" }).split(logo);
+    assert.equal(parts.length, 3);
+  });
+
+  void test("offers the audio SYNQ imports, and takes every one of them", async () => {
+    const html = transferPage({ accent: "#77adf8" });
+    const accept = TRANSFER_EXTENSIONS.map((extension) => `.${extension}`);
+    assert.ok(html.includes(`accept="${accept.join(",")},audio/*"`));
+    const { advance, choose, element, requests, sources } = loadPage();
+    sources[0]?.fire("state", '{"on":true}');
+    choose(TRANSFER_EXTENSIONS.map((extension) => `song.${extension}`));
+    await advance(400);
+    assert.equal(element("problems").hidden, true);
+    assert.equal(requests.length, 1);
+    assert.equal(remainingOf(requests[0]), TRANSFER_EXTENSIONS.length - 1);
   });
 });
 

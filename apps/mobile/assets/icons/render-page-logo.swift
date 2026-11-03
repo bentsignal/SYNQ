@@ -1,6 +1,7 @@
 // Renders the arrows from icon-blue.png as a small white mask for Wi-Fi
 // Transfer's page, which draws them in the theme's accent, as the alternate
-// icons do, and writes src/features/import/transfer-page-logo.ts.
+// icons do, and writes src/features/import/transfer-page-source/logo.png. Run
+// `pnpm build:transfer-page` after it, which inlines it in the page.
 //
 //   swift assets/icons/render-page-logo.swift   (from apps/mobile)
 import CoreGraphics
@@ -9,7 +10,7 @@ import ImageIO
 import UniformTypeIdentifiers
 
 let source = URL(fileURLWithPath: "assets/icons/icon-blue.png")
-let output = URL(fileURLWithPath: "src/features/import/transfer-page-logo.ts")
+let output = URL(fileURLWithPath: "src/features/import/transfer-page-source/logo.png")
 /// Three times its size on the page.
 let outputSize = 96
 
@@ -54,15 +55,5 @@ let destination = CGImageDestinationCreateWithData(
 CGImageDestinationAddImage(destination, small.makeImage()!, nil)
 CGImageDestinationFinalize(destination)
 
-let text = """
-  /**
-   * The arrows of the app icon as a white mask, inline because the page has to
-   * work with no internet. The page draws them in the theme's accent, as the
-   * alternate icons do. From `assets/icons/render-page-logo.swift`.
-   */
-  export const TRANSFER_LOGO_MASK =
-    "data:image/png;base64,\((data as Data).base64EncodedString())";
-
-  """
-try text.write(to: output, atomically: true, encoding: .utf8)
+try (data as Data).write(to: output)
 print("\(data.length) bytes")

@@ -1,9 +1,8 @@
-import { TRANSFER_LOGO_MASK } from "./transfer-page-logo.ts";
-import { TRANSFER_SCRIPT } from "./transfer-page-script.ts";
-import { TRANSFER_STYLE } from "./transfer-page-style.ts";
-import { TRANSFER_EXTENSIONS } from "./transfer-page-view.ts";
+import { AUDIO_TYPES } from "./clean-tags.ts";
+import { TRANSFER_PAGE } from "./transfer-page.generated.ts";
 
-export { TRANSFER_EXTENSIONS, TRANSFER_SCRIPT };
+/** The extensions Wi-Fi Transfer accepts (the server checks them too). */
+export const TRANSFER_EXTENSIONS = Object.keys(AUDIO_TYPES);
 
 /**
  * The native server puts the live state here as it serves the page, so the
@@ -12,60 +11,18 @@ export { TRANSFER_EXTENSIONS, TRANSFER_SCRIPT };
  */
 export const LIVE_STATE_TOKEN = "__SYNQ_LIVE_STATE__";
 
-const METER = "<i></i><i></i><i></i><i></i>";
-const CHECK =
-  '<svg class="check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8"/></svg>';
+/** Where the page's CSS takes the accent (`transfer-page-source/style.css`). */
+const ACCENT_TOKEN = "__SYNQ_ACCENT__";
 
 /**
  * The page a computer's browser loads from Wi-Fi Transfer: drop or choose
  * audio files anywhere on it, and they upload one at a time as the request
  * body, so the phone streams each to disk. A single self-contained file,
  * since it has to work with no internet. Near-black with the person's accent,
- * which follows the phone's theme.
+ * which follows the phone's theme. Built from `transfer-page-source/`
+ * (`pnpm -F @synq/mobile build:transfer-page`).
  */
 export function transferPage({ accent }: { accent: string }) {
-  const accept = TRANSFER_EXTENSIONS.map((extension) => `.${extension}`).join(
-    ",",
-  );
   const color = /^#[0-9a-f]{6}$/i.test(accent) ? accent : "#77adf8";
-  return `<!doctype html>
-<html lang="en" data-face="ready" data-link="connecting">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SYNQ</title>
-<link id="favicon" rel="icon" href="data:,">
-<style>${TRANSFER_STYLE} :root { --accent: ${color}; --logo: url("${TRANSFER_LOGO_MASK}"); }</style>
-</head>
-<body>
-<header>
-  <span class="mark" role="img" aria-label="SYNQ"></span>
-  <span class="status" role="status"><span class="meter" aria-hidden="true">${METER}</span><span id="status">Connecting</span></span>
-</header>
-<main>
-  <div class="card">
-    <label class="target">
-      <input id="files" type="file" multiple accept="${accept},audio/*">
-      <span class="face ready"><strong>Drop music here</strong><span>or choose files</span></span>
-      <span class="face off"><strong>Turn on Wi-Fi Transfer in SYNQ</strong><span>or drop files to send when it’s on</span></span>
-      <span class="face lost"><strong>Open SYNQ on your iPhone</strong><span>Files you drop will send when it’s back</span></span>
-    </label>
-    <div class="activity">
-      ${CHECK}<span class="line" id="line"></span><span class="name" id="name"></span>
-      <button type="button" id="cancel" hidden>Cancel</button>
-    </div>
-    <div class="rail" aria-hidden="true"><i id="fill"></i></div>
-  </div>
-  <div class="below">
-    <p class="line-note">Files go straight to your iPhone over your Wi-Fi.</p>
-    <details id="problems" hidden>
-      <summary id="problems-count"></summary>
-      <ul id="problems-list"></ul>
-    </details>
-  </div>
-</main>
-<script type="application/json" id="live">${LIVE_STATE_TOKEN}</script>
-<script>${TRANSFER_SCRIPT}</script>
-</body>
-</html>`;
+  return TRANSFER_PAGE.replace(ACCENT_TOKEN, color);
 }

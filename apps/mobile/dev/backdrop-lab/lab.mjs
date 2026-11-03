@@ -11,7 +11,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
-import { VARIANTS } from "../../src/features/player/backdrop-variants.ts";
+import {
+  CURRENT_VARIANT,
+  VARIANTS,
+} from "../../src/features/player/backdrop-variants.ts";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "../../../..");
@@ -49,7 +52,7 @@ const files = readdirSync(coverDir)
   .filter((file) => /\.(png|jpe?g)$/.test(file))
   .filter((file) => wanted?.has(path.parse(file).name) ?? true)
   .sort((a, b) => placeOf(a) - placeOf(b) || a.localeCompare(b));
-const variants = VARIANTS.filter(
+const variants = [CURRENT_VARIANT, ...VARIANTS].filter(
   (variant) => values.variants?.split(",").includes(variant.id) ?? true,
 );
 

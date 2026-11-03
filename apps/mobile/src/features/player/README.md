@@ -146,24 +146,33 @@ being in the cover (dusty pink became maroon); and it held everything at one
 middling lightness, where a dim yellow is olive and hues that are opposite mix
 to brown.
 
-`backdrop-variants.ts` holds the candidates, which a dev build switches between
-with the label at the player's top corner:
+`backdrop-variants.ts` holds the candidates. Testing on the phone ruled out a
+second hue (Duo), a grid of the cover's own colors (Cover), and a bright top
+(Glow): one hue family looked best, closest to Apple Music, if strong on some
+covers. A dev build now switches between versions of that family with the label
+at the player's top corner:
 
-- **Current**: the palette above, unchanged.
-- **Family**: one hue family, from a deep ground to a glow.
-- **Glow**: the family, lit from above. Only the text has to sit on a dark
-  backdrop, so the top may be bright enough to be gold.
-- **Duo**: the family, and a second hue the cover really has, darker and in the
-  far corner so they meet through the dark.
-- **Cover**: the cover's own colors where they sit, as a 5×5 grid of pools,
-  closest to what Apple is known to do (blurred, oversaturated copies of the art).
+- **Family**: one hue family, from a deep ground to a glow. Every color sits near
+  the most vivid its lightness and hue can show.
+- **Soft**: the same, about a quarter less saturated everywhere.
+- **Matched**: as saturated as the cover is, so a muted cover gets a muted
+  backdrop and a vivid one stays vivid.
+- **Pure**: the same strength, with shadows and glow staying on the cover's own
+  hue instead of leaning toward violet.
+- **Deep**: the same colors, darker.
+
+Each changes one thing, so a preference points at the cause.
 
 They share a few rules: nearby hues pool their area when choosing a lead, so
 area counts as much as chroma; chroma is a share of what that lightness and hue
 can show, so no hue looks duller than another; shadows lean toward violet; and
 dim yellows go to amber or green, never olive. They mix in Oklab and put back
 some of the chroma that opposite hues cancel (`BackdropShader.Look`). Release
-builds stay on Current until one wins.
+builds stay on the old palette until one wins.
+
+The native side still has what the dropped candidates needed: the analysis's
+`grid` and room for 25 pools. They come out with the winner, in one more dev
+client, so this round needs no reinstall.
 
 `dev/backdrop-lab` runs the real analysis, palette code, and shader on the Mac
 over a folder of covers (`.cache/backdrop-lab/covers`, never committed), draws a

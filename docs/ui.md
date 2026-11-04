@@ -400,11 +400,9 @@ has started by then; the next clean batch asks instead.
   and its temporary files go when the sheet closes.
 
 - **Download** ([download-servers.md](download-servers.md)): a sheet with the
-  server (a picker when there's more than one, starting on the default), a Paste
-  and Download button, a link field with its own download button, and what's on
-  its way. The button starts a download from what's copied. iOS asks before an
-  app reads the clipboard, unless the person chose Allow under Paste from Other
-  Apps in the app's settings, so the first paste offers once to open them. Songs
+  server (a picker when there's more than one, starting on the default), a link
+  field with a download button inside it, and what's on its way. A link starts
+  at once and the field clears for the next. Songs
   join the import queue, and the capsule counts the whole download from the
   moment the server knows its songs. They appear together when it ends, or when
   the app leaves the front and it pauses. A download's row has a spinner, counts

@@ -1,19 +1,14 @@
 import type { TextInputRef } from "@expo/ui";
 import { useRef, useState } from "react";
 import { ActivityIndicator, Alert } from "react-native";
-import { getStringAsync } from "expo-clipboard";
 import { router, Stack } from "expo-router";
 import { FieldGroup, Row as Line, ListItem, Picker, Text } from "@expo/ui";
-import { Button, Image, Text as SwiftText } from "@expo/ui/swift-ui";
+import { Button, Image } from "@expo/ui/swift-ui";
 import {
   animation,
   Animation,
   buttonStyle,
-  controlSize,
   disabled,
-  frame,
-  listRowBackground,
-  listRowInsets,
 } from "@expo/ui/swift-ui/modifiers";
 
 import type { Download } from "../engine";
@@ -24,7 +19,6 @@ import { Row, SECONDARY_LABEL } from "~/features/settings/form";
 import { selectionTick } from "~/lib/haptics";
 import { downloads, useDownloads } from "../downloads";
 import { downloadLine } from "../job-counts";
-import { offerPasteSetting } from "../paste-offer";
 import { useServers } from "../servers";
 
 function serversOf({
@@ -154,44 +148,7 @@ function useServerId(chosenId: string | null) {
   return chosen?.id ?? defaultId ?? servers[0]?.id ?? null;
 }
 
-const NO_FILL = "#00000000";
-
-/**
- * Starts a download from what's copied. A button with its own label reads the
- * clipboard itself, so iOS asks first unless the person has chosen Allow in the
- * app's settings, which `offerPasteSetting` points them to.
- */
-function PasteButton({ onPaste }: { onPaste: (text: string) => void }) {
-  return (
-    <FieldGroup.Section>
-      <Button
-        modifiers={[
-          buttonStyle("borderedProminent"),
-          controlSize("large"),
-          listRowBackground(NO_FILL),
-          listRowInsets({ bottom: 0, leading: 0, top: 0, trailing: 0 }),
-        ]}
-        onPress={() => {
-          getStringAsync()
-            .then((text) => {
-              if (text.trim() === "") Alert.alert("No Link Copied");
-              else {
-                onPaste(text.trim());
-                offerPasteSetting();
-              }
-            })
-            .catch(() => Alert.alert("No Link Copied"));
-        }}
-      >
-        <SwiftText modifiers={[frame({ maxWidth: Number.MAX_SAFE_INTEGER })]}>
-          Paste and Download
-        </SwiftText>
-      </Button>
-    </FieldGroup.Section>
-  );
-}
-
-/** A link typed or pasted by hand, with its own button to start it. */
+/** The link to download, with a button inside the field to start it. */
 function LinkField({ onSubmit }: { onSubmit: (url: string) => void }) {
   const [link, setLink] = useState("");
   const input = useRef<TextInputRef>(null);
@@ -210,11 +167,12 @@ function LinkField({ onSubmit }: { onSubmit: (url: string) => void }) {
       <Line alignment="center" spacing={8}>
         <TextInput
           ref={input}
+          autoFocus
           autoCapitalize="none"
           autoCorrect={false}
           enterKeyHint="go"
           keyboardType="url"
-          placeholder="Enter a Link"
+          placeholder="Paste a Link"
           onChangeText={setLink}
           onSubmitEditing={submit}
         />
@@ -234,8 +192,8 @@ function LinkField({ onSubmit }: { onSubmit: (url: string) => void }) {
 }
 
 /**
- * Download (docs/ui.md → Import): the server to send a link to, the button that
- * sends what's copied, a field for typing one, and what's on its way. Songs go through the import queue as they arrive, so this sheet
+ * Download (docs/ui.md → Import): the server to send a link to, the link, and
+ * what's on its way. Songs go through the import queue as they arrive, so this sheet
  * can close at any time.
  */
 export function DownloadScreen() {
@@ -262,12 +220,7 @@ export function DownloadScreen() {
       <NativeHost style={{ flex: 1 }}>
         <FieldGroup modifiers={[animation(Animation.default, rows)]}>
           <ServerSection serverId={serverId} onChoose={setChosenId} />
-          {serverId === null ? null : (
-            <>
-              <PasteButton onPaste={start} />
-              <LinkField onSubmit={start} />
-            </>
-          )}
+          {serverId === null ? null : <LinkField onSubmit={start} />}
           <DownloadRows />
         </FieldGroup>
       </NativeHost>

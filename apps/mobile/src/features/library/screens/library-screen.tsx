@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Text, useWindowDimensions, View } from "react-native";
 import { Stack, useFocusEffect } from "expo-router";
 
@@ -15,7 +15,7 @@ import { HeaderGlass } from "~/components/header-glass";
 import { ScreenList } from "~/components/screen-list";
 import { ScreenScroll } from "~/components/screen-scroll";
 import { RootTabTitle } from "~/components/tab-title";
-import { holdPlays, releasePlays } from "~/features/player/record-play";
+import { playsArrive, playsLeave } from "~/features/player/record-play";
 import { HomeCard } from "../home-card";
 import { CARD_GAP, CARD_PADDING, cardHeight } from "../home-layout";
 import { RECENTS_KEY } from "../home-queries";
@@ -139,11 +139,12 @@ function LibraryHome() {
     read: (db) => listRecents(db, { limit }),
     select: (window) => window,
   });
-  // What's played from here waits until this page is off screen, so it's in
-  // place on the way back rather than reordering under someone's finger.
+  // Recents only changes if this page was at the very top when it was left, so
+  // coming back to somewhere further down finds everything where it was.
+  const atTop = useRef(true);
   useFocusEffect(() => {
-    holdPlays();
-    return releasePlays;
+    playsArrive(() => atTop.current);
+    return playsLeave;
   });
   const rows = [
     ...sectionRows("pinned", "Pinned", pinned),
@@ -154,6 +155,9 @@ function LibraryHome() {
       data={rows}
       numColumns={2}
       holdThroughMoves
+      onAtTopChange={(next) => {
+        atTop.current = next;
+      }}
       keyExtractor={(row) => row.key}
       getItemType={(row) => row.type}
       overrideItemLayout={(layout, row) => {

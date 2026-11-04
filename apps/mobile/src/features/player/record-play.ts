@@ -14,32 +14,39 @@ type PlayedItem = NonNullable<ReturnType<typeof playedItem>>;
  * a play shouldn't reread every list on screen. It's a nicety, so a failure must
  * never stop the music.
  */
-const plays = createHeldPlays<PlayedItem>((batch) => {
-  try {
-    const db = libraryDb();
-    for (const { at, item } of batch) {
-      if (item.kind === "liked") recordLikedPlayed(db, { now: at });
-      else recordPlayed(db, item, { now: at });
-    }
+const plays = createHeldPlays<PlayedItem>({
+  show: () => {
     refreshLibraryQuery(RECENTS_KEY);
-  } catch (error) {
-    console.warn("Couldn't record a play", error);
-  }
+  },
+  write: (batch) => {
+    try {
+      const db = libraryDb();
+      for (const { at, item } of batch) {
+        if (item.kind === "liked") recordLikedPlayed(db, { now: at });
+        else recordPlayed(db, item, { now: at });
+      }
+    } catch (error) {
+      console.warn("Couldn't record a play", error);
+    }
+  },
 });
 
-export function holdPlays() {
-  plays.hold();
+/** The Library tab came on screen; `isAtTop` says whether its list is at the very top. */
+export function playsArrive(isAtTop: () => boolean) {
+  plays.arrive(isAtTop);
 }
 
-export function releasePlays() {
-  plays.release();
+/** The Library tab went off screen. */
+export function playsLeave() {
+  plays.leave();
 }
 
-export function flushPlays() {
-  plays.flush();
+/** The app went to the background. */
+export function playsBackground() {
+  plays.background();
 }
 
-/** Notes what's now playing, for Recents the next time it's opened. */
+/** Notes what's now playing, for Recents. */
 export function recordPlay(
   source: PlaybackSource,
   chosenSongId: number | undefined,

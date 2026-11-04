@@ -185,11 +185,15 @@ of their own, so a delete takes them along by any route, and an erase with it.
   (an album, artist, playlist, or Liked Songs), or, from Songs or a search, the
   song someone tapped. Play or Shuffle on all of Songs records nothing. Songs
   advancing on their own don't either.
-- **When it shows.** While the Library tab is on screen its plays wait in memory,
-  with the time each happened, so nothing reorders under someone's finger. They're
-  written when the tab goes off screen (another tab, a pushed page, the player) or
-  the app is backgrounded, so the new order is in place on the way back. A pin
-  shows at once.
+- **When it shows.** Recents only changes if the Library tab was at the very top
+  when it was left (for another tab, a pushed page, or the player), or when the app
+  went to the background. Then what was played is first on the way back. Left
+  scrolled down, it finds everything where it was, so someone browsing never has
+  the page move under them; what they played waits in memory, with the time each
+  happened, until the tab is next left at the top. Going to the background still
+  writes it, so a relaunch shows it, but doesn't refresh the list. A pin shows at
+  once. It's decided by scroll position rather than by when the app restarts
+  because playing music can keep the app alive for days.
 - **Recents** is everything not pinned, by `last_played_at`, else when it was
   added. So a new import comes up first, and a library nothing's been played in
   yet, which is every 2.5.2 upgrade, still has a home. A song an album stands for

@@ -1,8 +1,8 @@
 import type { RepeatMode } from "@synq/audio";
 import * as Audio from "@synq/audio";
 
-import type { PlayOptions } from "./types";
-import { errorFeedback } from "~/lib/haptics";
+import type { PlaybackSource, PlayOptions } from "./types";
+import { errorFeedback, lightImpact } from "~/lib/haptics";
 import { forgetPushedTracks, native, tracksFor } from "./native-queue";
 import { persist } from "./persistence";
 import {
@@ -17,8 +17,10 @@ import {
   shuffleQueue,
   unshuffleQueue,
   upNextMove,
+  withCurrentKey,
 } from "./queue-model";
 import { recordPlay } from "./record-play";
+import { songTapEffect } from "./song-tap";
 import { addSongs, cachedSongs, loadSongs, setSongs } from "./songs";
 import { ensureStarted, getPlayerState, setPlayerState } from "./store";
 
@@ -28,9 +30,34 @@ import { ensureStarted, getPlayerState, setPlayerState } from "./store";
  * natively, then saves the session.
  */
 
-/** Replaces the queue with `songIds` (in the order shown) and plays. */
-export function playSongs(songIds: readonly number[], options: PlayOptions) {
-  ensureStarted();
+function chosenSong(songIds: readonly number[], options: PlayOptions) {
+  return options.startIndex === undefined || options.shuffle === true
+    ? undefined
+    : songIds[options.startIndex];
+}
+
+function tapEffect(chosenSongId: number | undefined, source: PlaybackSource) {
+  const state = getPlayerState();
+  return songTapEffect({
+    chosen:
+      chosenSongId === undefined ? null : { songId: chosenSongId, source },
+    current:
+      state.current === null
+        ? null
+        : { songId: state.current.songId, source: state.source },
+    status: state.status,
+  });
+}
+
+/**
+ * Plays `songIds` as the new queue. With `keepKey`, the key of the entry already
+ * playing, that song carries on where it is instead of starting over.
+ */
+function replaceQueue(
+  songIds: readonly number[],
+  options: PlayOptions,
+  keepKey: string | undefined,
+) {
   const songs = loadSongs(songIds);
   const playable = songIds.filter((songId) => songs.has(songId));
   if (playable.length === 0) return;
@@ -39,27 +66,44 @@ export function playSongs(songIds: readonly number[], options: PlayOptions) {
     .slice(0, options.startIndex ?? 0)
     .filter((songId) => songs.has(songId)).length;
   const shuffle = options.shuffle ?? getPlayerState().shuffle;
-  const queue = buildQueue(playable, {
+  const built = buildQueue(playable, {
     shuffle,
     startIndex: options.shuffle === true ? null : start,
   });
+  const queue = keepKey === undefined ? built : withCurrentKey(built, keepKey);
   forgetPushedTracks();
   setSongs(songs);
   setPlayerState({ queue, shuffle, source: options.source });
   native(
     Audio.setQueue(tracksFor(queue.entries, songs), {
       play: true,
-      positionMs: 0,
+      ...(keepKey === undefined ? { positionMs: 0 } : {}),
       startIndex: currentIndex(queue),
     }),
   );
   persist();
-  recordPlay(
-    options.source,
-    options.startIndex === undefined || options.shuffle === true
-      ? undefined
-      : songIds[options.startIndex],
-  );
+  recordPlay(options.source, chosenSong(songIds, options));
+}
+
+/**
+ * Replaces the queue with `songIds` (in the order shown) and plays. A tap on
+ * the song that's already on doesn't restart it (`songTapEffect`).
+ */
+export function playSongs(songIds: readonly number[], options: PlayOptions) {
+  ensureStarted();
+  const chosenSongId = chosenSong(songIds, options);
+  const effect = tapEffect(chosenSongId, options.source);
+  if (effect === "start") {
+    replaceQueue(songIds, options, undefined);
+    return;
+  }
+  lightImpact();
+  if (effect === "carry-on-with-new-list") {
+    replaceQueue(songIds, options, getPlayerState().current?.key);
+    return;
+  }
+  if (getPlayerState().status === "paused") native(Audio.play());
+  recordPlay(options.source, chosenSongId);
 }
 
 function insert(songIds: readonly number[], queued: boolean) {

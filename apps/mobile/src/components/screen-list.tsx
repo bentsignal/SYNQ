@@ -52,11 +52,14 @@ function Slot({
 export function ScreenList<Item>({
   ref,
   holdThroughMoves = false,
+  onAtTopChange,
   ...props
 }: LegendListProps<Item> & {
   ref?: Ref<LegendListRef>;
   /** Keep what's on screen in place when rows move too, not just when they're added. */
   holdThroughMoves?: boolean;
+  /** Told when the list reaches or leaves the very top; it starts there. */
+  onAtTopChange?: (atTop: boolean) => void;
 }) {
   const background = useCSSVariable("--color-background");
   const backgroundColor =
@@ -100,8 +103,10 @@ export function ScreenList<Item>({
     props.onScrollBeginDrag?.(event);
   }
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
-    atTop.current =
+    const next =
       event.nativeEvent.contentOffset.y <= topOffset.current + AT_TOP_SLOP;
+    if (next !== atTop.current) onAtTopChange?.(next);
+    atTop.current = next;
     props.onScroll?.(event);
   }
   // With no rows, Legend List cut its header short (an empty playlist lost

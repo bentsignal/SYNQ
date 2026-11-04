@@ -115,6 +115,21 @@ void describe("losing the phone", () => {
     assert.equal(requests.length, 2);
   });
 
+  void test("sends a file again when the phone can't say whether it arrived", async () => {
+    const { advance, choose, fetched, requests, sources } = loadPage({
+      uploadedOk: false,
+    });
+    sources[0]?.fire("state", '{"on":true}');
+    choose(["a.mp3"]);
+    requests[0]?.onerror?.();
+    await advance(1300);
+    assert.equal(
+      fetched.filter((url) => url.startsWith("/uploaded")).length,
+      1,
+    );
+    assert.equal(requests.length, 2);
+  });
+
   void test("gives up on a file that keeps failing while the phone is there", async () => {
     const { advance, choose, element, requests, sources } = loadPage();
     sources[0]?.fire("state", '{"on":true}');

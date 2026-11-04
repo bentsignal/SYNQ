@@ -1,0 +1,10 @@
+{
+  "extends": "@synq/tsconfig/base.json",
+  "compilerOptions": {
+    // The browser, not React Native. ES2018 is what the page has always asked
+    // of a browser; the build lowers newer syntax to it too.
+    "lib": ["ES2018", "DOM", "DOM.Iterable"],
+    "types": []
+  },
+  "include": ["*.ts"]
+}

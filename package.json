@@ -10,6 +10,7 @@
   "packageManager": "pnpm@10.32.1",
   "scripts": {
     "build": "turbo run build",
+    "build:transfer-page": "node apps/mobile/scripts/build-transfer-page.ts",
     "clean": "git clean -xdf node_modules .turbo",
     "clean:all": "turbo run clean && pnpm run clean",
     "dev": "turbo run dev --parallel --continue",
@@ -20,7 +21,7 @@
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
     "postinstall": "pnpm lint:ws",
-    "typecheck": "turbo run typecheck && pnpm -F @synq/mobile exec tsgo --noEmit -p perf",
+    "typecheck": "turbo run typecheck && pnpm -F @synq/mobile exec tsgo --noEmit -p perf && pnpm -F @synq/mobile exec tsgo --noEmit -p src/features/import/transfer-page-source",
     "check": "pnpm run lint && pnpm run typecheck && pnpm run test",
     "perf": "pnpm -F @synq/mobile exec reassure measure --testMatch '**/perf/*.perf-test.tsx'",
     "test": "turbo run test && pnpm -F @synq/mobile exec jest"

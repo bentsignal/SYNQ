@@ -286,8 +286,8 @@ A native form (`FieldGroup`):
   alert's button stays off until "I want to erase my library" is typed). A task
   that finishes within 0.5 s shows nothing, so a small library doesn't flicker;
   a longer one shows its progress.
-- **SYNQ**: Rate SYNQ, Contact Support, X, Instagram, Discord, and the
-  version in the section footer.
+- **SYNQ**: Rate SYNQ, Contact Support, Source Code, X, Instagram, Discord, and
+  the version in the section footer.
 
 ## Import
 

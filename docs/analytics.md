@@ -16,7 +16,7 @@ Call `track(event, properties)` from anywhere.
 | `import_cancel` | | An import batch ends with files but none imported |
 | `theme_change` | `theme` | A theme is chosen |
 | `app_icon_change` | `icon` | An app icon is chosen |
-| `social_press` | `url` | Contact Support, X, Instagram, Discord |
+| `social_press` | `url` | Contact Support, Source Code, X, Instagram, Discord |
 | `export_song`, `export_playlist`, `export_album`, `export_artist` | | An export starts |
 
 2.5.2 also sent these, which belong to other features and should keep their

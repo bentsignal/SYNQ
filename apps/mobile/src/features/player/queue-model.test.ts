@@ -4,13 +4,11 @@ import { test } from "node:test";
 import type { Queue } from "./queue-model.ts";
 import {
   buildQueue,
+  cueSongs,
   currentIndex,
   forgetSongIds,
-  insertEntries,
   moveEntry,
   neighbors,
-  newEntries,
-  playNextIndex,
   removeEntries,
   shuffled,
   shuffleQueue,
@@ -36,7 +34,11 @@ function current(queue: Queue) {
 }
 
 function playNext(queue: Queue, songIds: number[]) {
-  return insertEntries(queue, newEntries(songIds, true), playNextIndex(queue));
+  return cueSongs(queue, songIds, "next").queue;
+}
+
+function addToQueue(queue: Queue, songIds: number[]) {
+  return cueSongs(queue, songIds, "last").queue;
 }
 
 function skipTo(queue: Queue, index: number) {
@@ -79,34 +81,6 @@ void test("Shuffle with no start song starts anywhere", () => {
   assert.equal(songs(queue).length, 3);
 });
 
-void test("Play Next stacks in the order songs were added, like 2.5.2", () => {
-  let queue = buildQueue([1, 2, 3], { shuffle: false, startIndex: 0 });
-  queue = playNext(queue, [10]);
-  queue = playNext(queue, [11, 12]);
-  assert.deepEqual(songs(queue), [1, 10, 11, 12, 2, 3]);
-  // Playing into the stack, the rest still stacks behind it.
-  queue = skipTo(queue, 1);
-  queue = playNext(queue, [13]);
-  assert.deepEqual(songs(queue), [1, 10, 11, 12, 13, 2, 3]);
-  // Once past the stack, Play Next goes right after the current song.
-  queue = skipTo(queue, 5);
-  queue = playNext(queue, [14]);
-  assert.deepEqual(songs(queue), [1, 10, 11, 12, 13, 2, 14, 3]);
-});
-
-void test("Add to Queue appends, and stays at the end when shuffle goes off", () => {
-  let queue = buildQueue([1, 2, 3, 4], {
-    random: seeded(),
-    shuffle: true,
-    startIndex: 1,
-  });
-  queue = insertEntries(queue, newEntries([9]), queue.entries.length);
-  assert.equal(songs(queue).at(-1), 9);
-  queue = unshuffleQueue(queue);
-  assert.deepEqual(songs(queue), [1, 2, 3, 4, 9]);
-  assert.equal(current(queue), 2);
-});
-
 void test("shuffle on then off restores the order around the current song", () => {
   let queue = buildQueue([1, 2, 3, 4, 5, 6], { shuffle: false, startIndex: 2 });
   queue = shuffleQueue(queue, seeded());
@@ -121,16 +95,17 @@ void test("shuffle on then off restores the order around the current song", () =
   assert.equal(queue.original, null);
 });
 
-void test("shuffle keeps the Play Next run right after the current song", () => {
+void test("shuffle keeps the cued run right after the current song", () => {
   let queue = buildQueue([1, 2, 3, 4, 5], { shuffle: false, startIndex: 0 });
-  queue = playNext(queue, [10, 11]);
+  queue = playNext(queue, [10]);
+  queue = addToQueue(queue, [11]);
   queue = shuffleQueue(queue, seeded(11));
   assert.deepEqual(songs(queue).slice(0, 3), [1, 10, 11]);
   queue = unshuffleQueue(queue);
   assert.deepEqual(songs(queue), [1, 10, 11, 2, 3, 4, 5]);
 });
 
-void test("turning shuffle off while a Play Next song plays keeps it after the song before it", () => {
+void test("turning shuffle off while a cued song plays keeps it after the song before it", () => {
   let queue = buildQueue([1, 2, 3, 4], {
     random: () => 0,
     shuffle: true,

@@ -16,14 +16,23 @@ first (the UI shows it on the same frame), then makes the same call
 natively, then saves the session. A native call that fails resyncs native
 from the JavaScript queue (`native-queue.ts`).
 
-- **Play Next** inserts after the current song and the Play Next songs
-  already behind it, so several play in the order they were added (2.5.2's
-  `addOffset`). **Add to Queue** appends.
+- **After the current song** come the cued songs, then the rest of the list.
+  An entry with `queued` set is cued, and the cued run is the unbroken stretch
+  of them right after the current song. **Play Next** inserts directly after
+  the current song, ahead of anything cued. **Add to Queue** inserts after
+  everything cued, ahead of the rest of the list. Every route (the swipe, the
+  song menu, the collection menu) goes through these two. Into an empty queue,
+  the songs are the list, not cued.
+- **Dragging** in Up Next keeps the run unbroken: a drop right after the current
+  song or in the run, down to its end, cues the entry, and a drop below it
+  returns the entry to the list.
 - **Shuffle** is computed here: on, the current song stays first with its
-  Play Next run, the rest shuffled; off, the unshuffled order (`original`)
-  comes back around the current song. The current entry keeps its key, so
-  native keeps playing it without a gap. `playSongs` with `shuffle: true`
-  shuffles from a random song; left out, the shuffle setting decides.
+  cued run, the rest shuffled; off, the unshuffled order (`original`) comes
+  back around the current song and its run. Cued songs aren't in `original`,
+  so one that has played stays behind the current song when shuffle goes off.
+  The current entry keeps its key, so native keeps playing it without a gap.
+  `playSongs` with `shuffle: true` shuffles from a random song; left out, the
+  shuffle setting decides.
 - **Repeat** cycles off → all → one; native implements it.
 - **Library changes** reach the queue through a library query
   (`["library", "player", "songs"]`, refreshed by every `writeLibrary`):
@@ -36,7 +45,7 @@ from the JavaScript queue (`native-queue.ts`).
 ## The session
 
 `session.ts` (pure, node-tested) is the stored shape, in the kv store under
-`synq.player.session`: the queue's song ids, which are Play Next entries,
+`synq.player.session`: the queue's song ids, which entries are cued,
 the current index and position, the unshuffled order (as indices), the
 source, shuffle, and repeat.
 `persistence.ts` writes it on every native `state` event (pause, track
@@ -47,10 +56,15 @@ if the current one went).
 
 **From 2.5.2**: when there is no stored session yet, the player takes over
 2.5.2's: `takeLegacySettings("session")` (queue, index, position, source,
-`addOffset` as Play Next entries), and shuffle and repeat from the import record's preferences.
+`addOffset` as cued entries), and shuffle and repeat from the import record's preferences.
 It writes its own session right away, so they're taken once. 2.5.2's
 queue was already in shuffled order and it never kept the unshuffled one,
 so turning shuffle off after the update keeps that order.
+
+**From a session saved before cueing covered Add to Queue**: the stored shape
+is the same. Its Play Next songs are the cued run. Songs it added with Add to
+Queue can't be told from the list, so they stay where they are, at the end. A
+flagged entry that isn't in the unbroken run is inert until the run reaches it.
 
 ## Startup
 

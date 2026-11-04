@@ -15,7 +15,7 @@ import { currentIndex, EMPTY_QUEUE, nextKey } from "./queue-model.ts";
 
 export interface StoredSession {
   readonly songIds: readonly number[];
-  /** Indices of entries added with Play Next. */
+  /** Indices of cued entries (Play Next, Add to Queue). */
   readonly queued: readonly number[];
   /** The current entry, or -1 for an empty queue. */
   readonly index: number;
@@ -134,8 +134,8 @@ export function decodeSession(stored: unknown) {
 
 /**
  * The first session after updating from 2.5.2: its queue (an ad entry is
- * already dropped by the importer), position, source, Play Next count,
- * shuffle and repeat. 2.5.2's queue was already in
+ * already dropped by the importer), position, source, count of cued songs
+ * (`addOffset`), shuffle and repeat. 2.5.2's queue was already in
  * shuffled order when shuffle was on, and it never kept the unshuffled
  * one, so turning shuffle off keeps the order.
  */

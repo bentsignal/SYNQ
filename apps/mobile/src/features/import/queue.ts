@@ -20,7 +20,8 @@ import {
  * a time, in the background; nothing here depends on a screen being open. A
  * batch is everything imported from when the queue starts until it's empty
  * and nothing more is on its way, so a second pick during an import just
- * makes the batch longer.
+ * makes the batch longer. A download keeps the batch open between its songs
+ * (`setIncomingImports`).
  *
  * Each song is written to the library as it finishes, so a batch cut short
  * keeps what it got, but library screens refresh only once, when the batch
@@ -56,6 +57,8 @@ export interface ImportState {
   readonly batch: BatchCounts;
   /** The browser's uploads in this batch, if any. */
   readonly transfer: Transfer;
+  /** Songs a download will still hand over, which the batch waits for. */
+  readonly incoming: number;
   /** The capsule's count, which follows the batch at its own pace. */
   readonly shown: CapsuleCount;
   /** The batch just finished cleanly, and says so for a moment. */
@@ -73,6 +76,7 @@ function importState(value: ImportState) {
 const IDLE = importState({
   batch: NO_BATCH,
   finished: false,
+  incoming: 0,
   shown: NO_COUNT,
   transfer: NEW_TRANSFER,
 });
@@ -133,7 +137,7 @@ function stopCapsule() {
 function tickCapsule() {
   const next = stepCapsule(
     state.shown,
-    capsuleTarget(state.batch, state.transfer),
+    capsuleTarget(state.batch, state.transfer, state.incoming),
   );
   if (next.done !== state.shown.done || next.total !== state.shown.total) {
     publish({ shown: next });
@@ -200,7 +204,7 @@ function finishBatch() {
 function reconsiderCompletion() {
   if (completionTimer !== undefined) clearTimeout(completionTimer);
   completionTimer = undefined;
-  if (state.finished) return;
+  if (state.finished || state.incoming > 0) return;
   if (!isBatchActive(state.batch, state.transfer)) {
     // An upload that came to nothing: the capsule just goes away.
     if (capsuleTimer !== undefined) finishBatch();
@@ -265,10 +269,23 @@ export function addImportSources(sources: readonly ImportSource[]) {
     clearStaging();
   }
   enqueue(sources.length);
-  // Shows the count from the first frame, without waiting for a tick.
-  tickCapsule();
+  // Shows the count from the first frame, without waiting for a tick. A
+  // download's song is still in `incoming` here, and would count twice.
+  if (state.incoming === 0) tickCapsule();
   reconsiderCompletion();
   for (const source of sources) schedule(source);
+}
+
+/**
+ * How many songs downloads will still hand over. The batch stays open for them
+ * and counts them in its total, so a download is one batch, not one per song.
+ */
+export function setIncomingImports(count: number) {
+  if (count === state.incoming) return;
+  if (count > 0) beginActivity();
+  publish({ incoming: count });
+  tickCapsule();
+  reconsiderCompletion();
 }
 
 /**

@@ -21,6 +21,7 @@ import { CARD_GAP, CARD_PADDING, cardHeight } from "../home-layout";
 import { RECENTS_KEY } from "../home-queries";
 import { LibraryLinkRow } from "../library-link-row";
 import {
+  DOWNLOAD_ACTION,
   IMPORT_ACTIONS,
   LIBRARY_ROWS,
   openImport,
@@ -109,6 +110,14 @@ function LibraryToolbar() {
           >
             Wi-Fi Transfer
           </Stack.Toolbar.MenuAction>
+          {DOWNLOAD_ACTION !== null ? (
+            <Stack.Toolbar.MenuAction
+              icon="arrow.down.circle"
+              onPress={DOWNLOAD_ACTION.onPress}
+            >
+              {DOWNLOAD_ACTION.label}
+            </Stack.Toolbar.MenuAction>
+          ) : null}
         </Stack.Toolbar.Menu>
         <Stack.Toolbar.MenuAction
           icon="music.note.list"

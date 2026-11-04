@@ -29,6 +29,7 @@ const LINKS = {
   discord: "https://discord.gg/KwC24St29g",
   instagram: "https://instagram.com/bentsignal",
   review: "https://apps.apple.com/app/id6624313712?action=write-review",
+  source: "https://github.com/bentsignal/SYNQ",
   x: "https://x.com/bentsignal",
 };
 
@@ -164,6 +165,12 @@ export function AboutSection() {
         label="Contact Support"
         trailing="external"
         onPress={contactSupport}
+      />
+      <Row
+        icon="chevron.left.forwardslash.chevron.right"
+        label="Source Code"
+        trailing="external"
+        onPress={() => openSocial(LINKS.source)}
       />
       <Row
         icon="at"

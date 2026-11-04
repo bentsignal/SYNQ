@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Alert, View } from "react-native";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { FieldGroup, ListItem, Switch, Text } from "@expo/ui";
 // eslint-disable-next-line no-restricted-imports -- This asks a remote server, which may be asleep or gone; the screen must show without waiting for it.
 import { useQuery } from "@tanstack/react-query";
+import { FieldGroup, ListItem, Switch, Text } from "@expo/ui";
 
 import type { ServerInfo } from "../contract";
 import type { DownloadServer } from "../servers";
@@ -64,12 +64,18 @@ function StatusRows({ id }: { id: string }) {
         : "Can't Reach Server";
   return (
     <>
-      <ListItem trailing={<Text textStyle={{ color: SECONDARY_LABEL }}>{status}</Text>}>
+      <ListItem
+        trailing={<Text textStyle={{ color: SECONDARY_LABEL }}>{status}</Text>}
+      >
         <Text>Status</Text>
       </ListItem>
       {data === undefined ? null : (
         <ListItem
-          trailing={<Text textStyle={{ color: SECONDARY_LABEL }}>{usageLine(data)}</Text>}
+          trailing={
+            <Text textStyle={{ color: SECONDARY_LABEL }}>
+              {usageLine(data)}
+            </Text>
+          }
         >
           <Text>Used Today</Text>
         </ListItem>
@@ -106,7 +112,11 @@ export function ServerScreen() {
       <NativeHost style={{ flex: 1 }}>
         <FieldGroup>
           <FieldGroup.Section>
-            <ListItem trailing={<Text textStyle={{ color: SECONDARY_LABEL }}>{server.url}</Text>}>
+            <ListItem
+              trailing={
+                <Text textStyle={{ color: SECONDARY_LABEL }}>{server.url}</Text>
+              }
+            >
               <Text>Address</Text>
             </ListItem>
             <StatusRows id={server.id} />

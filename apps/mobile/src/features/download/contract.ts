@@ -162,7 +162,9 @@ export function serverAddress(text: string) {
   const typed = text.trim();
   if (typed === "") return null;
   try {
-    const url = new URL(/^[a-z]+:\/\//i.test(typed) ? typed : `https://${typed}`);
+    const url = new URL(
+      /^[a-z]+:\/\//i.test(typed) ? typed : `https://${typed}`,
+    );
     if (url.protocol !== "https:" && url.protocol !== "http:") return null;
     if (url.username !== "" || url.password !== "") return null;
     if (url.hostname === "") return null;

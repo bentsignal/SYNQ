@@ -142,7 +142,9 @@ void test("takes songs in order even when a later one is ready first", async () 
   let replies = 0;
   const { added, deps } = setup({
     acknowledgeTrack: () =>
-      Promise.resolve(job("done", [track("a", "delivered"), track("b", "delivered")])),
+      Promise.resolve(
+        job("done", [track("a", "delivered"), track("b", "delivered")]),
+      ),
     fetchJob: () => {
       replies += 1;
       return Promise.resolve(
@@ -166,15 +168,22 @@ void test("takes songs in order even when a later one is ready first", async () 
 void test("a song the server couldn't get is reported, and the rest still come", async () => {
   const { added, deps } = setup({
     acknowledgeTrack: () =>
-      Promise.resolve(job("done", [track("a", "failed"), track("b", "delivered")])),
+      Promise.resolve(
+        job("done", [track("a", "failed"), track("b", "delivered")]),
+      ),
     startJob: () =>
-      Promise.resolve(job("running", [track("a", "failed"), track("b", "ready")])),
+      Promise.resolve(
+        job("running", [track("a", "failed"), track("b", "ready")]),
+      ),
   });
   const downloads = createDownloads(deps);
   downloads.start("s", "https://link");
   await settled(() => downloads.getDownloads()[0]?.state === "finished");
   assert.deepEqual(added, ["b"]);
-  assert.equal(downloads.getDownloads()[0]?.message, "1 song couldn't be downloaded.");
+  assert.equal(
+    downloads.getDownloads()[0]?.message,
+    "1 song couldn't be downloaded.",
+  );
 });
 
 void test("a link the server refuses shows its message", async () => {
@@ -218,7 +227,10 @@ void test("a download the server forgot says to try again", async () => {
   const downloads = createDownloads(deps);
   downloads.resume();
   await settled(() => downloads.getDownloads()[0]?.state === "failed");
-  assert.match(downloads.getDownloads()[0]?.message ?? "", /Try the link again/);
+  assert.match(
+    downloads.getDownloads()[0]?.message ?? "",
+    /Try the link again/,
+  );
 });
 
 void test("an unreachable server stops trying, and carries on when asked", async () => {
@@ -294,7 +306,10 @@ void test("a removed server fails the download instead of hanging", async () => 
   const downloads = createDownloads(deps);
   downloads.start("s", "https://link");
   await settled(() => downloads.getDownloads()[0]?.state === "failed");
-  assert.equal(downloads.getDownloads()[0]?.message, "That server was removed.");
+  assert.equal(
+    downloads.getDownloads()[0]?.message,
+    "That server was removed.",
+  );
 });
 
 void test("saves what it's doing, so a relaunch can carry on", async () => {

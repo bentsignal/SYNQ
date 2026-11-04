@@ -34,7 +34,14 @@ void test("reads a server's description", () => {
 });
 
 void test("anything else isn't a server", () => {
-  for (const value of [null, "hi", [], {}, { ...ME, api: "1" }, { ...ME, limits: 1 }]) {
+  for (const value of [
+    null,
+    "hi",
+    [],
+    {},
+    { ...ME, api: "1" },
+    { ...ME, limits: 1 },
+  ]) {
     assert.equal(decodeServerInfo(value), null);
   }
 });

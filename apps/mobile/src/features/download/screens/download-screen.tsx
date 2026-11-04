@@ -1,9 +1,9 @@
+import type { TextInputRef } from "@expo/ui";
 import { useRef, useState } from "react";
 import { Alert } from "react-native";
 import { router, Stack } from "expo-router";
 import { FieldGroup, ListItem, Picker, Text } from "@expo/ui";
 
-import type { TextInputRef } from "@expo/ui";
 import type { Download } from "../engine";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
@@ -12,7 +12,11 @@ import { selectionTick } from "~/lib/haptics";
 import { downloads, useDownloads } from "../downloads";
 import { useServers } from "../servers";
 
-function serversOf({ servers }: { servers: readonly { id: string; name: string }[] }) {
+function serversOf({
+  servers,
+}: {
+  servers: readonly { id: string; name: string }[];
+}) {
   return servers;
 }
 

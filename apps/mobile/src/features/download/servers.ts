@@ -69,7 +69,9 @@ function tokenKey(id: string) {
 }
 
 /** Part of the servers' state, re-rendering when it changes. */
-export function useServers<Selected>(select: (current: ServersState) => Selected) {
+export function useServers<Selected>(
+  select: (current: ServersState) => Selected,
+) {
   return useSyncExternalStore(subscribe, () => select(state));
 }
 

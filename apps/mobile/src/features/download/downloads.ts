@@ -54,7 +54,10 @@ export const downloads = createDownloads({
     STAGING.create({ idempotent: true, intermediates: true });
     const name = storedFileName(track);
     const key = `download-${download.key}-${track.id}`;
-    const destination = new File(STAGING, `${key}.${name.split(".").at(-1) ?? "m4a"}`);
+    const destination = new File(
+      STAGING,
+      `${key}.${name.split(".").at(-1) ?? "m4a"}`,
+    );
     const file = await File.downloadFileAsync(
       trackFileUrl(server, jobId, track.id),
       destination,

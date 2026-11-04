@@ -1,6 +1,4 @@
-import type { ComponentType } from "react";
 import { requireOptionalNativeModule } from "expo";
-import { Redirect } from "expo-router";
 
 import type * as Screens from "./screens";
 
@@ -19,12 +17,3 @@ export const downloadFeature =
       : // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/consistent-type-assertions -- An import statement can't be left out of the bundle.
         (require("./screens") as typeof Screens)
     : null;
-
-function GoHome() {
-  return <Redirect href="/" />;
-}
-
-/** A route file's screen; a build without the feature goes home. */
-export function downloadRoute(pick: (feature: typeof Screens) => ComponentType) {
-  return downloadFeature === null ? GoHome : pick(downloadFeature);
-}

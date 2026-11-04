@@ -1,3 +1,11 @@
-import { downloadRoute } from "~/features/download/feature";
+import { Redirect } from "expo-router";
 
-export default downloadRoute((feature) => feature.AddServerScreen);
+import { downloadFeature } from "~/features/download/feature";
+
+export default function AddServerRoute() {
+  return downloadFeature === null ? (
+    <Redirect href="/" />
+  ) : (
+    <downloadFeature.AddServerScreen />
+  );
+}

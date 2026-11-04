@@ -111,8 +111,7 @@ function createStore(deps: DownloadDeps) {
   return {
     add: (download: Download) => publish([...downloads, download]),
     all: () => downloads,
-    find: (key: string) =>
-      downloads.find((download) => download.key === key),
+    find: (key: string) => downloads.find((download) => download.key === key),
     remove: (key: string) =>
       publish(downloads.filter((download) => download.key !== key)),
     subscribe(listener: () => void) {
@@ -189,11 +188,7 @@ function settle(store: Store, key: string, job: RemoteJob) {
 }
 
 /** One round with the server: where the job stands, and any songs ready. */
-async function step(
-  engine: Engine,
-  download: Download,
-  server: ServerAccess,
-) {
+async function step(engine: Engine, download: Download, server: ServerAccess) {
   const { deps, store } = engine;
   const { key, jobId, url } = download;
   const job =

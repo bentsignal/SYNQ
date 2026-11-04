@@ -5,6 +5,7 @@ import type { ArtistDetail, ArtistListItem } from "@synq/db";
 import { getArtistDetail } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
+import { HeaderGlass } from "~/components/header-glass";
 import { ScreenList } from "~/components/screen-list";
 import { toolbarMenuItems } from "~/components/toolbar-menu-items";
 import { playSongs } from "~/features/player/actions";
@@ -116,6 +117,7 @@ function Artist({ detail }: { detail: ArtistDetail }) {
           />
         )}
       />
+      <HeaderGlass />
     </>
   );
 }

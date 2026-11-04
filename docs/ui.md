@@ -127,7 +127,7 @@ numbers.
   watches the page's scroll view natively, Library's and Settings' SwiftUI form
   alike: iOS's `hard` scroll edge effect had the look but cut in and out at once,
   and showed at the top of the page in Library, so it's hidden on these two
-  screens.
+  screens, and on Playlist, Album, and Artist.
 - Rows (accent symbol, label, chevron): Liked Songs (`heart`), Playlists
   (`music.note.list`), Artists (`music.microphone`), Albums
   (`square.stack`), Songs (`music.note`).
@@ -166,7 +166,9 @@ in Apple Music. Liked Songs is the playlist screen (it's a playlist row).
 The header scrolls with the list: 240 pt artwork centered (artists: 180 pt
 circle), name (`text-title` bold), detail line (`Album · 2021` with the
 artist in the accent and tappable; `14 songs, 52 minutes`), then Play /
-Shuffle. Toolbar `ellipsis` menu: the collection menu, with Sort By first
+Shuffle. The bar's dark glass (`HeaderGlass`, as in Library) fades in once the
+page has scrolled, and the name fades in on it once the header's name has gone
+under. Toolbar `ellipsis` menu: the collection menu, with Sort By first
 on playlists. Album: track-number rows and a footer `14 songs, 52 minutes`. Artist: "Albums" as a horizontal row
 of 140 pt album cards, then "Songs".
 

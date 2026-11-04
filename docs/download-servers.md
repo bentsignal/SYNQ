@@ -11,6 +11,7 @@ server's business.
   request and never shows the address unless asked.
 - Addresses are in the Keychain, because `preferences.db` is under `Documents/`,
   which the Files app shows. Names are preferences (`synq.downloadServerNames`).
+  Whether the paste setting was offered is one too (`synq.downloadPasteOffered`).
   Neither touches the library, so a 2.5.2 install upgrades through this with
   nothing to migrate.
 - Servers need HTTPS or a local network address (App Transport Security).

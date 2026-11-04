@@ -1,26 +1,30 @@
-import { useState } from "react";
+import type { TextInputRef } from "@expo/ui";
+import { useRef, useState } from "react";
 import { ActivityIndicator, Alert } from "react-native";
 import { getStringAsync } from "expo-clipboard";
 import { router, Stack } from "expo-router";
-import { FieldGroup, ListItem, Picker, Text } from "@expo/ui";
-import { Button, Text as SwiftText } from "@expo/ui/swift-ui";
+import { FieldGroup, Row as Line, ListItem, Picker, Text } from "@expo/ui";
+import { Button, Image, Text as SwiftText } from "@expo/ui/swift-ui";
 import {
   animation,
   Animation,
   buttonStyle,
   controlSize,
+  disabled,
   frame,
   listRowBackground,
   listRowInsets,
 } from "@expo/ui/swift-ui/modifiers";
 
 import type { Download } from "../engine";
-import { NativeHost } from "~/components/native-host";
+import { NativeHost, useNativeColor } from "~/components/native-host";
 import { SymbolIcon } from "~/components/symbol-icon";
+import { TextInput } from "~/components/text-input";
 import { Row, SECONDARY_LABEL } from "~/features/settings/form";
 import { selectionTick } from "~/lib/haptics";
 import { downloads, useDownloads } from "../downloads";
 import { downloadLine } from "../job-counts";
+import { offerPasteSetting } from "../paste-offer";
 import { useServers } from "../servers";
 
 function serversOf({
@@ -153,9 +157,9 @@ function useServerId(chosenId: string | null) {
 const NO_FILL = "#00000000";
 
 /**
- * Starts a download from what's copied, in one tap. A button with its own label
- * reads the clipboard itself, so iOS asks first unless the person has chosen
- * Allow in the app's settings.
+ * Starts a download from what's copied. A button with its own label reads the
+ * clipboard itself, so iOS asks first unless the person has chosen Allow in the
+ * app's settings, which `offerPasteSetting` points them to.
  */
 function PasteButton({ onPaste }: { onPaste: (text: string) => void }) {
   return (
@@ -171,7 +175,10 @@ function PasteButton({ onPaste }: { onPaste: (text: string) => void }) {
           getStringAsync()
             .then((text) => {
               if (text.trim() === "") Alert.alert("No Link Copied");
-              else onPaste(text.trim());
+              else {
+                onPaste(text.trim());
+                offerPasteSetting();
+              }
             })
             .catch(() => Alert.alert("No Link Copied"));
         }}
@@ -184,9 +191,51 @@ function PasteButton({ onPaste }: { onPaste: (text: string) => void }) {
   );
 }
 
+/** A link typed or pasted by hand, with its own button to start it. */
+function LinkField({ onSubmit }: { onSubmit: (url: string) => void }) {
+  const [link, setLink] = useState("");
+  const input = useRef<TextInputRef>(null);
+  const accent = useNativeColor("--color-accent");
+  const empty = link.trim() === "";
+
+  function submit() {
+    if (empty) return;
+    onSubmit(link.trim());
+    setLink("");
+    input.current?.clear();
+  }
+
+  return (
+    <FieldGroup.Section>
+      <Line alignment="center" spacing={8}>
+        <TextInput
+          ref={input}
+          autoCapitalize="none"
+          autoCorrect={false}
+          enterKeyHint="go"
+          keyboardType="url"
+          placeholder="Enter a Link"
+          onChangeText={setLink}
+          onSubmitEditing={submit}
+        />
+        <Button
+          modifiers={[buttonStyle("plain"), disabled(empty)]}
+          onPress={submit}
+        >
+          <Image
+            systemName="arrow.down.circle.fill"
+            size={28}
+            color={empty ? SECONDARY_LABEL : accent}
+          />
+        </Button>
+      </Line>
+    </FieldGroup.Section>
+  );
+}
+
 /**
  * Download (docs/ui.md → Import): the server to send a link to, the button that
- * sends what's copied, and what's on its way. Songs go through the import queue as they arrive, so this sheet
+ * sends what's copied, a field for typing one, and what's on its way. Songs go through the import queue as they arrive, so this sheet
  * can close at any time.
  */
 export function DownloadScreen() {
@@ -214,7 +263,10 @@ export function DownloadScreen() {
         <FieldGroup modifiers={[animation(Animation.default, rows)]}>
           <ServerSection serverId={serverId} onChoose={setChosenId} />
           {serverId === null ? null : (
-            <PasteButton onPaste={(text) => start(text.trim())} />
+            <>
+              <PasteButton onPaste={start} />
+              <LinkField onSubmit={start} />
+            </>
           )}
           <DownloadRows />
         </FieldGroup>

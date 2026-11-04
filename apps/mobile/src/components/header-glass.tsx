@@ -9,9 +9,10 @@ const NativeHeaderGlass =
     : requireNativeView<ViewProps>("SynqHeaderGlass");
 
 /**
- * A root tab's glass header, which fades in once the page has scrolled and out
- * back at the top (`HeaderGlassView.swift`). Goes after the page, as its
- * sibling, under `RootTabTitle`. It takes no touches.
+ * A glass header, which fades in once the page has scrolled and out back at the
+ * top (`HeaderGlassView.swift`), for a page whose bar would otherwise have nothing
+ * behind it: the root tabs, and playlist, album, and artist pages. Goes after the
+ * page, as its sibling. It takes no touches.
  */
 export function HeaderGlass() {
   if (NativeHeaderGlass === null) return null;

@@ -4,6 +4,7 @@ import type { PlaylistListItem } from "@synq/db";
 import { getPlaylist, listPlaylistSongs } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
+import { HeaderGlass } from "~/components/header-glass";
 import { ScreenList } from "~/components/screen-list";
 import { toolbarMenuItems } from "~/components/toolbar-menu-items";
 import { playSongs } from "~/features/player/actions";
@@ -114,6 +115,7 @@ function Playlist({ playlist }: { playlist: PlaylistListItem }) {
           />
         )}
       />
+      <HeaderGlass />
     </>
   );
 }

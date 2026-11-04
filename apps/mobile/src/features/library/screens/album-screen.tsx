@@ -5,6 +5,7 @@ import type { AlbumListItem, AlbumTrack } from "@synq/db";
 import { getAlbum, listAlbumTracks } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
+import { HeaderGlass } from "~/components/header-glass";
 import { ScreenList } from "~/components/screen-list";
 import { toolbarMenuItems } from "~/components/toolbar-menu-items";
 import { playSongs } from "~/features/player/actions";
@@ -113,6 +114,7 @@ function Album({ album }: { album: AlbumListItem }) {
           />
         )}
       />
+      <HeaderGlass />
     </>
   );
 }

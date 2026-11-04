@@ -8,107 +8,34 @@ import {
 import { FieldGroup } from "@expo/ui";
 
 import type { AlbumListItem } from "@synq/db";
-import {
-  createAlbum,
-  getAlbum,
-  listAlbumTracks,
-  setAlbumTracks,
-  updateAlbum,
-  written,
-} from "@synq/db";
+import { getAlbum, listAlbumTracks } from "@synq/db";
 
 import type { PickFor } from "./pick-created";
 import { afterMenuCloses } from "~/components/menu";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
-import { offerToDeleteEmptyAlbums, tryWrite } from "~/features/library/actions";
-import { copyCoverToAlbum } from "~/features/library/files";
+import { offerToDeleteEmptyAlbums } from "~/features/library/actions";
 import { names, songCount } from "~/features/library/format";
-import { openLibraryScreen } from "~/features/library/links";
 import { useIdParam } from "~/features/library/params";
 import { useLibraryQuery } from "~/features/library/queries";
 import {
-  coverFromTracks,
   draft,
   editRoutes,
   NEW_ALBUM_ROUTES,
-  parseYear,
   toRow,
   trackIds,
 } from "./album-draft";
 import { useArtistOptions } from "./artist-options";
-import { KEEP_ARTWORK, saveArtworkChange } from "./artwork-change";
+import { KEEP_ARTWORK } from "./artwork-change";
 import { ArtworkField } from "./artwork-field";
 import { ChoiceList } from "./choice-list";
 import { LinkRow } from "./link-row";
-import { artistIds } from "./pick";
-import { pickNewAlbum } from "./pick-created";
 import { moveItems, removeItems } from "./reorder";
 import { ReorderList } from "./reorder-list";
+import { saveEdits, saveNew } from "./save-album";
 import { SheetToolbar } from "./sheet-toolbar";
 import { draft as songDraft } from "./song-draft";
 import { SongPicker } from "./song-picker";
-
-/** Saves the sheet: fields and tracks together, then covers. */
-function saveEdits(album: AlbumListItem, saved: ReadonlySet<string>) {
-  const edits = draft.get();
-  const cover = coverFromTracks(edits, album.artwork !== null, saved);
-  const updated = tryWrite("Couldn't Save Album", (db) =>
-    db.transaction((tx) => {
-      const result = updateAlbum(tx, album.id, {
-        artistIds: artistIds(tx, edits.artists),
-        name: edits.name,
-        year: parseYear(edits.year),
-      });
-      const { emptied } = setAlbumTracks(tx, album.id, trackIds(edits)).value;
-      return written({ emptied, id: result.value.id }, [
-        "albums",
-        "album_songs",
-        "songs",
-      ]);
-    }),
-  );
-  if (updated === undefined) return;
-  if (cover !== null) copyCoverToAlbum(album.id, cover);
-  router.back();
-  saveArtworkChange(edits.artwork, "album", album.id);
-  offerToDeleteEmptyAlbums(updated.emptied);
-}
-
-/**
- * Creates the album with its songs, then covers, and opens it, or chooses it
- * on the song whose list opened this sheet. False keeps the sheet up.
- */
-function saveNew(pickFor: PickFor | undefined) {
-  const edits = draft.get();
-  const cover = coverFromTracks(edits, false, new Set());
-  const created = tryWrite("Couldn't Create Album", (db) =>
-    db.transaction((tx) => {
-      const album = createAlbum(tx, {
-        artistIds: artistIds(tx, edits.artists),
-        name: edits.name,
-        year: parseYear(edits.year),
-      }).value;
-      const { emptied } = setAlbumTracks(tx, album.id, trackIds(edits)).value;
-      return written({ emptied, id: album.id, name: album.name }, [
-        "albums",
-        "album_songs",
-        "album_artists",
-      ]);
-    }),
-  );
-  if (created === undefined) return false;
-  if (cover !== null) copyCoverToAlbum(created.id, cover);
-  router.back();
-  if (pickFor === undefined) {
-    openLibraryScreen({ id: created.id, screen: "album" });
-  } else {
-    pickNewAlbum(created);
-  }
-  saveArtworkChange(edits.artwork, "album", created.id);
-  offerToDeleteEmptyAlbums(created.emptied);
-  return true;
-}
 
 function AlbumFields({ artwork }: { artwork: AlbumListItem["artwork"] }) {
   const edits = draft.useValue();

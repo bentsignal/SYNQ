@@ -30,6 +30,13 @@ that makes them.
 - Feature parity with 2.5.2 (see "Feature checklist"), minus Premium and
   the ad (see "Free").
 
+### Download
+
+Download sends a link to a server's address and imports the audio files it
+returns (Shawn, November 2026). SYNQ doesn't host, name, or recommend a server.
+The address is the whole setup: a private server can put a token in its query.
+See [download-servers.md](download-servers.md).
+
 ### Free
 
 SYNQ 3.0 is completely free (Shawn, October 2026). There is no Premium

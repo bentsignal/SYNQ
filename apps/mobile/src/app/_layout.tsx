@@ -8,6 +8,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { useCSSVariable } from "uniwind";
 
 import { installDevAutomation } from "~/features/dev/automation";
+import { downloadFeature } from "~/features/download/feature";
 import { ExportBanner } from "~/features/export/export-banner";
 import { ImportActivity } from "~/features/import/import-activity";
 import { wifiSheetDetent } from "~/features/import/transfer-link";
@@ -22,6 +23,7 @@ SplashScreen.setOptions({ duration: 250, fade: true });
 applyStoredPreferences();
 installDevAutomation();
 installWifiTransfer();
+downloadFeature?.installDownloads();
 
 function color<Fallback>(
   value: string | number | undefined,
@@ -119,6 +121,7 @@ function RootStack() {
           title: "Wi-Fi Transfer",
         }}
       />
+      <Stack.Screen name="import/download" options={EDIT_SHEET} />
     </Stack>
   );
 }

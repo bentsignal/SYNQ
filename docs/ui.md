@@ -117,7 +117,7 @@ numbers.
 
 - "Library" sits on the bar's own row (`RootTabTitle`, as on Settings),
   left-aligned opposite the `plus` menu: Import from Files, Wi-Fi Transfer,
-  divider, New Playlist. A large title would leave that row's left half
+  Download, divider, New Playlist. A large title would leave that row's left half
   empty, with the title alone on the row below; pushed screens keep large
   titles, since their top left is Back.
 - The bar is transparent, so at the top of the page there's no bar to see.
@@ -398,6 +398,20 @@ has started by then; the next clean batch asks instead.
   the top (`Exporting Album Name`, `3 of 14`, a progress bar, and `xmark`
   to cancel); the app stays usable underneath. One export runs at a time,
   and its temporary files go when the sheet closes.
+
+- **Download** ([download-servers.md](download-servers.md)): a sheet with the
+  server (a picker when there's more than one, starting on the default), a link
+  field with a download button inside it, and what's on its way. A link starts
+  at once and the field clears for the next. Songs
+  join the import queue, and the capsule counts the whole download from the
+  moment the server knows its songs. They appear together when it ends, or when
+  the app leaves the front and it pauses. A download's row has a spinner, counts
+  the song it's on if there's more than one, and fades when it's done.
+  Tapping a download offers to cancel it. One that failed shows why, with an
+  `xmark` that clears it. Servers lists
+  what's been added, and a server shows its status, today's use if the server
+  reports it, its address (hidden until asked), Default Server, and Remove.
+  Adding one checks its address before saving.
 
 ## Updating from 2.5.2
 

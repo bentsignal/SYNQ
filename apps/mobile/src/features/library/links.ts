@@ -2,6 +2,7 @@ import type { Href } from "expo-router";
 import type { SFSymbol } from "expo-symbols";
 import { router } from "expo-router";
 
+import { downloadFeature } from "~/features/download/feature";
 import { importFromFiles } from "~/features/import/pick-files";
 
 /** The tabs whose stacks show library screens. */
@@ -52,10 +53,17 @@ export function openImport(kind: "files" | "wifi") {
   else router.push("/import/wifi");
 }
 
+/** Download (docs/download-servers.md). */
+export const DOWNLOAD_ACTION =
+  downloadFeature === null
+    ? null
+    : { label: "Download", onPress: () => router.push("/import/download") };
+
 /** What an empty page offers to get music in. */
 export const IMPORT_ACTIONS = [
   { label: "Import from Files", onPress: () => openImport("files") },
   { label: "Wi-Fi Transfer", onPress: () => openImport("wifi") },
+  ...(DOWNLOAD_ACTION === null ? [] : [DOWNLOAD_ACTION]),
 ];
 
 /** Opens the New Playlist sheet. */

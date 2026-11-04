@@ -44,6 +44,13 @@ export const songs = sqliteTable(
     durationMs: integer("duration_ms").notNull().default(0),
     /** Null when the song has no artwork of its own; otherwise a cache-busting number. */
     artworkVersion: integer("artwork_version"),
+    /**
+     * Whether its album's cover comes before its own artwork. Off, it shows only
+     * its own (docs/rewrite.md → Song artwork).
+     */
+    useAlbumArtwork: integer("use_album_artwork", { mode: "boolean" })
+      .notNull()
+      .default(true),
     addedAt: integer("added_at").notNull(),
     /** 2.5.2's `edited`: tags changed in the app since the file was last exported. */
     modifiedSinceExport: integer("modified_since_export", { mode: "boolean" })

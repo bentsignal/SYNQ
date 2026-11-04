@@ -36,8 +36,12 @@ export interface SongListItem {
   artists: ArtistCredit[];
   /** The song's album order; the first is its primary album. */
   albums: AlbumCredit[];
-  /** First album (by album order) with artwork, else the song's own, else null (placeholder). */
+  /** What it shows: see `resolveSongArtwork`. Null is the placeholder. */
   artwork: ArtworkRef | null;
+  /** Its own artwork, shown or not. */
+  ownArtwork: ArtworkRef | null;
+  /** Whether its album's cover comes before its own artwork. */
+  useAlbumArtwork: boolean;
   /** When it was pinned to the Library tab; null when it isn't. */
   pinnedAt: number | null;
 }
@@ -122,18 +126,38 @@ export function toSongItem(
     artists: artistCredits,
     albums: albumCredits,
     artwork: resolveSongArtwork(row, albumCredits),
+    ownArtwork: artworkRef("song", row.id, row.artworkVersion),
+    useAlbumArtwork: row.useAlbumArtwork,
     pinnedAt: row.pinnedAt,
   };
 }
 
-/** 2.5.2's precedence: the first of the song's albums that has artwork, else the song's own. */
+/**
+ * The album whose cover a song uses: the first (by album order) with one, else
+ * its primary album, which is the one to give a cover. Undefined with no albums.
+ */
+export function coverAlbum<Album extends { artworkVersion: number | null }>(
+  albumCredits: readonly Album[],
+) {
+  return (
+    albumCredits.find((credit) => credit.artworkVersion !== null) ??
+    albumCredits[0]
+  );
+}
+
+/**
+ * 2.5.2's precedence, the first of the song's albums that has artwork, else the
+ * song's own, unless it's been told to use only its own.
+ */
 export function resolveSongArtwork(
-  song: Pick<Song, "id" | "artworkVersion">,
+  song: Pick<Song, "id" | "artworkVersion" | "useAlbumArtwork">,
   albumCredits: readonly AlbumCredit[],
 ) {
-  const album = albumCredits.find((credit) => credit.artworkVersion !== null);
-  if (album) return artworkRef("album", album.id, album.artworkVersion);
-  return artworkRef("song", song.id, song.artworkVersion);
+  const own = artworkRef("song", song.id, song.artworkVersion);
+  if (!song.useAlbumArtwork) return own;
+  const album = coverAlbum(albumCredits);
+  if (album === undefined) return own;
+  return artworkRef("album", album.id, album.artworkVersion) ?? own;
 }
 
 function group<R, V>(rows: readonly R[], split: (row: R) => [number, V]) {

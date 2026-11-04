@@ -154,8 +154,9 @@ columns and names):
 
 - `songs`: `id`, `title`, `file_path` (relative), `mime_type`,
   `duration_ms`, `artwork_version` (null = no song artwork; otherwise a
-  cache-busting number), `added_at` (ms), `modified_since_export` (2.5.2's
-  `edited`), and the Home columns below.
+  cache-busting number), `use_album_artwork` (on by default; see Song artwork),
+  `added_at` (ms), `modified_since_export` (2.5.2's `edited`), and the Home
+  columns below.
 - `artists`: `id`, `name`, `artwork_version`, `added_at`, Home columns.
 - `albums`: `id`, `name`, `year`, `artwork_version`, `added_at`, Home columns.
 - `song_artists`: `song_id`, `artist_id`, `position` (unique pair).
@@ -173,7 +174,8 @@ columns and names):
 Durations are **milliseconds** everywhere in 3.0 (2.5.2 stored seconds).
 
 A song's artwork is its first album (by `album_songs.position`) that has
-artwork, else its own, else the placeholder (2.5.2's precedence).
+artwork, else its own, else the placeholder (2.5.2's precedence), unless its
+`use_album_artwork` is off: see Song artwork.
 
 Preferences (accent, haptics, shuffle, repeat, review bookkeeping) and the playback session (queue song ids, index, position,
 source) live in `expo-sqlite/kv-store` behind a small typed store, read
@@ -215,6 +217,32 @@ of their own, so a delete takes them along by any route, and an erase with it.
 - **Upgrading.** The migration only adds nullable columns, and the importer writes
   neither, so a 2.5.2 library arrives with nothing pinned or played and no file
   moved. Tested in `home.test.ts`, with the real migrator and importer.
+
+### Song artwork
+
+An album has one cover, in its own folder, and its songs show it, so no song
+needs a copy. A song can opt out with Use Album Artwork in Edit Info (Shawn,
+November 2026; `docs/ui.md` → Editing has the sheet).
+
+- **On, the default.** The precedence above, unchanged: an album's cover, else
+  the song's own, else the placeholder. The fallback is why a song on an album
+  with no cover keeps its own artwork, as it did in 2.5.2.
+- **Off.** Its own artwork or the placeholder, whatever its albums have.
+- **Nothing is deleted by the switch.** Its own artwork stays in
+  `library/{songId}/`, so turning it back on and off again restores it. Remove
+  Photo on a song deletes only that, and isn't offered while the switch is on.
+- **An album's cover changes from Edit Album, or from a song by answering Album
+  Artwork.** A song's sheet can't remove one: "Remove Photo" there used to remove
+  the album's cover for every song on it, which is what this replaced.
+- **Which album.** The one the song is showing, else its primary one. It's
+  worked out at Done, after the sheet's other edits, and a pending photo is
+  dropped if an edit in the sheet changes which it would land on, so an edit
+  can't change a cover the sheet wasn't showing.
+- **Upgrading.** The migration adds the column with every row on, the importer
+  doesn't write it, and no file moves, so a 2.5.2 library shows exactly what it
+  did. Tested in `song-artwork.test.ts`, with the real migrator and importer.
+- **Backups.** A new song keeps the backup's setting; a song on both sides keeps
+  this library's. An older backup is migrated first, so its songs are on.
 
 ### Adding a song to an album
 

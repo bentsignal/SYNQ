@@ -220,7 +220,8 @@ final class BackdropView: ExpoView {
     uniforms.time = Float(time)
     uniforms.aspect = Float(bounds.width / bounds.height)
     uniforms.count = UInt32(frame.colors.count)
-    uniforms.colors.replaceSubrange(0..<frame.colors.count, with: frame.colors)
+    uniforms.colors.replaceSubrange(
+      0..<frame.colors.count, with: frame.colors.map(BackdropShader.oklab))
     uniforms.pools.replaceSubrange(0..<frame.pools.count, with: frame.pools)
     BackdropShader.encode(uniforms, pipeline: pipeline, into: encoder)
     commands.present(drawable)

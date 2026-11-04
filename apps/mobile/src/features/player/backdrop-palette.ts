@@ -1,13 +1,14 @@
 /**
  * Chooses the colors behind the player from a cover's clusters
- * (`modules/synq-backdrop`, which weights saturated pixels when clustering).
- * What counts is what the art feels like, not its average: a black cover
- * with a red ring is a red cover, and a cover with no color at all gets depth
- * from its own tones.
+ * (`modules/synq-backdrop`, which weights saturated pixels when clustering):
+ * one family of hues, the cover's main one, from a deep ground up to a glow.
+ * A single family can't clash, and lightness does the work competing hues would.
  *
  * Every color is capped at `MAX_LUMINANCE`, and the shader only ever blends
  * them, so white text and controls read over the backdrop whatever the cover.
  */
+import type { Lch } from "./backdrop-color.ts";
+import { maxChroma, toHex, toLch } from "./backdrop-color.ts";
 
 export interface ArtworkCluster {
   color: string;
@@ -26,21 +27,20 @@ export interface BackdropSwatch {
   weight: number;
 }
 
-/**
- * The brightest a backdrop color may be, as relative luminance: white has
- * 7:1 contrast over it, and `muted` text over 3:1.
- */
-export const MAX_LUMINANCE = 0.1;
-
 /** Below this chroma (Oklab), a color reads as grey. */
 const MIN_CHROMA = 0.03;
 /** Clusters smaller than this are noise, not part of the art. */
 const MIN_POPULATION = 0.002;
-const MAX_ACCENTS = 4;
+/** Hues this close (radians) count as one family: browns, oranges, skin. */
+const FAMILY_WIDTH = 0.7;
+/** How much of what the screen can show the colors use. */
+const SATURATION = 0.72;
+/** The most chroma any color has, short of neon on the hues that go that far. */
+const MAX_CHROMA = 0.125;
 
 /**
- * Where the pools sit, 0–1 over the screen. They cover it evenly and favor
- * what shows around the artwork: its lower half.
+ * Where the tone-only pools sit, 0–1 over the screen. They cover it evenly and
+ * favor what shows around the artwork: its lower half.
  */
 const SLOTS = [
   { x: 0.12, y: 0.08 },
@@ -50,103 +50,16 @@ const SLOTS = [
   { x: 0.96, y: 0.86 },
 ] as const;
 
-interface Lch {
-  l: number;
-  c: number;
-  /** Radians. */
-  h: number;
-}
-
-function linear(channel: number) {
-  return channel <= 0.040_45
-    ? channel / 12.92
-    : ((channel + 0.055) / 1.055) ** 2.4;
-}
-
-function gamma(channel: number) {
-  return channel <= 0.003_130_8
-    ? channel * 12.92
-    : 1.055 * channel ** (1 / 2.4) - 0.055;
-}
-
-/** The color's linear sRGB channels. */
-function parseHex(hex: string) {
-  const match = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
-  if (match?.[1] === undefined) return null;
-  const value = Number.parseInt(match[1], 16);
-  return [
-    linear(((value >> 16) & 255) / 255),
-    linear(((value >> 8) & 255) / 255),
-    linear((value & 255) / 255),
-  ] as const;
-}
-
-function toLch(hex: string) {
-  const srgb = parseHex(hex);
-  if (srgb === null) return null;
-  const [r, g, b] = srgb;
-  const l = Math.cbrt(0.412_221_47 * r + 0.536_332_54 * g + 0.051_445_99 * b);
-  const m = Math.cbrt(0.211_903_5 * r + 0.680_699_55 * g + 0.107_396_96 * b);
-  const s = Math.cbrt(0.088_302_46 * r + 0.281_718_84 * g + 0.629_978_7 * b);
-  const a = 1.977_998_5 * l - 2.428_592_21 * m + 0.450_593_71 * s;
-  const lab = 0.025_904_04 * l + 0.782_771_77 * m - 0.808_675_77 * s;
-  return {
-    c: Math.hypot(a, lab),
-    h: Math.atan2(lab, a),
-    l: 0.210_454_26 * l + 0.793_617_79 * m - 0.004_072_05 * s,
-  } satisfies Lch;
-}
-
-/** Linear sRGB; components outside 0–1 are out of gamut. */
-function toLinearRgb({ l: lightness, c, h }: Lch) {
-  const a = c * Math.cos(h);
-  const b = c * Math.sin(h);
-  const l = (lightness + 0.396_337_78 * a + 0.215_803_76 * b) ** 3;
-  const m = (lightness - 0.105_561_35 * a - 0.063_854_17 * b) ** 3;
-  const s = (lightness - 0.089_484_18 * a - 1.291_485_55 * b) ** 3;
-  return [
-    4.076_741_66 * l - 3.307_711_59 * m + 0.230_969_93 * s,
-    -1.268_438 * l + 2.609_757_4 * m - 0.341_319_4 * s,
-    -0.004_196_09 * l - 0.703_418_61 * m + 1.707_614_7 * s,
-  ] as const;
-}
-
-function linearLuminance([r, g, b]: readonly [number, number, number]) {
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-/** WCAG relative luminance of an sRGB color. */
-export function luminanceOf(hex: string) {
-  const srgb = parseHex(hex);
-  return srgb === null ? 0 : linearLuminance(srgb);
-}
-
-function inGamut(rgb: readonly number[]) {
-  return rgb.every((channel) => channel >= -0.000_1 && channel <= 1.000_1);
-}
-
-/**
- * The color as `#rrggbb`, in gamut and under `MAX_LUMINANCE`: chroma gives
- * way first to stay in gamut, keeping the hue, and lightness to stay readable.
- */
-function toHex(color: Lch) {
-  let { l, c } = color;
-  for (;;) {
-    const rgb = toLinearRgb({ c, h: color.h, l });
-    if (c > 0 && !inGamut(rgb)) c = Math.max(0, c - 0.004);
-    else if (l > 0 && linearLuminance(rgb) > MAX_LUMINANCE) l -= 0.004;
-    else break;
-  }
-  const channels = toLinearRgb({ c, h: color.h, l }).map((channel) =>
-    Math.round(gamma(Math.max(0, Math.min(1, channel))) * 255)
-      .toString(16)
-      .padStart(2, "0"),
-  );
-  return `#${channels.join("")}`;
-}
-
 function clamp(value: number, low: number, high: number) {
   return Math.max(low, Math.min(high, value));
+}
+
+function radians(value: number) {
+  return (value * Math.PI) / 180;
+}
+
+function degrees(hue: number) {
+  return ((((hue * 180) / Math.PI) % 360) + 360) % 360;
 }
 
 function hueDistance(a: number, b: number) {
@@ -175,96 +88,129 @@ function read(clusters: readonly ArtworkCluster[]) {
   });
 }
 
+/** The side of the cover a set of colors sits on, by how much each shows. */
+function sitsOnRight(colors: readonly Seen[]) {
+  const total = colors.reduce(
+    (sum, color) => sum + color.population * color.c,
+    0,
+  );
+  const x = colors.reduce(
+    (sum, color) => sum + color.x * color.population * color.c,
+    0,
+  );
+  return total > 0 && x / total > 0.5;
+}
+
+interface Lead {
+  h: number;
+  /** The family's most vivid chroma on the cover. */
+  c: number;
+  /** How light the family is on the cover. */
+  l: number;
+}
+
 /**
- * The colors worth showing, most striking first: chroma counts more than
- * area, so a small red ring beats a large muddy brown, and hues too close to
- * one already chosen add nothing.
+ * The cover's main color, as a family of hues: nearby hues pool their area, and
+ * area counts as much as chroma, so a little text or a logo can't lead. Null
+ * for a cover with no color at all.
  */
-function accentsOf(seen: readonly Seen[]) {
-  // `filter` made a new array, so sorting it in place is safe (Hermes has no
-  // `toSorted`).
-  const ranked = seen
-    .filter((color) => color.c >= MIN_CHROMA)
-    .sort((a, b) => b.c * b.population ** 0.35 - a.c * a.population ** 0.35);
-  const accents = new Array<Seen>();
-  for (const color of ranked) {
-    const distinct = accents.every(
-      (accent) =>
-        hueDistance(accent.h, color.h) > 0.4 ||
-        Math.abs(accent.l - color.l) > 0.2,
+function leadOf(seen: readonly Seen[]) {
+  const colored = seen.filter((color) => color.c >= MIN_CHROMA);
+  function score(center: Seen) {
+    return colored.reduce(
+      (sum, color) =>
+        sum +
+        color.population *
+          Math.min(color.c, 0.14) *
+          Math.exp(-((hueDistance(color.h, center.h) / 0.5) ** 2)),
+      0,
     );
-    if (distinct && accents.length < MAX_ACCENTS) accents.push(color);
   }
-  return accents;
-}
-
-interface Stop extends Lch {
-  /** Where on the cover it comes from, to choose a slot. */
-  x: number;
-  y: number;
-  weight: number;
-}
-
-/** Bright enough to glow and dark enough for white text; vivid, not neon. */
-function glow(color: Seen, weight = 1) {
+  function weight(color: Seen) {
+    return color.population * color.c;
+  }
+  const [first, ...rest] = colored;
+  if (first === undefined) return null;
+  const best = rest.reduce((a, b) => (score(b) > score(a) ? b : a), first);
+  const members = colored.filter(
+    (color) => hueDistance(color.h, best.h) < FAMILY_WIDTH,
+  );
+  const total = members.reduce((sum, color) => sum + weight(color), 0);
   return {
-    ...color,
-    c: clamp(color.c * 1.25, 0.05, 0.135),
-    l: clamp(color.l, 0.42, 0.56),
-    weight,
-  } satisfies Stop;
+    c: Math.max(...members.map((color) => color.c)),
+    h: Math.atan2(
+      members.reduce((sum, c) => sum + weight(c) * Math.sin(c.h), 0) / total,
+      members.reduce((sum, c) => sum + weight(c) * Math.cos(c.h), 0) / total,
+    ),
+    l: members.reduce((sum, c) => sum + weight(c) * c.l, 0) / total,
+  } satisfies Lead;
 }
 
-/** Olive isn't anyone's favorite: dim yellows lean toward amber, not green. */
-function neighborHue(hue: number, shift: number) {
-  const degrees = ((hue * 180) / Math.PI + 360) % 360;
-  return degrees > 75 && degrees < 135 ? hue - Math.abs(shift) : hue + shift;
+/**
+ * Dark yellow is olive, about the least liked color there is, and white text
+ * needs a dark backdrop. Yellows lean into gold and amber as they dim, and the
+ * yellow-greens of grass and leaves into green, so nothing lands in between.
+ * `sourceLightness` tells them apart: a bright lemon is a yellow, and a dim color
+ * at the same hue already reads as green.
+ */
+function rescueHue(h: number, sourceLightness = 1) {
+  const d = degrees(h);
+  const split = sourceLightness < 0.6 ? 100 : 118;
+  if (d <= 58 || d >= 145) return h;
+  if (d <= split) return radians(54 + ((d - 58) / (split - 58)) * 18);
+  return radians(132 + ((d - split) / (145 - split)) * 13);
 }
 
-function colorStops(accents: readonly Seen[], seen: readonly Seen[]) {
-  const stops = accents.map((accent) => glow(accent));
-  const [lead] = stops;
-  if (lead === undefined) return [];
-  // A single color would be flat; its neighbors in hue and shade give it depth.
-  if (stops.length === 1) {
-    stops.push({
-      ...lead,
-      h: neighborHue(lead.h, 0.32),
-      l: lead.l - 0.1,
-      x: 1 - lead.x,
-      y: 1 - lead.y,
-    });
-  }
-  if (stops.length === 2) {
-    stops.push({
-      ...lead,
-      c: lead.c * 0.8,
-      h: neighborHue(lead.h, -0.26),
-      l: lead.l - 0.16,
-      x: lead.y,
-      y: lead.x,
-    });
-  }
-  // The ground the colors float in, at the bottom corners, in the lead's hue:
-  // as dark as the cover is dark, so a black cover stays black in spirit and a
-  // flat color fills the screen.
+/** Shadows lean to violet, the way painters cool a shadow, by the shortest way. */
+function shadowHue(h: number, amount: number) {
+  const target = radians(290);
+  const delta = Math.atan2(Math.sin(target - h), Math.cos(target - h));
+  return h + Math.sign(delta) * Math.min(Math.abs(delta), amount);
+}
+
+function colorPalette(seen: readonly Seen[], lead: Lead) {
   const dark = seen
     .filter((color) => color.l < 0.3)
     .reduce((sum, color) => sum + color.population, 0);
-  const grounds = new Array<Stop>();
-  while (stops.length + grounds.length < SLOTS.length) {
-    const depth = grounds.length === 0 ? 0.18 : 0.25;
-    grounds.push({
-      c: Math.min(lead.c * (0.45 + (1 - dark) * 0.3), 0.08),
-      h: lead.h,
-      l: depth * dark + (lead.l - 0.2 + grounds.length * 0.04) * (1 - dark),
-      weight: 1.1,
-      x: grounds.length % 2 === 0 ? 0 : 1,
-      y: 1,
-    });
+  const hue = rescueHue(lead.h, lead.l);
+  // A cover with faint color gets a faint backdrop, not an invented vivid one.
+  const share = SATURATION * clamp(lead.c / 0.09, 0.65, 1);
+  const top = clamp(0.56 - dark * 0.15, 0.4, 0.56);
+  const ground = 0.13 + (1 - dark) * 0.12;
+  // The glow goes on whichever side the cover's color is, so covers differ.
+  const flip = !sitsOnRight(
+    seen.filter((color) => hueDistance(color.h, lead.h) < FAMILY_WIDTH),
+  );
+  function swatch(
+    { l, h, amount }: { l: number; h: number; amount: number },
+    x: number,
+    y: number,
+    weight = 1,
+  ) {
+    const c = Math.min(maxChroma(l, h) * share * amount, MAX_CHROMA);
+    return {
+      color: toHex({ c, h, l }),
+      weight,
+      x: flip ? 1 - x : x,
+      y,
+    } satisfies BackdropSwatch;
   }
-  // The ground takes its corners first; the colors share what's left.
-  return [...grounds, ...stops];
+  return [
+    swatch(
+      { amount: 0.85, h: shadowHue(hue, 0.5), l: ground },
+      0.92,
+      1.02,
+      1.2,
+    ),
+    swatch(
+      { amount: 0.85, h: shadowHue(hue, 0.35), l: ground + 0.07 },
+      0.05,
+      0.82,
+    ),
+    swatch({ amount: 0.9, h: shadowHue(hue, 0.15), l: top - 0.14 }, 0.9, 0.5),
+    swatch({ amount: 0.9, h: hue, l: top - 0.04 }, 0.04, 0.36),
+    swatch({ amount: 1, h: hue + 0.12, l: top }, 0.82, 0.06),
+  ];
 }
 
 /**
@@ -272,7 +218,7 @@ function colorStops(accents: readonly Seen[], seen: readonly Seen[]) {
  * centered on how light the cover is, wider when the cover itself has range,
  * with whatever faint tint it has.
  */
-function toneStops(seen: readonly Seen[]) {
+function tonePalette(seen: readonly Seen[]) {
   const total = seen.reduce((sum, color) => sum + color.population, 0) || 1;
   const mean =
     seen.reduce((sum, color) => sum + color.l * color.population, 0) / total;
@@ -286,50 +232,29 @@ function toneStops(seen: readonly Seen[]) {
     h: 0,
   } satisfies Pick<Lch, "c" | "h">);
   const c = Math.min(tint.c, 0.012);
-  return [1.25, -0.5, 0.75, -1, 0.25].map(
-    (offset, index) =>
+  return SLOTS.map(
+    (slot, index) =>
       ({
-        c,
-        h: tint.h,
-        l: clamp(center + offset * spread, 0.13, 0.5),
-        weight: 1,
-        x: SLOTS[index]?.x ?? 0.5,
-        y: SLOTS[index]?.y ?? 0.5,
-      }) satisfies Stop,
-  );
-}
-
-/** Gives each stop, in order, the free slot nearest where it sits on the cover. */
-function placed(stops: readonly Stop[]) {
-  const free = [...SLOTS];
-  return stops.flatMap((stop) => {
-    const nearest = free.reduce(
-      (best, slot, index) =>
-        Math.hypot(slot.x - stop.x, slot.y - stop.y) <
-        Math.hypot((free[best]?.x ?? 0) - stop.x, (free[best]?.y ?? 0) - stop.y)
-          ? index
-          : best,
-      0,
-    );
-    const [slot] = free.splice(nearest, 1);
-    if (slot === undefined) return [];
-    return [
-      {
         ...slot,
-        color: toHex(stop),
-        weight: stop.weight,
-      } satisfies BackdropSwatch,
-    ];
-  });
+        color: toHex({
+          c,
+          h: rescueHue(tint.h),
+          l: clamp(
+            center + ([1.25, -0.5, 0.75, -1, 0.25][index] ?? 0) * spread,
+            0.13,
+            0.5,
+          ),
+        }),
+        weight: 1,
+      }) satisfies BackdropSwatch,
+  );
 }
 
 /** The backdrop for a cover's clusters. */
 export function backdropPalette(clusters: readonly ArtworkCluster[]) {
   const seen = read(clusters);
-  const accents = accentsOf(seen);
-  return placed(
-    accents.length === 0 ? toneStops(seen) : colorStops(accents, seen),
-  );
+  const lead = leadOf(seen);
+  return lead === null ? tonePalette(seen) : colorPalette(seen, lead);
 }
 
 /** The backdrop with no cover: the app's charcoal, in slow relief. */

@@ -5,7 +5,14 @@ import { createHeldPlays } from "./held-plays.ts";
 
 function recorder() {
   const log = new Array<string>();
+  let leaving = new Array<() => void>();
   const plays = createHeldPlays<string>({
+    afterLeaving: (then) => {
+      leaving.push(then);
+      return () => {
+        leaving = [];
+      };
+    },
     show: () => log.push("show"),
     write: (batch) => {
       log.push(`write ${batch.map(({ item }) => item).join(",")}`);
@@ -18,7 +25,18 @@ function recorder() {
   function visit() {
     plays.arrive(() => top);
   }
-  return { log, plays, scrollTo, visit };
+  /** The tab has finished going off screen. */
+  function finishLeaving() {
+    const finished = leaving;
+    leaving = [];
+    for (const then of finished) then();
+  }
+  /** Leaves the tab and lets it finish. */
+  function leave() {
+    plays.leave();
+    finishLeaving();
+  }
+  return { finishLeaving, leave, log, plays, scrollTo, visit };
 }
 
 void test("before the tab has been opened, a play is written and shown at once", () => {
@@ -35,28 +53,28 @@ void test("a play waits while the tab is on screen, even at the top", () => {
 });
 
 void test("left at the top: what was played is there on the way back", () => {
-  const { log, plays, visit } = recorder();
+  const { leave, log, plays, visit } = recorder();
   visit();
   plays.record("album", 1);
   plays.record("song", 2);
-  plays.leave();
+  leave();
   assert.deepEqual(log, ["write album,song", "show"]);
 });
 
 void test("away from a tab left at the top, plays are written and shown at once", () => {
-  const { log, plays, visit } = recorder();
+  const { leave, log, plays, visit } = recorder();
   visit();
-  plays.leave();
+  leave();
   plays.record("album", 1);
   assert.deepEqual(log, ["write album", "show"]);
 });
 
 void test("left scrolled down: nothing changes, on the way out or while away", () => {
-  const { log, plays, scrollTo, visit } = recorder();
+  const { leave, log, plays, scrollTo, visit } = recorder();
   visit();
   scrollTo("down");
   plays.record("album", 1);
-  plays.leave();
+  leave();
   plays.record("song", 2);
   assert.deepEqual(log, []);
   visit();
@@ -64,37 +82,37 @@ void test("left scrolled down: nothing changes, on the way out or while away", (
 });
 
 void test("what waited lands the next time the tab is left at the top, in order", () => {
-  const { log, plays, scrollTo, visit } = recorder();
+  const { leave, log, plays, scrollTo, visit } = recorder();
   visit();
   scrollTo("down");
   plays.record("album", 1);
-  plays.leave();
+  leave();
   visit();
   scrollTo("top");
   assert.deepEqual(log, []);
-  plays.leave();
+  leave();
   assert.deepEqual(log, ["write album", "show"]);
 });
 
 void test("scrolled down, the background saves without changing the list", () => {
-  const { log, plays, scrollTo, visit } = recorder();
+  const { leave, log, plays, scrollTo, visit } = recorder();
   visit();
   scrollTo("down");
   plays.record("album", 1);
   plays.background();
   assert.deepEqual(log, ["write album"]);
-  plays.leave();
+  leave();
   assert.deepEqual(log, ["write album"]);
 });
 
 void test("what the background saved is shown when the tab is next left at the top", () => {
-  const { log, plays, scrollTo, visit } = recorder();
+  const { leave, log, plays, scrollTo, visit } = recorder();
   visit();
   scrollTo("down");
   plays.record("album", 1);
   plays.background();
   scrollTo("top");
-  plays.leave();
+  leave();
   assert.deepEqual(log, ["write album", "show"]);
 });
 
@@ -107,9 +125,34 @@ void test("at the top, the background counts as leaving", () => {
 });
 
 void test("nothing waiting writes and shows nothing", () => {
-  const { log, plays, visit } = recorder();
+  const { leave, log, plays, visit } = recorder();
   visit();
   plays.background();
+  leave();
+  assert.deepEqual(log, []);
+});
+
+void test("nothing changes until the tab has finished going off screen", () => {
+  const { finishLeaving, log, plays, visit } = recorder();
+  visit();
+  plays.record("album", 1);
   plays.leave();
   assert.deepEqual(log, []);
+  plays.record("song", 2);
+  assert.deepEqual(log, []);
+  finishLeaving();
+  assert.deepEqual(log, ["write album,song", "show"]);
+});
+
+void test("coming back before it's off screen leaves everything as it was", () => {
+  const { finishLeaving, log, plays, visit } = recorder();
+  visit();
+  plays.record("album", 1);
+  plays.leave();
+  visit();
+  finishLeaving();
+  assert.deepEqual(log, []);
+  plays.leave();
+  finishLeaving();
+  assert.deepEqual(log, ["write album", "show"]);
 });

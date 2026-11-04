@@ -7,6 +7,13 @@ import { refreshLibraryQuery } from "~/features/library/queries";
 import { createHeldPlays } from "./held-plays";
 import { playedItem } from "./played-item";
 
+/**
+ * Longer than any way off the tab takes to animate. A timer because the stack's
+ * transition events only cover pushes in its own stack, not another tab or the
+ * player's sheet. Coming back sooner just leaves the list as it was.
+ */
+const TAB_OFF_SCREEN_AFTER_MS = 1000;
+
 type PlayedItem = NonNullable<ReturnType<typeof playedItem>>;
 
 /**
@@ -15,6 +22,12 @@ type PlayedItem = NonNullable<ReturnType<typeof playedItem>>;
  * never stop the music.
  */
 const plays = createHeldPlays<PlayedItem>({
+  afterLeaving: (then) => {
+    const timer = setTimeout(then, TAB_OFF_SCREEN_AFTER_MS);
+    return () => {
+      clearTimeout(timer);
+    };
+  },
   show: () => {
     refreshLibraryQuery(RECENTS_KEY);
   },

@@ -190,7 +190,9 @@ of their own, so a delete takes them along by any route, and an erase with it.
   went to the background. Then what was played is first on the way back. Left
   scrolled down, it finds everything where it was, so someone browsing never has
   the page move under them; what they played waits in memory, with the time each
-  happened, until the tab is next left at the top. Going to the background still
+  happened, until the tab is next left at the top. Leaving counts once the tab is
+  fully off screen, a second later, so the change is never seen during the
+  animation; coming back sooner leaves the list as it was. Going to the background still
   writes it, so a relaunch shows it, but doesn't refresh the list. A pin shows at
   once. It's decided by scroll position rather than by when the app restarts
   because playing music can keep the app alive for days.

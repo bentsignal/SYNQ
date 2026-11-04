@@ -9,7 +9,10 @@ export interface QueueEntry {
   /** Unique within the queue; the native track id. */
   readonly key: string;
   readonly songId: number;
-  /** Added with Play Next: part of the run that stacks after the current song. */
+  /**
+   * Cued (Play Next, Add to Queue, or dragged among them): part of the run
+   * right after the current song that plays before the rest of the list.
+   */
   readonly queued: boolean;
 }
 
@@ -77,7 +80,7 @@ export function neighbors(queue: Queue, repeat: "off" | "all" | "one") {
   return [next, previous].filter((entry) => entry !== undefined);
 }
 
-/** How many Play Next entries directly follow the current one. */
+/** How many cued entries directly follow the current one. */
 function queuedRunLength(entries: readonly QueueEntry[], index: number) {
   let length = 0;
   while (entries[index + 1 + length]?.queued === true) length += 1;
@@ -143,35 +146,35 @@ function queueOf(
 }
 
 /**
- * Where Play Next inserts: after the current entry and the Play Next
- * entries already stacked behind it, so several play in the order they
- * were added (2.5.2's `addOffset`).
+ * Adds songs to the cued run: "next" (Play Next) straight after the current
+ * song, "last" (Add to Queue) behind everything already cued, both ahead of
+ * the rest of the list. Cued songs stay out of `original`, so they stay with
+ * the current song when shuffle goes off. An empty queue has no list to go
+ * ahead of: the songs are the list, so shuffle can reorder them.
  */
-export function playNextIndex(queue: Queue) {
-  const index = currentIndex(queue);
-  if (index === -1) return queue.entries.length;
-  return index + 1 + queuedRunLength(queue.entries, index);
-}
-
-export function insertEntries(
+export function cueSongs(
   queue: Queue,
-  added: readonly QueueEntry[],
-  index: number,
+  songIds: readonly number[],
+  place: "next" | "last",
 ) {
+  const added = newEntries(songIds, queue.entries.length > 0);
+  const current = currentIndex(queue);
+  const index =
+    current === -1
+      ? queue.entries.length
+      : current +
+        1 +
+        (place === "next" ? 0 : queuedRunLength(queue.entries, current));
   const entries = [...queue.entries];
   entries.splice(index, 0, ...added);
-  // Songs added to the end belong to the list; Play Next ones float with
-  // the current song when shuffle goes off.
-  const original =
-    queue.original === null
-      ? null
-      : added.every((entry) => !entry.queued)
-        ? [...queue.original, ...added.map((entry) => entry.key)]
-        : queue.original;
   return {
-    currentKey: queue.currentKey ?? added[0]?.key ?? null,
-    entries,
-    original,
+    added,
+    index,
+    queue: queueOf(
+      entries,
+      queue.currentKey ?? added[0]?.key ?? null,
+      queue.original,
+    ),
   };
 }
 
@@ -203,12 +206,23 @@ export function removeEntries(
   };
 }
 
-/** Moves the entry at `from` so it ends up at `to`. */
+/**
+ * Moves the entry at `from` so it ends up at `to`. A drop right after the
+ * current song or in the cued run, down to its end, cues the entry; a drop
+ * below that returns it to the list. That keeps the run unbroken, so the
+ * next Add to Queue lands behind everything cued.
+ */
 export function moveEntry(queue: Queue, from: number, to: number) {
   const entries = [...queue.entries];
   const [moved] = entries.splice(from, 1);
   if (moved === undefined) return queue;
-  entries.splice(to, 0, moved);
+  const current = entries.findIndex((entry) => entry.key === queue.currentKey);
+  // Not found: the entry moving is the current one, which isn't in the run.
+  const queued =
+    current === -1
+      ? moved.queued
+      : to > current && to <= current + 1 + queuedRunLength(entries, current);
+  entries.splice(to, 0, queued === moved.queued ? moved : { ...moved, queued });
   return { ...queue, entries };
 }
 
@@ -244,8 +258,8 @@ export function forgetSongIds(
 }
 
 /**
- * Turns shuffle on: the current song stays first with its Play Next run
- * behind it, and everything else follows in random order.
+ * Turns shuffle on: the current song stays first with its cued run behind
+ * it, and everything else follows in random order as part of the list.
  */
 export function shuffleQueue(queue: Queue, random = Math.random) {
   const index = currentIndex(queue);
@@ -258,7 +272,12 @@ export function shuffleQueue(queue: Queue, random = Math.random) {
   const rest = queue.entries.filter((entry) => !inRun.has(entry.key));
   return {
     currentKey: queue.currentKey,
-    entries: [...run, ...shuffled(rest, random)],
+    entries: [
+      ...run,
+      ...shuffled(rest, random).map((entry) =>
+        entry.queued ? { ...entry, queued: false } : entry,
+      ),
+    ],
     original: queue.entries
       .filter((entry) => entry === run[0] || !inRun.has(entry.key))
       .map((entry) => entry.key),
@@ -267,8 +286,8 @@ export function shuffleQueue(queue: Queue, random = Math.random) {
 
 /**
  * Turns shuffle off: back to the unshuffled order, with the current song
- * (and its Play Next run) where it was in that order, so what played before
- * it is behind it again and the rest follows.
+ * (and its cued run) where it was in that order, so what played before it
+ * is behind it again and the rest follows.
  */
 export function unshuffleQueue(queue: Queue) {
   const index = currentIndex(queue);
@@ -286,11 +305,14 @@ export function unshuffleQueue(queue: Queue) {
     const entry = byKey.get(key);
     return entry === undefined || inRun.has(key) ? [] : [entry];
   });
-  // Entries added while shuffled that aren't in the original order (Play
-  // Next songs that drifted from the run) stay right after it.
-  const leftovers = queue.entries.filter(
-    (entry) => !inRun.has(entry.key) && !inOriginal.has(entry.key),
-  );
+  // Songs cued while shuffled aren't in the original order. Those already
+  // played stay behind the current song, so they don't play again; any still
+  // to come (dragged out of the run) stay right after the run.
+  function isLeftover(entry: QueueEntry) {
+    return !inRun.has(entry.key) && !inOriginal.has(entry.key);
+  }
+  const played = queue.entries.slice(0, index).filter(isLeftover);
+  const toCome = queue.entries.slice(index + 1).filter(isLeftover);
   let insertAt = 0;
   const currentKey = queue.currentKey;
   if (currentKey !== null && inOriginal.has(currentKey)) {
@@ -299,8 +321,8 @@ export function unshuffleQueue(queue: Queue) {
       .slice(0, position)
       .filter((key) => byKey.has(key) && !inRun.has(key)).length;
   } else {
-    // The current song was added with Play Next: it goes after the nearest
-    // song before it that is in the original order.
+    // The current song was cued: it goes after the nearest song before it
+    // that is in the original order.
     const basePosition = new Map(base.map((entry, i) => [entry.key, i]));
     for (let i = index - 1; i >= 0; i -= 1) {
       const found = basePosition.get(queue.entries[i]?.key ?? "");
@@ -314,8 +336,9 @@ export function unshuffleQueue(queue: Queue) {
     currentKey,
     entries: [
       ...base.slice(0, insertAt),
+      ...played,
       ...run,
-      ...leftovers,
+      ...toCome,
       ...base.slice(insertAt),
     ],
     original: null,

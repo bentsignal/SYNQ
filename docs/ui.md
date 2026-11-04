@@ -346,7 +346,8 @@ has started by then; the next clean batch asks instead.
   same port. An older binary's server can't refuse uploads, so there it runs only
   while the switch is on.
 
-  **The page** (`features/import/transfer-page*.ts`) is one self-contained file,
+  **The page** (`features/import/transfer-page-source/`: HTML, CSS, the logo, and
+  typed browser TypeScript) builds into one self-contained file,
   since it has to work with no internet: charcoal, the theme's accent, the app
   icon at the top left with its arrows in that accent, like the alternate icons
   (and the tab's icon too), a big quiet drop area, and one line of copy. It holds
@@ -363,6 +364,12 @@ has started by then; the next clean batch asks instead.
   quiet the page asks; only no answer within 1.5 s counts as gone, so a Wi-Fi
   hiccup doesn't cost an upload in flight. Dropped files wait through any of that and go on by
   themselves. The sheet being closed changes nothing here.
+
+  `pnpm build:transfer-page` writes the built page to
+  `transfer-page.generated.ts`, which is committed, so Metro, `eas update`, EAS
+  builds, and tests all use it with no build step of their own. `pnpm test` fails
+  if it doesn't match its sources. It reaches binaries over the air like any other
+  JavaScript: the native server is handed one string, as it always was.
 
   In progress, the page shows one line ("Sending 3 of 12", the file's name, and
   Cancel) and a hairline along the card's edge, then "Adding to your library",

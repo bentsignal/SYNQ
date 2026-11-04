@@ -221,6 +221,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: 1.0.0
         version: 1.0.0
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
       eslint:
         specifier: 'catalog:'
         version: 9.39.4(jiti@2.7.0)

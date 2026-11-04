@@ -1,17 +1,17 @@
 import type { TextInputRef } from "@expo/ui";
 import type { PasteEventPayload } from "expo-clipboard";
 import { useRef, useState } from "react";
-import { Alert } from "react-native";
+import { ActivityIndicator, Alert, useWindowDimensions } from "react-native";
 import { ClipboardPasteButton, isPasteButtonAvailable } from "expo-clipboard";
 import { router, Stack } from "expo-router";
+import { FieldGroup, ListItem, Picker, RNHostView, Text } from "@expo/ui";
+import { HStack } from "@expo/ui/swift-ui";
 import {
-  FieldGroup,
-  Row as Line,
-  ListItem,
-  Picker,
-  RNHostView,
-  Text,
-} from "@expo/ui";
+  animation,
+  Animation,
+  listRowBackground,
+  listRowInsets,
+} from "@expo/ui/swift-ui/modifiers";
 
 import type { Download } from "../engine";
 import { NativeHost } from "~/components/native-host";
@@ -19,6 +19,7 @@ import { TextInput } from "~/components/text-input";
 import { Row } from "~/features/settings/form";
 import { selectionTick } from "~/lib/haptics";
 import { downloads, useDownloads } from "../downloads";
+import { downloadLine } from "../job-counts";
 import { useServers } from "../servers";
 
 function serversOf({
@@ -41,10 +42,8 @@ function hostOf(url: string) {
   }
 }
 
-function statusLine(download: Download) {
-  if (download.message !== null) return download.message;
-  if (download.state === "starting" || download.total === 0) return "Starting…";
-  return `${String(download.done + download.failed)} of ${String(download.total)}`;
+function isWorking({ state }: Download) {
+  return state === "starting" || state === "running";
 }
 
 function confirmRemove(download: Download) {
@@ -65,7 +64,8 @@ function confirmRemove(download: Download) {
 function DownloadRow({ download }: { download: Download }) {
   return (
     <ListItem
-      supportingText={statusLine(download)}
+      supportingText={downloadLine(download) ?? undefined}
+      trailing={isWorking(download) ? <ActivityIndicator /> : undefined}
       onPress={() => confirmRemove(download)}
     >
       <Text>{download.title ?? hostOf(download.url)}</Text>
@@ -138,23 +138,42 @@ function useServerId(chosenId: string | null) {
   return chosen?.id ?? defaultId ?? servers[0]?.id ?? null;
 }
 
+/** The form's side margins, which the button lines up with. */
+const SECTION_MARGIN = 16;
+const PASTE_HEIGHT = 50;
+const NO_FILL = "#00000000";
+
 /**
  * Starts a download from what's copied, in one tap. iOS doesn't ask for
- * permission, as it does when an app reads the clipboard itself.
+ * permission, as it does when an app reads the clipboard itself, and in return
+ * it fixes the button's wording.
  */
 function PasteButton({ onPaste }: { onPaste: (text: string) => void }) {
+  const { width } = useWindowDimensions();
   if (!isPasteButtonAvailable) return null;
   return (
-    <RNHostView matchContents>
-      <ClipboardPasteButton
-        acceptedContentTypes={["plain-text"]}
-        displayMode="iconOnly"
-        style={{ height: 44, width: 44 }}
-        onPress={(data: PasteEventPayload) => {
-          if (data.type === "text") onPaste(data.text);
-        }}
-      />
-    </RNHostView>
+    <FieldGroup.Section>
+      <HStack
+        modifiers={[
+          listRowBackground(NO_FILL),
+          listRowInsets({ bottom: 0, leading: 0, top: 0, trailing: 0 }),
+        ]}
+      >
+        <RNHostView matchContents>
+          <ClipboardPasteButton
+            acceptedContentTypes={["plain-text"]}
+            displayMode="iconAndLabel"
+            style={{
+              height: PASTE_HEIGHT,
+              width: width - SECTION_MARGIN * 2,
+            }}
+            onPress={(data: PasteEventPayload) => {
+              if (data.type === "text") onPaste(data.text);
+            }}
+          />
+        </RNHostView>
+      </HStack>
+    </FieldGroup.Section>
   );
 }
 
@@ -168,6 +187,7 @@ export function DownloadScreen() {
   const [chosenId, setChosenId] = useState<string | null>(null);
   const serverId = useServerId(chosenId);
   const input = useRef<TextInputRef>(null);
+  const rows = useDownloads().length;
 
   function start(url: string) {
     if (serverId === null || url === "") return;
@@ -201,26 +221,24 @@ export function DownloadScreen() {
         />
       </Stack.Toolbar>
       <NativeHost style={{ flex: 1 }}>
-        <FieldGroup>
+        <FieldGroup modifiers={[animation(Animation.default, rows)]}>
           <ServerSection serverId={serverId} onChoose={setChosenId} />
           <FieldGroup.Section>
-            <Line alignment="center" spacing={8}>
-              <TextInput
-                ref={input}
-                autoFocus
-                autoCapitalize="none"
-                autoCorrect={false}
-                enterKeyHint="go"
-                keyboardType="url"
-                placeholder="Paste a Link"
-                onChangeText={setLink}
-                onSubmitEditing={download}
-              />
-              {serverId === null ? null : (
-                <PasteButton onPaste={(text) => start(text.trim())} />
-              )}
-            </Line>
+            <TextInput
+              ref={input}
+              autoFocus
+              autoCapitalize="none"
+              autoCorrect={false}
+              enterKeyHint="go"
+              keyboardType="url"
+              placeholder="Paste a Link"
+              onChangeText={setLink}
+              onSubmitEditing={download}
+            />
           </FieldGroup.Section>
+          {serverId === null ? null : (
+            <PasteButton onPaste={(text) => start(text.trim())} />
+          )}
           <DownloadRows />
         </FieldGroup>
       </NativeHost>

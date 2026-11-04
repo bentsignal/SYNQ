@@ -7,12 +7,10 @@ import { forgetPushedTracks, native, tracksFor } from "./native-queue";
 import { persist } from "./persistence";
 import {
   buildQueue,
+  cueSongs,
   currentIndex,
   forgetSongIds,
-  insertEntries,
   moveEntry,
-  newEntries,
-  playNextIndex,
   removeEntries,
   shuffleQueue,
   unshuffleQueue,
@@ -55,30 +53,29 @@ export function playSongs(songIds: readonly number[], options: PlayOptions) {
   persist();
 }
 
-function insert(songIds: readonly number[], queued: boolean) {
+function cue(songIds: readonly number[], place: "next" | "last") {
   ensureStarted();
   const songs = loadSongs(songIds);
-  const added = newEntries(
+  const { added, index, queue } = cueSongs(
+    getPlayerState().queue,
     songIds.filter((songId) => songs.has(songId)),
-    queued,
+    place,
   );
   if (added.length === 0) return;
-  const { queue } = getPlayerState();
-  const index = queued ? playNextIndex(queue) : queue.entries.length;
   addSongs(songs);
-  setPlayerState({ queue: insertEntries(queue, added, index) });
+  setPlayerState({ queue });
   native(Audio.insert(tracksFor(added, songs), index));
   persist();
 }
 
-/** Inserts songs after the current one and any added this way before ("Play Next"). */
+/** Inserts songs directly after the current one, ahead of anything cued ("Play Next"). */
 export function playNext(songIds: readonly number[]) {
-  insert(songIds, true);
+  cue(songIds, "next");
 }
 
-/** Appends songs to the end of the queue ("Add to Queue"). */
+/** Inserts songs after anything cued, ahead of the rest of the list ("Add to Queue"). */
 export function addToQueue(songIds: readonly number[]) {
-  insert(songIds, false);
+  cue(songIds, "last");
 }
 
 /** Removes queue entries by index. */

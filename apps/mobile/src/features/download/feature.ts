@@ -3,17 +3,14 @@ import { requireOptionalNativeModule } from "expo";
 import type * as Screens from "./screens";
 
 /**
- * The Download feature, or null in a build without it (docs/download-servers.md).
- * The literal `process.env` check is the point: Metro folds it at build time and
- * leaves this code out of a store bundle altogether. Don't read this flag through
- * a variable, or the code ships dormant, which App Review guideline 2.5.19 forbids.
- * A binary built before the Keychain module doesn't get it either: importing the
- * module there would crash at launch.
+ * The Download feature, or null on a binary built before its native modules.
+ * Importing them there would crash at launch, so they load only after this check.
  */
-export const downloadFeature =
-  process.env.EXPO_PUBLIC_DOWNLOADS === "1"
-    ? requireOptionalNativeModule("ExpoSecureStore") === null
-      ? null
-      : // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/consistent-type-assertions -- An import statement can't be left out of the bundle.
-        (require("./screens") as typeof Screens)
-    : null;
+const hasNativeModules = ["ExpoClipboard", "ExpoSecureStore"].every(
+  (name) => requireOptionalNativeModule(name) !== null,
+);
+
+export const downloadFeature = hasNativeModules
+  ? // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/consistent-type-assertions -- An import statement would run on every binary.
+    (require("./screens") as typeof Screens)
+  : null;

@@ -134,10 +134,18 @@ export const CAPSULE_TICK_MS = 350;
 export const CAPSULE_MIN_MS = 900;
 
 /** The real counts the capsule moves toward. */
-export function capsuleTarget(batch: BatchCounts, transfer: Transfer) {
+export function capsuleTarget(
+  batch: BatchCounts,
+  transfer: Transfer,
+  incoming = 0,
+) {
   return {
     done: batch.imported + batch.failed,
-    total: batch.total + uploadCount(transfer) + (transfer.announced ?? 0),
+    total:
+      batch.total +
+      uploadCount(transfer) +
+      (transfer.announced ?? 0) +
+      incoming,
   } satisfies CapsuleCount;
 }
 
@@ -196,11 +204,12 @@ export function failureReport(names: readonly string[]) {
 export function activityLine({
   batch,
   finished,
+  incoming,
   shown,
   transfer,
 }: ImportState) {
   if (finished) return finishedLine(batch.imported);
-  if (!isBatchActive(batch, transfer)) return null;
+  if (incoming === 0 && !isBatchActive(batch, transfer)) return null;
   // Nothing to count yet, as when an upload broke off with none arrived.
   return shown.total === 0 ? null : capsuleLine(shown);
 }

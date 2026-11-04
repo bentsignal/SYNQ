@@ -45,7 +45,7 @@ export interface StagedSong {
 
 /** What the engine needs from the app, which tests replace. */
 export interface DownloadDeps {
-  /** The server's address and token, or null if it was removed. */
+  /** How to reach the server, or null if it was removed. */
   server: (serverId: string) => ServerAccess | null;
   startJob: (server: ServerAccess, url: string) => Promise<RemoteJob>;
   fetchJob: (server: ServerAccess, jobId: string) => Promise<RemoteJob>;
@@ -64,6 +64,8 @@ export interface DownloadDeps {
   /** Hands a song to the import queue, which owns it from then on. */
   addSong: (song: StagedSong) => void;
   discardSong: (song: StagedSong) => void;
+  /** How many more songs are coming, so the import can count them in. */
+  setIncoming: (count: number) => void;
   isForeground: () => boolean;
   wait: (ms: number) => Promise<unknown>;
   load: () => readonly Download[];
@@ -89,9 +91,18 @@ function failedLine(failed: number) {
     : `${String(failed)} songs couldn't be downloaded.`;
 }
 
-function jobCounts(job: RemoteJob) {
+/** Identifies a track across retries of a job. */
+function handoverKey(job: RemoteJob, track: RemoteTrack) {
+  return `${job.id}/${track.id}`;
+}
+
+function jobCounts(job: RemoteJob, handedOver: ReadonlySet<string>) {
   return {
-    done: job.tracks.filter(({ state }) => state === "delivered").length,
+    done: job.tracks.filter(
+      (track) =>
+        track.state === "delivered" ||
+        handedOver.has(handoverKey(job, track)),
+    ).length,
     failed: job.tracks.filter(({ state }) => state === "failed").length,
     total: job.tracks.length,
   };
@@ -134,6 +145,31 @@ type Store = ReturnType<typeof createStore>;
 interface Engine {
   deps: DownloadDeps;
   store: Store;
+  /** Songs the import queue has, so a retry doesn't import them twice. */
+  handedOver: Set<string>;
+}
+
+/** Hands a song to the import queue, unless it's there already. */
+async function handOver(
+  { deps, handedOver, store }: Engine,
+  key: string,
+  server: ServerAccess,
+  { job, track }: { job: RemoteJob; track: RemoteTrack },
+) {
+  if (handedOver.has(handoverKey(job, track))) return;
+  const download = store.find(key);
+  if (download === undefined) return;
+  const song = await deps.fetchFile(server, download, job.id, track);
+  // Cancelled while it was on its way.
+  if (store.find(key) === undefined) {
+    deps.discardSong(song);
+    return;
+  }
+  deps.addSong(song);
+  handedOver.add(handoverKey(job, track));
+  // In the same moment as the song joining the queue, so the import's total
+  // stays right.
+  store.update(key, jobCounts(job, handedOver));
 }
 
 /**
@@ -142,37 +178,33 @@ interface Engine {
  * job as it stands, and whether any song came.
  */
 async function deliver(
-  { deps, store }: Engine,
+  engine: Engine,
   key: string,
   server: ServerAccess,
   first: RemoteJob,
 ) {
+  const { deps, handedOver, store } = engine;
   let job = first;
   let moved = false;
   for (;;) {
     const next = job.tracks.find(
       ({ state }) => state !== "delivered" && state !== "failed",
     );
-    const download = store.find(key);
-    if (next?.state !== "ready" || download === undefined) {
+    if (next?.state !== "ready" || store.find(key) === undefined) {
       return { job, moved };
     }
-    const song = await deps.fetchFile(server, download, job.id, next);
-    // Cancelled while it was on its way.
-    if (store.find(key) === undefined) {
-      deps.discardSong(song);
-      return { job, moved };
-    }
-    deps.addSong(song);
+    await handOver(engine, key, server, { job, track: next });
+    if (store.find(key) === undefined) return { job, moved };
     job = await deps.acknowledgeTrack(server, job.id, next.id);
+    handedOver.delete(handoverKey(job, next));
     moved = true;
     if (store.find(key) === undefined) return { job, moved };
-    store.update(key, { ...jobCounts(job), title: job.title });
+    store.update(key, { ...jobCounts(job, handedOver), title: job.title });
   }
 }
 
 /** Closes a download the server is finished with. True if it was. */
-function settle(store: Store, key: string, job: RemoteJob) {
+function settle({ handedOver, store }: Engine, key: string, job: RemoteJob) {
   if (job.state === "failed") {
     store.update(key, {
       message: job.error ?? "This link couldn't be read.",
@@ -181,7 +213,7 @@ function settle(store: Store, key: string, job: RemoteJob) {
     return true;
   }
   if (job.state !== "done") return false;
-  const { failed } = jobCounts(job);
+  const { failed } = jobCounts(job, handedOver);
   if (failed === 0) store.remove(key);
   else store.update(key, { message: failedLine(failed), state: "finished" });
   return true;
@@ -189,7 +221,7 @@ function settle(store: Store, key: string, job: RemoteJob) {
 
 /** One round with the server: where the job stands, and any songs ready. */
 async function step(engine: Engine, download: Download, server: ServerAccess) {
-  const { deps, store } = engine;
+  const { deps, handedOver, store } = engine;
   const { key, jobId, url } = download;
   const job =
     jobId === null
@@ -201,7 +233,7 @@ async function step(engine: Engine, download: Download, server: ServerAccess) {
     return { done: true, moved: false };
   }
   store.update(key, {
-    ...jobCounts(job),
+    ...jobCounts(job, handedOver),
     jobId: job.id,
     message: null,
     state: job.state === "resolving" ? "starting" : "running",
@@ -209,7 +241,7 @@ async function step(engine: Engine, download: Download, server: ServerAccess) {
   });
   const delivered = await deliver(engine, key, server, job);
   if (store.find(key) === undefined) return { done: true, moved: false };
-  return { done: settle(store, key, delivered.job), moved: delivered.moved };
+  return { done: settle(engine, key, delivered.job), moved: delivered.moved };
 }
 
 /** A round that failed. Returns whether it's worth trying again. */
@@ -258,15 +290,30 @@ async function drive(engine: Engine, key: string) {
 
 export function createDownloads(deps: DownloadDeps) {
   const store = createStore(deps);
-  const engine = { deps, store };
+  const engine = { deps, handedOver: new Set<string>(), store };
   const driving = new Set<string>();
+
+  /** Only what's moving counts: a paused download mustn't hold an import open. */
+  function announceIncoming() {
+    let incoming = 0;
+    for (const { done, failed, key, total } of store.all()) {
+      if (driving.has(key)) incoming += Math.max(0, total - done - failed);
+    }
+    deps.setIncoming(incoming);
+  }
+
+  store.subscribe(announceIncoming);
 
   function kick(key: string) {
     if (driving.has(key)) return;
     driving.add(key);
+    announceIncoming();
     drive(engine, key)
       .catch(() => undefined)
-      .finally(() => driving.delete(key));
+      .finally(() => {
+        driving.delete(key);
+        announceIncoming();
+      });
   }
 
   return {

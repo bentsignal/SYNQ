@@ -9,8 +9,11 @@ export const API_VERSION = 1;
 export interface ServerInfo {
   readonly api: number;
   readonly name: string;
-  readonly maxTracks: number;
-  readonly tokenName: string;
+  /** How much of its allowance this address has used, if the server counts. */
+  readonly usage: ServerUsage | null;
+}
+
+export interface ServerUsage {
   /** Songs a day, or null for no limit. */
   readonly dailyLimit: number | null;
   readonly usedToday: number;
@@ -85,30 +88,24 @@ function isJobState(value: unknown): value is RemoteJobState {
   return JOB_STATES.has(value);
 }
 
-/** What `GET /v1/me` says, or null if this isn't a download server. */
+function decodeUsage(value: unknown) {
+  const usedToday = count(field(value, "usedToday"));
+  if (usedToday === null) return null;
+  return {
+    dailyLimit: count(field(value, "dailyLimit")),
+    usedToday,
+  } satisfies ServerUsage;
+}
+
+/** What `GET /v1/server` says, or null if this isn't a download server. */
 export function decodeServerInfo(value: unknown) {
   const api = count(field(value, "api"));
   const name = textOrNull(field(value, "name"));
-  const maxTracks = count(field(field(value, "limits"), "maxTracks"));
-  const token = field(value, "token");
-  const tokenName = textOrNull(field(token, "name"));
-  const usedToday = count(field(token, "usedToday"));
-  if (
-    api === null ||
-    name === null ||
-    maxTracks === null ||
-    tokenName === null ||
-    usedToday === null
-  ) {
-    return null;
-  }
+  if (api === null || name === null) return null;
   return {
     api,
-    dailyLimit: count(field(token, "dailyLimit")),
-    maxTracks,
     name,
-    tokenName,
-    usedToday,
+    usage: decodeUsage(field(value, "usage")),
   } satisfies ServerInfo;
 }
 
@@ -155,8 +152,9 @@ export function decodeError(value: unknown) {
 }
 
 /**
- * What someone typed as a server's address, without the trailing slash, or
- * null if it can't be one. HTTPS is assumed when no scheme is given.
+ * What someone typed as a server's address, without a trailing slash, or null
+ * if it can't be one. HTTPS is assumed when no scheme is given. Its query stays,
+ * since that's how a private server knows who's asking.
  */
 export function serverAddress(text: string) {
   const typed = text.trim();
@@ -168,10 +166,18 @@ export function serverAddress(text: string) {
     if (url.protocol !== "https:" && url.protocol !== "http:") return null;
     if (url.username !== "" || url.password !== "") return null;
     if (url.hostname === "") return null;
-    return `${url.origin}${url.pathname}`.replace(/\/+$/, "");
+    return `${url.origin}${url.pathname.replace(/\/+$/, "")}${url.search}`;
   } catch {
     return null;
   }
+}
+
+/** The URL of a path on a server, keeping the query its address came with. */
+export function serverEndpoint(address: string, path: string) {
+  const query = address.indexOf("?");
+  return query === -1
+    ? `${address}${path}`
+    : `${address.slice(0, query)}${path}${address.slice(query)}`;
 }
 
 const AUDIO_EXTENSION = /\.(m4a|mp3|aac|flac|wav|mp4)$/i;

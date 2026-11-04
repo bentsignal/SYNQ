@@ -1,127 +1,18 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { ServerAccess } from "./client.ts";
-import type { RemoteJob, RemoteTrack } from "./contract.ts";
-import type { Download, DownloadDeps, StagedSong } from "./engine.ts";
+import type { RemoteJob } from "./contract.ts";
+import type { Download, StagedSong } from "./engine.ts";
 import { ServerError } from "./client.ts";
 import { createDownloads } from "./engine.ts";
-
-const SERVER = { token: "t", url: "https://server" } satisfies ServerAccess;
-
-function track(id: string, state: RemoteTrack["state"]) {
-  return {
-    fileName: `${id}.m4a`,
-    id,
-    mimeType: "audio/mp4",
-    state,
-    title: id,
-  } satisfies RemoteTrack;
-}
-
-function job(
-  state: RemoteJob["state"],
-  tracks: readonly RemoteTrack[],
-  error: string | null = null,
-) {
-  return {
-    error,
-    id: "job",
-    state,
-    title: "Album",
-    tracks,
-  } satisfies RemoteJob;
-}
-
-/** A promise settled from outside, for a reply that comes when a test says. */
-function deferred<Value>() {
-  const resolvers = new Array<(value: Value) => void>();
-  const promise = new Promise<Value>((resolve) => {
-    resolvers.push(resolve);
-  });
-  return {
-    promise,
-    resolve: (value: Value) => {
-      for (const resolve of resolvers) resolve(value);
-    },
-  };
-}
-
-/** A server whose job is scripted, reply by reply, and the app around it. */
-function setup(overrides: Partial<DownloadDeps> = {}) {
-  const added = new Array<string>();
-  const discarded = new Array<string>();
-  const cancelled = new Array<string>();
-  const saved = { value: new Array<Download>() };
-  let keys = 0;
-  const deps = {
-    acknowledgeTrack: () => Promise.reject(new Error("not scripted")),
-    addSong: (song: StagedSong) => {
-      added.push(song.key);
-    },
-    cancelJob: (_server: ServerAccess, id: string) => {
-      cancelled.push(id);
-      return Promise.resolve();
-    },
-    discardSong: (song: StagedSong) => {
-      discarded.push(song.key);
-    },
-    fetchFile: (
-      _server: ServerAccess,
-      _download: Download,
-      _job: string,
-      remote: RemoteTrack,
-    ) =>
-      Promise.resolve({
-        key: remote.id,
-        mimeType: remote.mimeType,
-        name: remote.fileName ?? "",
-        uri: `file:///${remote.id}`,
-      }),
-    fetchJob: () => Promise.reject(new Error("not scripted")),
-    isForeground: () => true,
-    load: () => [],
-    newKey: () => {
-      keys += 1;
-      return `d${String(keys)}`;
-    },
-    save: (downloads: readonly Download[]) => {
-      saved.value = [...downloads];
-    },
-    server: () => SERVER,
-    startJob: () => Promise.reject(new Error("not scripted")),
-    wait: () => Promise.resolve(),
-    ...overrides,
-  } satisfies DownloadDeps;
-  return { added, cancelled, deps, discarded, saved };
-}
-
-async function settled(predicate: () => boolean) {
-  for (let attempt = 0; attempt < 200; attempt += 1) {
-    if (predicate()) return;
-    await new Promise((done) => setTimeout(done, 1));
-  }
-  throw new Error("timed out");
-}
-
-/** Replies for a job whose tracks finish one at a time, as a real one would. */
-function scripted(ids: readonly string[]) {
-  const delivered = new Set<string>();
-  function current() {
-    return job(
-      delivered.size === ids.length ? "done" : "running",
-      ids.map((id) => track(id, delivered.has(id) ? "delivered" : "ready")),
-    );
-  }
-  return {
-    acknowledgeTrack: (_s: ServerAccess, _j: string, id: string) => {
-      delivered.add(id);
-      return Promise.resolve(current());
-    },
-    fetchJob: () => Promise.resolve(current()),
-    startJob: () => Promise.resolve(current()),
-  };
-}
+import {
+  deferred,
+  job,
+  scripted,
+  settled,
+  setup,
+  track,
+} from "./engine-test-kit.ts";
 
 void test("shows a download the moment it starts, before the server answers", () => {
   const { deps } = setup({ startJob: () => new Promise(() => undefined) });

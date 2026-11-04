@@ -5,15 +5,14 @@ import { readJson, writeJson } from "~/lib/kv";
 import { field } from "./contract";
 
 /**
- * The download servers someone has added. Their addresses are ordinary
- * preferences; tokens go in the Keychain, because `preferences.db` sits under
- * `Documents/`, which the Files app shows.
+ * The download servers someone has added. An address can carry a private
+ * server's token, so addresses go in the Keychain: `preferences.db` sits under
+ * `Documents/`, which the Files app shows. Preferences keep only the names.
  */
 
 export interface DownloadServer {
   readonly id: string;
   readonly name: string;
-  readonly url: string;
 }
 
 interface ServersState {
@@ -21,7 +20,7 @@ interface ServersState {
   readonly defaultId: string | null;
 }
 
-const STORAGE_KEY = "synq.downloadServers";
+const STORAGE_KEY = "synq.downloadServerNames";
 
 /** Types a state (its values are built from literals). */
 function serversState(value: ServersState) {
@@ -33,8 +32,7 @@ const EMPTY = serversState({ defaultId: null, servers: [] });
 function isServer(value: unknown): value is DownloadServer {
   return (
     typeof field(value, "id") === "string" &&
-    typeof field(value, "name") === "string" &&
-    typeof field(value, "url") === "string"
+    typeof field(value, "name") === "string"
   );
 }
 
@@ -64,8 +62,8 @@ function subscribe(listener: () => void) {
   };
 }
 
-function tokenKey(id: string) {
-  return `download-server-token.${id}`;
+function addressKey(id: string) {
+  return `download-server.${id}`;
 }
 
 /** Part of the servers' state, re-rendering when it changes. */
@@ -80,8 +78,8 @@ export function newServerId() {
 }
 
 /** Adds a server. The first one added becomes the default. */
-export function addServer(server: DownloadServer, token: string) {
-  SecureStore.setItem(tokenKey(server.id), token, {
+export function addServer(server: DownloadServer, address: string) {
+  SecureStore.setItem(addressKey(server.id), address, {
     keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
   });
   publish({
@@ -90,7 +88,7 @@ export function addServer(server: DownloadServer, token: string) {
   });
 }
 
-/** Removes a server and its token. The next one left becomes the default. */
+/** Removes a server and its address. The next one left becomes the default. */
 export function removeServer(id: string) {
   const servers = state.servers.filter((server) => server.id !== id);
   publish({
@@ -98,22 +96,20 @@ export function removeServer(id: string) {
       state.defaultId === id ? (servers[0]?.id ?? null) : state.defaultId,
     servers,
   });
-  SecureStore.deleteItemAsync(tokenKey(id)).catch(() => undefined);
+  SecureStore.deleteItemAsync(addressKey(id)).catch(() => undefined);
 }
 
 export function setDefaultServer(id: string) {
   publish({ ...state, defaultId: id });
 }
 
-export function serverToken(id: string) {
-  return SecureStore.getItem(tokenKey(id));
+export function storedServerAddress(id: string) {
+  return SecureStore.getItem(addressKey(id));
 }
 
-/** A server's address and token, or null if it's gone. */
+/** How to reach a server, or null if it's gone. */
 export function serverAccess(id: string) {
-  const server = state.servers.find((candidate) => candidate.id === id);
-  const token = serverToken(id);
-  return server === undefined || token === null
-    ? null
-    : { token, url: server.url };
+  const known = state.servers.some((server) => server.id === id);
+  const url = storedServerAddress(id);
+  return !known || url === null ? null : { url };
 }

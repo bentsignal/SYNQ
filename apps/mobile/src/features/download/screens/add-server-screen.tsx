@@ -5,7 +5,7 @@ import { FieldGroup, ListItem, Text } from "@expo/ui";
 
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
-import { Row, SECONDARY_LABEL } from "~/features/settings/form";
+import { SECONDARY_LABEL } from "~/features/settings/form";
 import { fetchServerInfo, ServerError } from "../client";
 import { serverAddress } from "../contract";
 import { addServer, newServerId } from "../servers";
@@ -16,26 +16,22 @@ function failureMessage(error: unknown) {
     : "Check the address, and that the server is running.";
 }
 
-/** Adds a server: its address and token, checked together before saving. */
+/** Adds a server: its address, checked before saving. */
 export function AddServerScreen() {
   const [address, setAddress] = useState("");
-  const [token, setToken] = useState("");
-  const [showToken, setShowToken] = useState(false);
   const [checking, setChecking] = useState(false);
   // The check takes a moment; a second tap must not start another.
   const busy = useRef(false);
 
   const url = serverAddress(address);
-  const canSave = url !== null && token.trim() !== "";
 
   function save() {
-    if (url === null || token.trim() === "" || busy.current) return;
+    if (url === null || busy.current) return;
     busy.current = true;
     setChecking(true);
-    const typed = token.trim();
-    fetchServerInfo({ token: typed, url }).then(
+    fetchServerInfo({ url }).then(
       (info) => {
-        addServer({ id: newServerId(), name: info.name, url }, typed);
+        addServer({ id: newServerId(), name: info.name }, url);
         router.back();
       },
       (error: unknown) => {
@@ -54,7 +50,7 @@ export function AddServerScreen() {
           icon="checkmark"
           accessibilityLabel="Add Server"
           variant="prominent"
-          disabled={!canSave}
+          disabled={url === null}
           onPress={save}
         />
       </Stack.Toolbar>
@@ -68,23 +64,6 @@ export function AddServerScreen() {
               keyboardType="url"
               placeholder="https://"
               onChangeText={setAddress}
-            />
-          </FieldGroup.Section>
-          <FieldGroup.Section title="Token">
-            <TextInput
-              key={showToken ? "shown" : "hidden"}
-              defaultValue={token}
-              autoCapitalize="none"
-              autoCorrect={false}
-              placeholder="Token"
-              secureTextEntry={!showToken}
-              onChangeText={setToken}
-            />
-            <Row
-              icon={showToken ? "eye.slash" : "eye"}
-              label={showToken ? "Hide Token" : "Show Token"}
-              trailing="none"
-              onPress={() => setShowToken(!showToken)}
             />
           </FieldGroup.Section>
           {checking ? (

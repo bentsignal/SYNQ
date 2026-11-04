@@ -86,9 +86,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       // 2.5.2 showed its Documents folder in the Files app; keep it there.
       UIFileSharingEnabled: true,
       LSSupportsOpeningDocumentsInPlace: true,
-      // Wi-Fi Transfer runs a web server on the local network once it's been used.
+      // Wi-Fi Transfer runs a web server on the local network once it's been used,
+      // and a download server may be on the local network.
       NSLocalNetworkUsageDescription:
-        "SYNQ receives music from your computer over Wi-Fi when you use Wi-Fi Transfer.",
+        "SYNQ uses your local network for Wi-Fi Transfer and for download servers on your network.",
     },
   },
   plugins: [

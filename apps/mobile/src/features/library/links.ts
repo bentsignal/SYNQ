@@ -53,7 +53,7 @@ export function openImport(kind: "files" | "wifi") {
   else router.push("/import/wifi");
 }
 
-/** Download, in builds that have it (docs/download-servers.md). */
+/** Download (docs/download-servers.md). */
 export const DOWNLOAD_ACTION =
   process.env.EXPO_PUBLIC_DOWNLOADS === "1" && downloadFeature !== null
     ? { label: "Download", onPress: () => router.push("/import/download") }

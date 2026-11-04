@@ -11,8 +11,6 @@
 # Every development binary is SYNQ Dev (app.config.ts), and Metro serves its
 # config, so Metro, fingerprints, and prebuilds all use the dev variant.
 export APP_VARIANT=development
-# SYNQ Dev has Download; store builds leave it out (docs/download-servers.md).
-export EXPO_PUBLIC_DOWNLOADS=1
 
 hash_of() { printf '%s' "$1" | cksum | cut -d' ' -f1; }
 

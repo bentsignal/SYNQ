@@ -5,7 +5,7 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { FieldGroup, ListItem, Switch, Text } from "@expo/ui";
 
-import type { ServerInfo } from "../contract";
+import type { ServerInfo, ServerUsage } from "../contract";
 import type { DownloadServer } from "../servers";
 import { NativeHost } from "~/components/native-host";
 import { Row, SECONDARY_LABEL } from "~/features/settings/form";
@@ -13,8 +13,8 @@ import { fetchServerInfo, ServerError } from "../client";
 import {
   removeServer,
   serverAccess,
-  serverToken,
   setDefaultServer,
+  storedServerAddress,
   useServers,
 } from "../servers";
 
@@ -26,16 +26,16 @@ function defaultOf({ defaultId }: { defaultId: string | null }) {
   return defaultId;
 }
 
-const HIDDEN_TOKEN = "••••••••••••";
+const HIDDEN_ADDRESS = "••••••••••••";
 
-function usageLine(info: { usedToday: number; dailyLimit: number | null }) {
+function usageLine(info: ServerUsage) {
   const used = String(info.usedToday);
   return info.dailyLimit === null
     ? `${used} ${info.usedToday === 1 ? "song" : "songs"}`
     : `${used} of ${String(info.dailyLimit)} songs`;
 }
 
-/** What the server says about this token right now. */
+/** What the server says right now. */
 function useServerStatus(id: string) {
   return useQuery({
     queryFn: () => {
@@ -49,8 +49,8 @@ function useServerStatus(id: string) {
   });
 }
 
-function usageOf({ dailyLimit, usedToday }: ServerInfo) {
-  return { dailyLimit, usedToday };
+function usageOf({ usage }: ServerInfo) {
+  return { usage };
 }
 
 function StatusRows({ id }: { id: string }) {
@@ -69,11 +69,11 @@ function StatusRows({ id }: { id: string }) {
       >
         <Text>Status</Text>
       </ListItem>
-      {data === undefined ? null : (
+      {data?.usage == null ? null : (
         <ListItem
           trailing={
             <Text textStyle={{ color: SECONDARY_LABEL }}>
-              {usageLine(data)}
+              {usageLine(data.usage)}
             </Text>
           }
         >
@@ -98,7 +98,7 @@ function confirmRemove(server: DownloadServer) {
   ]);
 }
 
-/** One server: whether it's reachable, its token (hidden until asked), and its settings. */
+/** One server: whether it's reachable, its address (hidden until asked), and its settings. */
 export function ServerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const servers = useServers(serversOf);
@@ -112,25 +112,20 @@ export function ServerScreen() {
       <NativeHost style={{ flex: 1 }}>
         <FieldGroup>
           <FieldGroup.Section>
-            <ListItem
-              trailing={
-                <Text textStyle={{ color: SECONDARY_LABEL }}>{server.url}</Text>
-              }
-            >
-              <Text>Address</Text>
-            </ListItem>
             <StatusRows id={server.id} />
           </FieldGroup.Section>
-          <FieldGroup.Section title="Token">
+          <FieldGroup.Section title="Address">
             <ListItem>
-              <Text>{revealed ?? HIDDEN_TOKEN}</Text>
+              <Text>{revealed ?? HIDDEN_ADDRESS}</Text>
             </ListItem>
             <Row
               icon={revealed === null ? "eye" : "eye.slash"}
-              label={revealed === null ? "Show Token" : "Hide Token"}
+              label={revealed === null ? "Show Address" : "Hide Address"}
               trailing="none"
               onPress={() =>
-                setRevealed(revealed === null ? serverToken(server.id) : null)
+                setRevealed(
+                  revealed === null ? storedServerAddress(server.id) : null,
+                )
               }
             />
           </FieldGroup.Section>

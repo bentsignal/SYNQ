@@ -3,12 +3,12 @@ import {
   decodeError,
   decodeJob,
   decodeServerInfo,
+  serverEndpoint,
 } from "./contract.ts";
 
-/** A server to talk to, with its token. */
+/** A server to talk to. */
 export interface ServerAccess {
   readonly url: string;
-  readonly token: string;
 }
 
 /** The server answered, and said no. Its message is written to be shown. */
@@ -49,14 +49,10 @@ function send(
 ) {
   const abort = new AbortController();
   const timeout = setTimeout(() => abort.abort(), REQUEST_TIMEOUT_MS);
-  return fetch(`${server.url}${path}`, {
+  return fetch(serverEndpoint(server.url, path), {
     ...init,
-    headers: {
-      Authorization: `Bearer ${server.token}`,
-      ...(init.body === undefined
-        ? {}
-        : { "Content-Type": "application/json" }),
-    },
+    headers:
+      init.body === undefined ? {} : { "Content-Type": "application/json" },
     signal: abort.signal,
   })
     .then(bodyOf)
@@ -77,9 +73,9 @@ function trackPath(jobId: string, trackId: string) {
   return `${downloadPath(jobId)}/tracks/${encodeURIComponent(trackId)}`;
 }
 
-/** Checks the address and token together. Throws what to tell the person. */
+/** Checks an address. Throws what to tell the person. */
 export async function fetchServerInfo(server: ServerAccess) {
-  const info = decodeServerInfo(await send(server, "/v1/me"));
+  const info = decodeServerInfo(await send(server, "/v1/server"));
   if (info === null) throw new ServerError(200, "unknown", NOT_A_SERVER);
   if (info.api !== API_VERSION) {
     throw new ServerError(
@@ -124,5 +120,5 @@ export function trackFileUrl(
   jobId: string,
   trackId: string,
 ) {
-  return `${server.url}${trackPath(jobId, trackId)}/file`;
+  return serverEndpoint(server.url, `${trackPath(jobId, trackId)}/file`);
 }

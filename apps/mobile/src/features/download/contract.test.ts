@@ -7,30 +7,31 @@ import {
   decodeJob,
   decodeServerInfo,
   serverAddress,
+  serverEndpoint,
   storedFileName,
 } from "./contract.ts";
 
-const ME = {
+const SERVER = {
   api: 1,
-  limits: { maxTracks: 200 },
   name: "Mine",
-  token: { dailyLimit: 100, name: "me", usedToday: 3 },
+  usage: { dailyLimit: 100, usedToday: 3 },
 };
 
 void test("reads a server's description", () => {
-  assert.deepEqual(decodeServerInfo(ME), {
-    api: 1,
-    dailyLimit: 100,
-    maxTracks: 200,
-    name: "Mine",
-    tokenName: "me",
-    usedToday: 3,
-  });
+  assert.deepEqual(decodeServerInfo(SERVER), SERVER);
   const unlimited = decodeServerInfo({
-    ...ME,
-    token: { ...ME.token, dailyLimit: null },
+    ...SERVER,
+    usage: { dailyLimit: null, usedToday: 3 },
   });
-  assert.equal(unlimited?.dailyLimit, null);
+  assert.equal(unlimited?.usage?.dailyLimit, null);
+});
+
+void test("a server doesn't have to report usage", () => {
+  assert.deepEqual(decodeServerInfo({ api: 1, name: "Open" }), {
+    api: 1,
+    name: "Open",
+    usage: null,
+  });
 });
 
 void test("anything else isn't a server", () => {
@@ -39,8 +40,8 @@ void test("anything else isn't a server", () => {
     "hi",
     [],
     {},
-    { ...ME, api: "1" },
-    { ...ME, limits: 1 },
+    { ...SERVER, api: "1" },
+    { ...SERVER, name: "" },
   ]) {
     assert.equal(decodeServerInfo(value), null);
   }
@@ -83,12 +84,26 @@ void test("cleans up a typed server address", () => {
     ["  server.example  ", "https://server.example"],
     ["http://192.168.1.5:8080", "http://192.168.1.5:8080"],
     ["https://server.example/base/", "https://server.example/base"],
+    ["https://server.example/?token=abc", "https://server.example?token=abc"],
+    ["server.example/base/?a=1&b=2", "https://server.example/base?a=1&b=2"],
+    ["https://server.example/#part", "https://server.example"],
     ["ftp://server.example", null],
     ["https://user:pass@server.example", null],
     ["", null],
     ["not an address", null],
   ] as const) {
     assert.equal(serverAddress(typed), address, typed);
+  }
+});
+
+void test("paths go between an address's own path and its query", () => {
+  for (const [address, url] of [
+    ["https://server.example", "https://server.example/v1/server"],
+    ["https://server.example/base", "https://server.example/base/v1/server"],
+    ["https://server.example?token=a", "https://server.example/v1/server?token=a"],
+    ["https://s.example/base?a=1&b=2", "https://s.example/base/v1/server?a=1&b=2"],
+  ] as const) {
+    assert.equal(serverEndpoint(address, "/v1/server"), url);
   }
 });
 

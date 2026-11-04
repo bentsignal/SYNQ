@@ -1,8 +1,17 @@
 import type { TextInputRef } from "@expo/ui";
+import type { PasteEventPayload } from "expo-clipboard";
 import { useRef, useState } from "react";
 import { Alert } from "react-native";
+import { ClipboardPasteButton, isPasteButtonAvailable } from "expo-clipboard";
 import { router, Stack } from "expo-router";
-import { FieldGroup, ListItem, Picker, Text } from "@expo/ui";
+import {
+  FieldGroup,
+  ListItem,
+  Picker,
+  RNHostView,
+  Row as Line,
+  Text,
+} from "@expo/ui";
 
 import type { Download } from "../engine";
 import { NativeHost } from "~/components/native-host";
@@ -129,13 +138,32 @@ function useServerId(chosenId: string | null) {
   return chosen?.id ?? defaultId ?? servers[0]?.id ?? null;
 }
 
+/** Pastes without iOS asking for permission, unlike reading the clipboard. */
+function PasteButton({ onPaste }: { onPaste: (text: string) => void }) {
+  if (!isPasteButtonAvailable) return null;
+  return (
+    <RNHostView matchContents>
+      <ClipboardPasteButton
+        acceptedContentTypes={["plain-text"]}
+        displayMode="iconOnly"
+        style={{ height: 32, width: 32 }}
+        onPress={(data: PasteEventPayload) => {
+          if (data.type === "text") onPaste(data.text);
+        }}
+      />
+    </RNHostView>
+  );
+}
+
 /**
- * Download (docs/ui.md → Import): a link, the server to send it to, and what's
- * on its way. Songs go through the import queue as they arrive, so this sheet
+ * Download (docs/ui.md → Import): the server to send a link to, the link, and
+ * what's on its way. Songs go through the import queue as they arrive, so this sheet
  * can close at any time.
  */
 export function DownloadScreen() {
   const [link, setLink] = useState("");
+  // The field keeps its own text, so a paste gives it a new starting value.
+  const [pastes, setPastes] = useState(0);
   const [chosenId, setChosenId] = useState<string | null>(null);
   const serverId = useServerId(chosenId);
   const input = useRef<TextInputRef>(null);
@@ -146,6 +174,11 @@ export function DownloadScreen() {
     selectionTick();
     setLink("");
     input.current?.clear();
+  }
+
+  function paste(text: string) {
+    setLink(text.trim());
+    setPastes(pastes + 1);
   }
 
   return (
@@ -169,20 +202,25 @@ export function DownloadScreen() {
       </Stack.Toolbar>
       <NativeHost style={{ flex: 1 }}>
         <FieldGroup>
-          <FieldGroup.Section>
-            <TextInput
-              ref={input}
-              autoFocus
-              autoCapitalize="none"
-              autoCorrect={false}
-              enterKeyHint="go"
-              keyboardType="url"
-              placeholder="Paste a Link"
-              onChangeText={setLink}
-              onSubmitEditing={download}
-            />
-          </FieldGroup.Section>
           <ServerSection serverId={serverId} onChoose={setChosenId} />
+          <FieldGroup.Section>
+            <Line alignment="center" spacing={8}>
+              <TextInput
+                key={pastes}
+                ref={input}
+                autoFocus
+                defaultValue={link}
+                autoCapitalize="none"
+                autoCorrect={false}
+                enterKeyHint="go"
+                keyboardType="url"
+                placeholder="Paste a Link"
+                onChangeText={setLink}
+                onSubmitEditing={download}
+              />
+              <PasteButton onPaste={paste} />
+            </Line>
+          </FieldGroup.Section>
           <DownloadRows />
         </FieldGroup>
       </NativeHost>

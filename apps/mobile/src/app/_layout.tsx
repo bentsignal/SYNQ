@@ -121,9 +121,7 @@ function RootStack() {
           title: "Wi-Fi Transfer",
         }}
       />
-      {process.env.EXPO_PUBLIC_DOWNLOADS === "1" && (
-        <Stack.Screen name="import/download" options={EDIT_SHEET} />
-      )}
+      <Stack.Screen name="import/download" options={EDIT_SHEET} />
     </Stack>
   );
 }

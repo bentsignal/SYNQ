@@ -140,8 +140,7 @@ function LibraryToolbar() {
           >
             Wi-Fi Transfer
           </Stack.Toolbar.MenuAction>
-          {process.env.EXPO_PUBLIC_DOWNLOADS === "1" &&
-          DOWNLOAD_ACTION !== null ? (
+          {DOWNLOAD_ACTION !== null ? (
             <Stack.Toolbar.MenuAction
               icon="arrow.down.circle"
               onPress={DOWNLOAD_ACTION.onPress}

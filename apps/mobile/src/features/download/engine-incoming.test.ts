@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { createDownloads } from "./engine.ts";
 import { job, scripted, settled, setup, track } from "./engine-test-kit.ts";
+import { createDownloads } from "./engine.ts";
 
 void test("counts its songs in as incoming until each is handed over", async () => {
   const incoming = new Array<number>();

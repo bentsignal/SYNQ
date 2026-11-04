@@ -55,9 +55,9 @@ export function openImport(kind: "files" | "wifi") {
 
 /** Download (docs/download-servers.md). */
 export const DOWNLOAD_ACTION =
-  process.env.EXPO_PUBLIC_DOWNLOADS === "1" && downloadFeature !== null
-    ? { label: "Download", onPress: () => router.push("/import/download") }
-    : null;
+  downloadFeature === null
+    ? null
+    : { label: "Download", onPress: () => router.push("/import/download") };
 
 /** What an empty page offers to get music in. */
 export const IMPORT_ACTIONS = [

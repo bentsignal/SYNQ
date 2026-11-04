@@ -4,7 +4,6 @@ import { test } from "node:test";
 import type { RemoteJob } from "./contract.ts";
 import type { Download, StagedSong } from "./engine.ts";
 import { ServerError } from "./client.ts";
-import { createDownloads } from "./engine.ts";
 import {
   deferred,
   job,
@@ -13,6 +12,7 @@ import {
   setup,
   track,
 } from "./engine-test-kit.ts";
+import { createDownloads } from "./engine.ts";
 
 void test("shows a download the moment it starts, before the server answers", () => {
   const { deps } = setup({ startJob: () => new Promise(() => undefined) });

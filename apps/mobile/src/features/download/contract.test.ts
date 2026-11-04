@@ -100,8 +100,14 @@ void test("paths go between an address's own path and its query", () => {
   for (const [address, url] of [
     ["https://server.example", "https://server.example/v1/server"],
     ["https://server.example/base", "https://server.example/base/v1/server"],
-    ["https://server.example?token=a", "https://server.example/v1/server?token=a"],
-    ["https://s.example/base?a=1&b=2", "https://s.example/base/v1/server?a=1&b=2"],
+    [
+      "https://server.example?token=a",
+      "https://server.example/v1/server?token=a",
+    ],
+    [
+      "https://s.example/base?a=1&b=2",
+      "https://s.example/base/v1/server?a=1&b=2",
+    ],
   ] as const) {
     assert.equal(serverEndpoint(address, "/v1/server"), url);
   }

@@ -7,6 +7,7 @@ import {
   CAPSULE_TICK_MS,
   SETTLED_MS,
 } from "./progress.ts";
+import { advance, setup, source } from "./queue-test-kit.ts";
 import {
   addImportSources,
   getImportState,
@@ -18,7 +19,6 @@ import {
   uploadsStopped,
   uploadStarted,
 } from "./queue.ts";
-import { advance, setup, source } from "./queue-test-kit.ts";
 
 void describe("a batch", () => {
   beforeEach(() => {

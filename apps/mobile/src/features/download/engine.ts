@@ -100,8 +100,7 @@ function jobCounts(job: RemoteJob, handedOver: ReadonlySet<string>) {
   return {
     done: job.tracks.filter(
       (track) =>
-        track.state === "delivered" ||
-        handedOver.has(handoverKey(job, track)),
+        track.state === "delivered" || handedOver.has(handoverKey(job, track)),
     ).length,
     failed: job.tracks.filter(({ state }) => state === "failed").length,
     total: job.tracks.length,

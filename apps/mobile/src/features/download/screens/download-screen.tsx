@@ -6,10 +6,10 @@ import { ClipboardPasteButton, isPasteButtonAvailable } from "expo-clipboard";
 import { router, Stack } from "expo-router";
 import {
   FieldGroup,
+  Row as Line,
   ListItem,
   Picker,
   RNHostView,
-  Row as Line,
   Text,
 } from "@expo/ui";
 
@@ -146,7 +146,7 @@ function PasteButton({ onPaste }: { onPaste: (text: string) => void }) {
       <ClipboardPasteButton
         acceptedContentTypes={["plain-text"]}
         displayMode="iconOnly"
-        style={{ height: 32, width: 32 }}
+        style={{ height: 44, width: 44 }}
         onPress={(data: PasteEventPayload) => {
           if (data.type === "text") onPaste(data.text);
         }}

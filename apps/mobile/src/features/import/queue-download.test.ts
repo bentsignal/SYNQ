@@ -2,12 +2,12 @@ import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, mock, test } from "node:test";
 
 import { CAPSULE_MIN_MS } from "./progress.ts";
+import { advance, setup, source } from "./queue-test-kit.ts";
 import {
   addImportSources,
   getImportState,
   setIncomingImports,
 } from "./queue.ts";
-import { advance, setup, source } from "./queue-test-kit.ts";
 
 void describe("a batch waiting on a download", () => {
   beforeEach(() => {

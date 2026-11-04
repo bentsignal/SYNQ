@@ -99,7 +99,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-router",
     // Playback in the background and on the lock screen (packages/audio).
     "@synq/audio",
-    // Download's server tokens, in the Keychain. No Face ID, so no prompt.
+    // Download's server addresses, in the Keychain. No Face ID, so no prompt.
     ["expo-secure-store", { faceIDPermission: false }],
     [
       "expo-splash-screen",

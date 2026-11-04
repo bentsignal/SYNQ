@@ -7,6 +7,12 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["src", "app.config.ts", ".expo/types/**/*.ts", "expo-env.d.ts"],
-  "exclude": ["node_modules", "ios"]
+  "include": [
+    "src",
+    "scripts/*.ts",
+    "app.config.ts",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": ["node_modules", "ios", "src/features/import/transfer-page-source"]
 }

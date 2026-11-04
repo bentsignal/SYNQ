@@ -1,12 +1,15 @@
 import vm from "node:vm";
 
 import { parseUploadType } from "./progress.ts";
-import { TRANSFER_SCRIPT } from "./transfer-page.ts";
+import { transferPage } from "./transfer-page.ts";
 
 /**
- * Runs the page's script in a test, against just enough of a browser, with
- * a clock the test moves.
+ * Runs the built page's script in a test, against just enough of a browser,
+ * with a clock the test moves. Its elements are the ones the built page has.
  */
+
+const PAGE = transferPage({ accent: "#77adf8" });
+const SCRIPT = /<script>([\s\S]*)<\/script>/.exec(PAGE)?.[1] ?? "";
 
 type Listener = (event: { data: string }) => void;
 
@@ -126,6 +129,7 @@ export function loadPage({
   initial = '{"on":true}',
   ping = () => okResponse({}),
   uploaded = false,
+  uploadedOk = true,
 } = {}) {
   FakeRequest.sent = [];
   FakeSource.opened = [];
@@ -134,6 +138,7 @@ export function loadPage({
   const accents = new Array<string>();
   const clock = fakeClock();
   function element(id: string) {
+    if (!PAGE.includes(`id="${id}"`)) throw new Error(`The page has no #${id}`);
     const found = elements.get(id) ?? fakeElement();
     elements.set(id, found);
     return found;
@@ -144,7 +149,7 @@ export function loadPage({
     accents.push(value);
     return undefined;
   };
-  vm.runInNewContext(TRANSFER_SCRIPT, {
+  vm.runInNewContext(SCRIPT, {
     AbortController,
     EventSource: FakeSource,
     XMLHttpRequest: FakeRequest,
@@ -158,9 +163,13 @@ export function loadPage({
     encodeURIComponent,
     fetch: (url: string) => {
       fetched.push(url);
-      return url.startsWith("/uploaded")
+      if (!url.startsWith("/uploaded")) return ping();
+      return uploadedOk
         ? okResponse({ received: uploaded })
-        : ping();
+        : Promise.resolve({
+            json: () => Promise.resolve({ error: "Not found." }),
+            ok: false,
+          });
     },
     window: { addEventListener: noop },
   });

@@ -1,5 +1,10 @@
 import { useRef, useState } from "react";
-import { router, Stack, useNavigation } from "expo-router";
+import {
+  router,
+  Stack,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import { FieldGroup } from "@expo/ui";
 
 import type { AlbumListItem } from "@synq/db";
@@ -7,12 +12,12 @@ import {
   createAlbum,
   getAlbum,
   listAlbumTracks,
-  listArtists,
   setAlbumTracks,
   updateAlbum,
   written,
 } from "@synq/db";
 
+import type { PickFor } from "./pick-created";
 import { afterMenuCloses } from "~/components/menu";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
@@ -31,14 +36,17 @@ import {
   toRow,
   trackIds,
 } from "./album-draft";
+import { useArtistOptions } from "./artist-options";
 import { KEEP_ARTWORK, saveArtworkChange } from "./artwork-change";
 import { ArtworkField } from "./artwork-field";
 import { ChoiceList } from "./choice-list";
 import { LinkRow } from "./link-row";
 import { artistIds } from "./pick";
+import { pickNewAlbum } from "./pick-created";
 import { moveItems, removeItems } from "./reorder";
 import { ReorderList } from "./reorder-list";
 import { SheetToolbar } from "./sheet-toolbar";
+import { draft as songDraft } from "./song-draft";
 import { SongPicker } from "./song-picker";
 
 /** Saves the sheet: fields and tracks together, then covers. */
@@ -67,8 +75,11 @@ function saveEdits(album: AlbumListItem, saved: ReadonlySet<string>) {
   offerToDeleteEmptyAlbums(updated.emptied);
 }
 
-/** Creates the album with its songs, then covers. False keeps the sheet up. */
-function saveNew() {
+/**
+ * Creates the album with its songs, then covers, and opens it, or chooses it
+ * on the song whose list opened this sheet. False keeps the sheet up.
+ */
+function saveNew(pickFor: PickFor | undefined) {
   const edits = draft.get();
   const cover = coverFromTracks(edits, false, new Set());
   const created = tryWrite("Couldn't Create Album", (db) =>
@@ -79,7 +90,7 @@ function saveNew() {
         year: parseYear(edits.year),
       }).value;
       const { emptied } = setAlbumTracks(tx, album.id, trackIds(edits)).value;
-      return written({ emptied, id: album.id }, [
+      return written({ emptied, id: album.id, name: album.name }, [
         "albums",
         "album_songs",
         "album_artists",
@@ -89,7 +100,11 @@ function saveNew() {
   if (created === undefined) return false;
   if (cover !== null) copyCoverToAlbum(created.id, cover);
   router.back();
-  openLibraryScreen({ id: created.id, screen: "album" });
+  if (pickFor === undefined) {
+    openLibraryScreen({ id: created.id, screen: "album" });
+  } else {
+    pickNewAlbum(created);
+  }
   saveArtworkChange(edits.artwork, "album", created.id);
   offerToDeleteEmptyAlbums(created.emptied);
   return true;
@@ -202,9 +217,11 @@ export function EditAlbumScreen() {
 
 /** New Album: the same form as Edit Album, so it can start with songs. */
 export function NewAlbumScreen() {
+  const { pickFor } = useLocalSearchParams<{ pickFor?: PickFor }>();
   useState(() =>
     draft.begin({
-      artists: [],
+      // Opened from a song's Albums: an album made there is by its artists.
+      artists: pickFor === "song" ? songDraft.get().artists : [],
       artwork: KEEP_ARTWORK,
       name: "",
       routes: NEW_ALBUM_ROUTES,
@@ -223,21 +240,12 @@ export function NewAlbumScreen() {
         onCancel={() => router.back()}
         onDone={() => {
           if (saved.current) return;
-          saved.current = saveNew();
+          saved.current = saveNew(pickFor);
         }}
       />
       <AlbumFields artwork={null} />
     </>
   );
-}
-
-/** Every artist, for choosing an album's or a song's. */
-export function useArtistOptions() {
-  return useLibraryQuery({
-    key: ["artists", "name", "asc"],
-    read: (db) => listArtists(db, { order: "asc", sort: "name" }),
-    select: (artists) => artists,
-  });
 }
 
 export function EditAlbumArtistsScreen() {
@@ -251,6 +259,9 @@ export function EditAlbumArtistsScreen() {
         options={artists}
         picked={edits.artists}
         onChange={(picked) => draft.update(() => ({ artists: picked }))}
+        onNew={() =>
+          router.push({ params: { pickFor: "album" }, pathname: "/new-artist" })
+        }
       />
     </>
   );

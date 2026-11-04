@@ -196,6 +196,12 @@ hold, so they're page sheets, and Done saves everything the sheet changed
 - **Artist**: artwork, name.
 - **Song**: artwork, title, artists, albums (toggle lists with search).
   Setting a cover on a song with an album sets the album's cover (2.5.2).
+- **Artists and Albums lists**: `plus` in the bar, opposite Back, opens New
+  Artist or New Album over the list; Done closes it and the new one is already
+  chosen. It's saved at that point, so canceling the edit sheet keeps it.
+  Typing a name that isn't listed also offers it as a new one, created when
+  the edit sheet saves. New Album opened from a song starts with the song's
+  artists.
 - **New Playlist / Album**: the same form as editing, with no field focused
   so the keyboard doesn't hide Add Songs, so someone can pick a picture and
   songs before it exists. With no songs yet,

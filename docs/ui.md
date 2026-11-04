@@ -44,7 +44,7 @@ numbers.
   `shuffle` Shuffle).
 - **Song menu** (the ellipsis and the context menu, one data definition):
   Play Next, Add to Queue, Add to Playlist…, Add to Liked / Remove from Liked,
-  Go to Album, Go to Artist, Edit Info, Share (export with tags), Remove
+  Pin / Unpin, Go to Album, Go to Artist, Edit Info, Share (export with tags), Remove
   from Playlist (inside a user playlist), Delete from Library (destructive,
   confirmed with an alert: cancel first, destructive second). Run list
   changes after the menu closes (Vera's `afterMenuCloses`).
@@ -82,11 +82,11 @@ numbers.
   press on a playlist, album, or artist, wherever one appears (lists,
   search, an artist's album cards), and the `ellipsis` on its own page,
   from one definition in the song menu's order: Play, Shuffle; Play Next,
-  Add to Queue; Add to Playlist…; Go to Artist; Edit, Export; Delete. Its
+  Add to Queue; Add to Playlist…, Pin; Go to Artist; Edit, Export; Delete. Its
   page leaves out Play and Shuffle (they're buttons there) and Go to
   Artist (the header links to them). A collection with no songs offers
-  only Edit and Delete. Liked Songs has no Delete. Collection rows and
-  Recently Added's and an artist's cards are `NativeRow`s without the
+  only Pin, Edit, and Delete. Liked Songs has no Delete. Collection rows and
+  the Library tab's and an artist's cards are `NativeRow`s without the
   `ellipsis` button or a separator, so a long press lifts them natively and
   lists cost what song rows cost. Cards (`card`) have no tap highlight at all. The queue's rows have no menu either; they
   drag and swipe instead.
@@ -131,8 +131,21 @@ numbers.
 - Rows (accent symbol, label, chevron): Liked Songs (`heart`), Playlists
   (`music.note.list`), Artists (`music.microphone`), Albums
   (`square.stack`), Songs (`music.note`).
-- "Recently Added": a two-column grid of the newest songs' artwork with
-  title and artist below; tap plays.
+- **Pinned**: everything pinned, the latest pin first, with no limit. Pin and
+  Unpin are in the menu of any playlist, album, artist, or song, and the section
+  is gone when nothing's pinned.
+- **Recents**: everything else, by when it was last played, or added if it never
+  has been (docs/rewrite.md → Home). More loads as the list scrolls, until it has
+  shown the whole library.
+- **Nothing jumps.** A play moves its card only if the tab was left at the very top
+  of the page (docs/rewrite.md → Home); left scrolled down, it finds everything
+  where it was. A pin moves one card at once. Away from the top of the page, what's on screen stays
+  where it is (`holdThroughMoves`, which won't hold on to a card that itself moved,
+  or the list goes with it). Cards are keyed by what they show, so the ones around a
+  move keep their artwork rather than fading in each other's.
+- Both are the same two-column grid: artwork with two lines below. A tap opens a
+  playlist, album, or artist, and plays a song, carrying on through the library
+  as a tap in Songs does.
 - Empty library: "No Music Yet" with Import from Files and Wi-Fi Transfer.
 
 ### Songs, Albums, Artists, Playlists
@@ -293,8 +306,7 @@ can show the songs written so far; lists hold their position through that.
 **Nothing moves when a batch lands.** Scrolled down a list, the rows on screen
 stay exactly where they are and the new ones go in above them
 (`ScreenList`, `isInsertionOnly`). At the very top of a list the new rows push
-down, so they're seen arriving. Library's Recently Added keeps its height once
-it has 12 songs. The capsule floats over the screen and moves nothing.
+down, so they're seen arriving. The capsule floats over the screen and moves nothing.
 
 **The capsule** floats above the mini player during any batch, Files or Wi-Fi,
 on every tab, passing touches through: "Importing 3 of 12", then "12 Songs

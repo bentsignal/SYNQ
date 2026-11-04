@@ -1,3 +1,4 @@
+import type { SQL } from "drizzle-orm";
 import { and, asc, eq, inArray, ne, sql } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
@@ -32,6 +33,8 @@ export interface PlaylistListItem {
   updatedAt: number;
   songCount: number;
   durationMs: number;
+  /** When it was pinned to the Library tab; null when it isn't. */
+  pinnedAt: number | null;
 }
 
 export type PlaylistSort = "name" | "createdAt";
@@ -65,7 +68,7 @@ export function getPlaylist(db: LibraryDb, id: number) {
   return selectPlaylists(db, eq(playlists.id, id))[0] ?? null;
 }
 
-function selectPlaylists(db: LibraryDb, where?: ReturnType<typeof eq>) {
+export function selectPlaylists(db: LibraryDb, where?: SQL) {
   return db
     .select({
       id: playlists.id,
@@ -74,6 +77,7 @@ function selectPlaylists(db: LibraryDb, where?: ReturnType<typeof eq>) {
       artworkVersion: playlists.artworkVersion,
       createdAt: playlists.createdAt,
       updatedAt: playlists.updatedAt,
+      pinnedAt: playlists.pinnedAt,
       songCount: sql<number>`count(${playlistSongs.id})`,
       durationMs: sql<number>`coalesce(sum(${songs.durationMs}), 0)`,
     })

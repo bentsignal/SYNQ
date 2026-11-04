@@ -13,6 +13,7 @@ import { addToQueue, playNext } from "~/features/player/actions";
 import { showQueueToast } from "~/features/player/queue-toast-store";
 import {
   confirmDeleteSongs,
+  pinAction,
   removeFromAlbum,
   removeFromPlaylist,
   setLiked,
@@ -155,6 +156,7 @@ export function songMenu(song: SongListItem, place: SongMenuPlace) {
           label: "Add to Liked",
           onPress: () => setLiked(song.id, true),
         },
+    pinAction({ id: song.id, kind: "song" }, song.pinnedAt),
   ] satisfies MenuItem[];
   const go = [
     ...(album === undefined

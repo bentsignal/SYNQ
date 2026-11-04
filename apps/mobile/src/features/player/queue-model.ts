@@ -117,6 +117,22 @@ export function buildQueue(
   );
 }
 
+/**
+ * `queue` with its current entry under `key`. Native keeps playing an entry
+ * whose key it already has, so a new queue around the song playing doesn't
+ * interrupt it.
+ */
+export function withCurrentKey(queue: Queue, key: string) {
+  function rename(entryKey: string) {
+    return entryKey === queue.currentKey ? key : entryKey;
+  }
+  return queueOf(
+    queue.entries.map((entry) => ({ ...entry, key: rename(entry.key) })),
+    key,
+    queue.original?.map(rename) ?? null,
+  );
+}
+
 function clampIndex(index: number, length: number) {
   return Math.min(Math.max(index, 0), Math.max(length - 1, 0));
 }

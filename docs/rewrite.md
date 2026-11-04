@@ -148,15 +148,15 @@ columns and names):
 - `songs`: `id`, `title`, `file_path` (relative), `mime_type`,
   `duration_ms`, `artwork_version` (null = no song artwork; otherwise a
   cache-busting number), `added_at` (ms), `modified_since_export` (2.5.2's
-  `edited`).
-- `artists`: `id`, `name`, `artwork_version`, `added_at`.
-- `albums`: `id`, `name`, `year`, `artwork_version`, `added_at`.
+  `edited`), and the Home columns below.
+- `artists`: `id`, `name`, `artwork_version`, `added_at`, Home columns.
+- `albums`: `id`, `name`, `year`, `artwork_version`, `added_at`, Home columns.
 - `song_artists`: `song_id`, `artist_id`, `position` (unique pair).
 - `album_songs`: `album_id`, `song_id`, `track` (nullable), `position` (the
   song's album order; the first is its primary album) (unique pair).
 - `album_artists`: `album_id`, `artist_id`, `position` (unique pair).
 - `playlists`: `id`, `name`, `kind` (`liked` for Liked Songs, else `user`),
-  `artwork_version`, `created_at`, `updated_at`. Liked Songs is a playlist
+  `artwork_version`, `created_at`, `updated_at`, Home columns. Liked Songs is a playlist
   row, so renames and order survive. 2.5.2's hidden "Library" playlist
   (id 1) is not migrated: the library is the `songs` table.
 - `playlist_songs`: `id`, `playlist_id`, `song_id`, `position` (REAL, so a
@@ -171,6 +171,43 @@ artwork, else its own, else the placeholder (2.5.2's precedence).
 Preferences (accent, haptics, shuffle, repeat, review bookkeeping) and the playback session (queue song ids, index, position,
 source) live in `expo-sqlite/kv-store` behind a small typed store, read
 synchronously at startup.
+
+### Home
+
+The Library tab opens to what you go back to (Shawn, November 2026): Pinned,
+then Recents. The code is `packages/db/src/library/home.ts`.
+
+`songs`, `albums`, `artists`, and `playlists` each have two nullable columns,
+`last_played_at` and `pinned_at` (ms). They're on the rows rather than in a table
+of their own, so a delete takes them along by any route, and an erase with it.
+
+- **What counts as a play.** `playSongs` records the collection it came from
+  (an album, artist, playlist, or Liked Songs), or, from Songs or a search, the
+  song someone tapped. Play or Shuffle on all of Songs records nothing. Songs
+  advancing on their own don't either.
+- **When it shows.** Recents only changes if the Library tab was at the very top
+  when it was left (for another tab, a pushed page, or the player), or when the app
+  went to the background. Then what was played is first on the way back. Left
+  scrolled down, it finds everything where it was, so someone browsing never has
+  the page move under them; what they played waits in memory, with the time each
+  happened, until the tab is next left at the top. Leaving counts once the tab is
+  fully off screen, a second later, so the change is never seen during the
+  animation; coming back sooner leaves the list as it was. Going to the background still
+  writes it, so a relaunch shows it, but doesn't refresh the list. A pin shows at
+  once. It's decided by scroll position rather than by when the app restarts
+  because playing music can keep the app alive for days.
+- **Recents** is everything not pinned, by `last_played_at`, else when it was
+  added. So a new import comes up first, and a library nothing's been played in
+  yet, which is every 2.5.2 upgrade, still has a home. A song an album stands for
+  waits until it's played by itself; an artist waits until played, since imports
+  add artists as a side effect; Liked Songs has its own row until it's played; an
+  album with no songs isn't shown.
+- **Paging.** The list asks for the newest N and asks for more near its end. It's
+  one read of the whole window rather than pages kept side by side, so something
+  played moves up with no duplicate or gap.
+- **Upgrading.** The migration only adds nullable columns, and the importer writes
+  neither, so a 2.5.2 library arrives with nothing pinned or played and no file
+  moved. Tested in `home.test.ts`, with the real migrator and importer.
 
 ### Adding a song to an album
 
@@ -322,6 +359,9 @@ nothing the second time.
   is the union whatever each side calls it, and keeps the current name.
 - **Artwork** fills in only where the current item has none, and never over
   a cover file that's already in the folder.
+- **Pins and plays** come with what's new. Something on both sides keeps its own:
+  having unpinned it isn't a blank for an old backup to fill. Liked Songs is on
+  both sides, so its pin and last play stay this library's.
 - **Settings stay.** A backup has no theme, icon, or haptics. A 3.0 backup's
   `legacy_import` row may hold 2.5.2's settings; it's ignored, so a restore
   can't bring back an old theme. This device's own `legacy_import` row stays.

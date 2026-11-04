@@ -17,6 +17,7 @@ import {
   restoreSession,
   saveFromNative,
 } from "./persistence";
+import { playsBackground } from "./record-play";
 import { isSettingSongs, PLAYER_SONGS_QUERY } from "./songs";
 import {
   getPlayerState,
@@ -100,6 +101,7 @@ function startPlayer() {
   AppState.addEventListener("change", (next) => {
     if (next === "active") prefetchAroundCurrent();
     else saveFromNative();
+    if (next === "background") playsBackground();
   });
   setInterval(() => {
     if (getPlayerState().status === "playing") saveFromNative();

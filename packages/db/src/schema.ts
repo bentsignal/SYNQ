@@ -49,6 +49,10 @@ export const songs = sqliteTable(
     modifiedSinceExport: integer("modified_since_export", { mode: "boolean" })
       .notNull()
       .default(false),
+    /** When it was last started from here; null until then (docs/rewrite.md → Home). */
+    lastPlayedAt: integer("last_played_at"),
+    /** When it was pinned to the Library tab; null when it isn't. */
+    pinnedAt: integer("pinned_at"),
   },
   (t) => [index("songs_added_at_idx").on(t.addedAt)],
 );
@@ -60,6 +64,10 @@ export const artists = sqliteTable(
     name: text("name").notNull(),
     artworkVersion: integer("artwork_version"),
     addedAt: integer("added_at").notNull(),
+    /** When it was last started from here; null until then (docs/rewrite.md → Home). */
+    lastPlayedAt: integer("last_played_at"),
+    /** When it was pinned to the Library tab; null when it isn't. */
+    pinnedAt: integer("pinned_at"),
   },
   // NOCASE so find-or-create on import is an index lookup.
   (t) => [index("artists_name_idx").on(sql`${t.name} COLLATE NOCASE`)],
@@ -73,6 +81,10 @@ export const albums = sqliteTable(
     year: integer("year"),
     artworkVersion: integer("artwork_version"),
     addedAt: integer("added_at").notNull(),
+    /** When it was last started from here; null until then (docs/rewrite.md → Home). */
+    lastPlayedAt: integer("last_played_at"),
+    /** When it was pinned to the Library tab; null when it isn't. */
+    pinnedAt: integer("pinned_at"),
   },
   (t) => [index("albums_name_idx").on(sql`${t.name} COLLATE NOCASE`)],
 );
@@ -152,6 +164,10 @@ export const playlists = sqliteTable(
     artworkVersion: integer("artwork_version"),
     createdAt: integer("created_at").notNull(),
     updatedAt: integer("updated_at").notNull(),
+    /** When it was last started from here; null until then (docs/rewrite.md → Home). */
+    lastPlayedAt: integer("last_played_at"),
+    /** When it was pinned to the Library tab; null when it isn't. */
+    pinnedAt: integer("pinned_at"),
   },
   (t) => [
     check("playlists_kind_check", sql`${t.kind} IN ('liked', 'user')`),

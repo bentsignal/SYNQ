@@ -52,9 +52,10 @@ type set to manual so nothing goes live on approval until Shawn releases it.
 
 ## Website
 
-`apps/site` is the static site at [synq.bentsignal.com](https://synq.bentsignal.com),
-behind the App Store's marketing, support (`/help`) and privacy (`/privacy`) links.
-It has no build step, and pushes don't deploy it. Deploy it by hand:
+`apps/site` is the static site at [synq.cc](https://synq.cc), behind the App
+Store's marketing, support (`/help`) and privacy (`/privacy`) links. `www.synq.cc`
+and the old `synq.bentsignal.com` redirect to it, set on the Vercel project's
+domains. It has no build step, and pushes don't deploy it. Deploy it by hand:
 
 ```sh
 cd apps/site

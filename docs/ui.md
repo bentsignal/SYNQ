@@ -388,15 +388,16 @@ has started by then; the next clean batch asks instead.
   and its temporary files go when the sheet closes.
 
 - **Download** ([download-servers.md](download-servers.md)): a sheet with the
-  server (a picker when there's more than one, starting on the default), a link
-  field, a Paste button, and what's on its way. Paste starts a download from
-  what's copied, in one tap, and a typed link starts at once and clears the
-  field for the next. iOS fixes the button's wording: that's what lets it read
-  the clipboard without asking. A download's row has a spinner, counts the song
-  it's on if there's more than one, and fades when it's done. Songs join the import queue, and the capsule
-  counts the whole download from the moment the server knows its songs. They
-  appear together when it ends, or when the app leaves the front and it pauses.
-  Tapping a download offers to cancel it; a failed one just goes. Servers lists
+  server (a picker when there's more than one, starting on the default), a Paste
+  and Download button, and what's on its way. The button starts a download from
+  what's copied. iOS asks before an app reads the clipboard, unless the person
+  chose Allow under Paste from Other Apps in the app's settings. Songs
+  join the import queue, and the capsule counts the whole download from the
+  moment the server knows its songs. They appear together when it ends, or when
+  the app leaves the front and it pauses. A download's row has a spinner, counts
+  the song it's on if there's more than one, and fades when it's done.
+  Tapping a download offers to cancel it. One that failed shows why, with an
+  `xmark` that clears it. Servers lists
   what's been added, and a server shows its status, today's use if the server
   reports it, its address (hidden until asked), Default Server, and Remove.
   Adding one checks its address before saving.

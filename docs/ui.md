@@ -389,8 +389,9 @@ has started by then; the next clean batch asks instead.
 
 - **Download** ([download-servers.md](download-servers.md)): a sheet with the
   server (a picker when there's more than one, starting on the default), a link
-  field with a paste button, and what's on its way. A link starts at once and
-  the field clears for the next. Songs join the import queue, and the capsule
+  field with a paste button, and what's on its way. The paste button starts a
+  download from what's copied, in one tap, and a typed link starts at once and
+  clears the field for the next. Songs join the import queue, and the capsule
   counts the whole download from the moment the server knows its songs. They
   appear together when it ends, or when the app leaves the front and it pauses.
   Tapping a download offers to cancel it; a failed one just goes. Servers lists

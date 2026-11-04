@@ -1,6 +1,7 @@
 import type { ServerAccess } from "./client.ts";
 import type { RemoteJob, RemoteTrack } from "./contract.ts";
 import { ServerError } from "./client.ts";
+import { failedLine, handoverKey, jobCounts } from "./job-counts.ts";
 
 /**
  * Moves downloads from a server into the import queue (docs/ui.md → Import).
@@ -73,7 +74,7 @@ export interface DownloadDeps {
   newKey: () => string;
 }
 
-const POLL_MS = 2000;
+const POLL_MS = 1000;
 /** Tries before giving up until the app next comes to the front. */
 const MAX_MISSES = 5;
 const GONE =
@@ -83,28 +84,6 @@ const OFFLINE = "Can't reach the server.";
 
 function isSettled({ state }: Download) {
   return state === "failed" || state === "finished";
-}
-
-function failedLine(failed: number) {
-  return failed === 1
-    ? "1 song couldn't be downloaded."
-    : `${String(failed)} songs couldn't be downloaded.`;
-}
-
-/** Identifies a track across retries of a job. */
-function handoverKey(job: RemoteJob, track: RemoteTrack) {
-  return `${job.id}/${track.id}`;
-}
-
-function jobCounts(job: RemoteJob, handedOver: ReadonlySet<string>) {
-  return {
-    done: job.tracks.filter(
-      (track) =>
-        track.state === "delivered" || handedOver.has(handoverKey(job, track)),
-    ).length,
-    failed: job.tracks.filter(({ state }) => state === "failed").length,
-    total: job.tracks.length,
-  };
 }
 
 /** The list of downloads, saved and announced on every change. */
@@ -318,8 +297,17 @@ export function createDownloads(deps: DownloadDeps) {
   return {
     getDownloads: () => store.all(),
     subscribe: (listener: () => void) => store.subscribe(listener),
-    /** Shows the download right away, and starts it. */
+    /** Shows the download right away, and starts it, unless it's already going. */
     start(serverId: string, url: string) {
+      const running = store
+        .all()
+        .find(
+          (download) =>
+            !isSettled(download) &&
+            download.serverId === serverId &&
+            download.url === url,
+        );
+      if (running !== undefined) return running.key;
       const key = deps.newKey();
       store.add({
         done: 0,

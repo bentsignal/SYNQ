@@ -138,7 +138,10 @@ function useServerId(chosenId: string | null) {
   return chosen?.id ?? defaultId ?? servers[0]?.id ?? null;
 }
 
-/** Pastes without iOS asking for permission, unlike reading the clipboard. */
+/**
+ * Starts a download from what's copied, in one tap. iOS doesn't ask for
+ * permission, as it does when an app reads the clipboard itself.
+ */
 function PasteButton({ onPaste }: { onPaste: (text: string) => void }) {
   if (!isPasteButtonAvailable) return null;
   return (
@@ -162,23 +165,20 @@ function PasteButton({ onPaste }: { onPaste: (text: string) => void }) {
  */
 export function DownloadScreen() {
   const [link, setLink] = useState("");
-  // The field keeps its own text, so a paste gives it a new starting value.
-  const [pastes, setPastes] = useState(0);
   const [chosenId, setChosenId] = useState<string | null>(null);
   const serverId = useServerId(chosenId);
   const input = useRef<TextInputRef>(null);
 
-  function download() {
-    if (serverId === null || link.trim() === "") return;
-    downloads.start(serverId, link.trim());
+  function start(url: string) {
+    if (serverId === null || url === "") return;
+    downloads.start(serverId, url);
     selectionTick();
-    setLink("");
-    input.current?.clear();
   }
 
-  function paste(text: string) {
-    setLink(text.trim());
-    setPastes(pastes + 1);
+  function download() {
+    start(link.trim());
+    setLink("");
+    input.current?.clear();
   }
 
   return (
@@ -206,10 +206,8 @@ export function DownloadScreen() {
           <FieldGroup.Section>
             <Line alignment="center" spacing={8}>
               <TextInput
-                key={pastes}
                 ref={input}
                 autoFocus
-                defaultValue={link}
                 autoCapitalize="none"
                 autoCorrect={false}
                 enterKeyHint="go"
@@ -218,7 +216,9 @@ export function DownloadScreen() {
                 onChangeText={setLink}
                 onSubmitEditing={download}
               />
-              <PasteButton onPaste={paste} />
+              {serverId === null ? null : (
+                <PasteButton onPaste={(text) => start(text.trim())} />
+              )}
             </Line>
           </FieldGroup.Section>
           <DownloadRows />

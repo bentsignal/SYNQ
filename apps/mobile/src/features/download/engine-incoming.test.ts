@@ -65,3 +65,24 @@ void test("a song isn't imported twice when telling the server fails", async () 
   await settled(() => downloads.getDownloads().length === 0);
   assert.deepEqual(added, ["a"]);
 });
+
+void test("the same link twice is one download, until the first has ended", () => {
+  const { added, deps } = setup({
+    ...scripted(["a"]),
+    fetchFile: () => new Promise(() => undefined),
+  });
+  const downloads = createDownloads(deps);
+  const first = downloads.start("s", "https://link");
+  assert.equal(downloads.start("s", "https://link"), first);
+  assert.notEqual(downloads.start("other", "https://link"), first);
+  assert.equal(downloads.getDownloads().length, 2);
+  assert.deepEqual(added, []);
+});
+
+void test("a link that failed can be tried again", async () => {
+  const { deps } = setup({ server: () => null });
+  const downloads = createDownloads(deps);
+  const first = downloads.start("s", "https://link");
+  await settled(() => downloads.getDownloads()[0]?.state === "failed");
+  assert.notEqual(downloads.start("s", "https://link"), first);
+});

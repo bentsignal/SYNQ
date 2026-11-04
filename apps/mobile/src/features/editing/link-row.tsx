@@ -5,7 +5,7 @@ import { foregroundStyle, lineLimit } from "@expo/ui/swift-ui/modifiers";
 import { useNativeColor } from "~/components/native-host";
 
 /**
- * A form row that opens a list in the sheet (Edit Songs, Artists): its
+ * A form row that opens a list in the sheet (Songs, Artists): its
  * label, what it holds now in gray, and a chevron.
  */
 export function LinkRow({

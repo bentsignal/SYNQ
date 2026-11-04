@@ -34,9 +34,21 @@ function trackSubtitle(track: AlbumTrack, album: AlbumListItem) {
     : names(track.artists);
 }
 
+function pickSongs(album: AlbumListItem) {
+  router.push({
+    params: { id: String(album.id) },
+    pathname: "/album-songs/[id]",
+  });
+}
+
 function AlbumMenu({ album }: { album: AlbumListItem }) {
   return (
     <Stack.Toolbar placement="right">
+      <Stack.Toolbar.Button
+        icon="plus"
+        accessibilityLabel="Add Songs"
+        onPress={() => pickSongs(album)}
+      />
       <Stack.Toolbar.Menu icon="ellipsis" accessibilityLabel="More">
         {toolbarMenuItems(albumMenu(album, { onPage: true }))}
       </Stack.Toolbar.Menu>
@@ -95,6 +107,7 @@ function Album({ album }: { album: AlbumListItem }) {
             compact={!bare}
             icon="square.stack"
             title="No Songs Yet"
+            actions={[{ label: "Add Songs", onPress: () => pickSongs(album) }]}
           />
         }
         ListFooterComponent={

@@ -218,7 +218,7 @@ of their own, so a delete takes them along by any route, and an erase with it.
 
 ### Adding a song to an album
 
-Adding a song from an album's Edit Songs (or New Album) moves it there
+Adding a song from an album's song picker (or New Album) moves it there
 (`addSongsToAlbum`). No schema change, so a 2.5.2 library upgrades through
 it untouched, and no audio or artwork file moves or is deleted.
 

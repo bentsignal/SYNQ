@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 
 /**
  * An edit sheet's unsaved changes, shared by the screens of its stack (the
- * form and the lists it pushes, such as Edit Songs) and saved by its Done.
+ * form and the lists it pushes, such as Reorder Songs) and saved by its Done.
  * Each sheet kind has one; the form starts it when it opens.
  */
 export function createDraft<Value extends object>(name: string) {

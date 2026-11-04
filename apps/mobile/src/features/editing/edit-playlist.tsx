@@ -29,10 +29,11 @@ import { KEEP_ARTWORK, saveArtworkChange } from "./artwork-change";
 import { ArtworkField } from "./artwork-field";
 import { createDraft } from "./draft";
 import { LinkRow } from "./link-row";
-import { moveItems, removeItems } from "./reorder";
+import { moveItems } from "./reorder";
 import { ReorderList } from "./reorder-list";
 import { SheetToolbar } from "./sheet-toolbar";
 import { SongPicker } from "./song-picker";
+import { applySongPick } from "./song-selection";
 
 interface PlaylistDraft {
   name: string;
@@ -159,20 +160,20 @@ function PlaylistFields({
         </FieldGroup.Section>
         <FieldGroup.Section>
           <LinkRow
-            label={edits.songs.length === 0 ? "Add Songs" : "Edit Songs"}
+            label={edits.songs.length === 0 ? "Add Songs" : "Songs"}
             value={
               edits.songs.length === 0
                 ? undefined
                 : songCount(edits.songs.length)
             }
-            onPress={() =>
-              router.push(
-                edits.songs.length === 0
-                  ? edits.routes.addSongs
-                  : edits.routes.songs,
-              )
-            }
+            onPress={() => router.push(edits.routes.addSongs)}
           />
+          {edits.songs.length > 1 && (
+            <LinkRow
+              label="Reorder Songs"
+              onPress={() => router.push(edits.routes.songs)}
+            />
+          )}
         </FieldGroup.Section>
       </FieldGroup>
     </NativeHost>
@@ -211,7 +212,7 @@ function EditForm({ playlist }: { playlist: PlaylistListItem }) {
   );
 }
 
-/** Edit Playlist (docs/ui.md → Editing): artwork, name, and Edit Songs. */
+/** Edit Playlist (docs/ui.md → Editing): artwork, name, songs, and their order. */
 export function EditPlaylistScreen() {
   const id = useIdParam();
   const playlist = useLibraryQuery({
@@ -258,24 +259,17 @@ export function NewPlaylistScreen() {
   );
 }
 
-/** Edit Songs: add from the library, drag to reorder, swipe to remove. */
+/** Reorder Songs: drag to change the playlist's order. */
 export function EditPlaylistSongsScreen() {
   const edits = draft.useValue();
   return (
     <>
-      <Stack.Screen options={{ title: "Edit Songs" }} />
+      <Stack.Screen options={{ title: "Reorder Songs" }} />
       <ReorderList
         rows={edits.songs}
-        onAdd={() => router.push(edits.routes.addSongs)}
         onMove={(from, to) =>
           draft.update((current) => ({
             songs: moveItems(current.songs, from, to),
-            songsChanged: true,
-          }))
-        }
-        onDelete={(indices) =>
-          draft.update((current) => ({
-            songs: removeItems(current.songs, indices),
             songsChanged: true,
           }))
         }
@@ -284,18 +278,22 @@ export function EditPlaylistSongsScreen() {
   );
 }
 
-/** Add Songs: they join the end of the sheet's list at once, and save with it. */
+/**
+ * The checklist of songs: new ones join the end of the sheet's list at once,
+ * unchecked ones leave it, and both save with it.
+ */
 export function AddPlaylistSongsScreen() {
   const edits = draft.useValue();
   return (
     <SongPicker
-      added={new Set(songIds(edits))}
-      onDone={(songs) => {
+      present={songIds(edits)}
+      onDone={(pick) => {
         draft.update((current) => ({
-          songs: [...current.songs, ...songs.map(toRow)],
+          songs: applySongPick(current.songs, pick, toRow),
           songsChanged: true,
         }));
         router.back();
+        return true;
       }}
     />
   );

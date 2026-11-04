@@ -36,10 +36,11 @@ import { ArtworkField } from "./artwork-field";
 import { ChoiceList } from "./choice-list";
 import { LinkRow } from "./link-row";
 import { artistIds } from "./pick";
-import { moveItems, removeItems } from "./reorder";
+import { moveItems } from "./reorder";
 import { ReorderList } from "./reorder-list";
 import { SheetToolbar } from "./sheet-toolbar";
 import { SongPicker } from "./song-picker";
+import { applySongPick } from "./song-selection";
 
 /** Saves the sheet: fields and tracks together, then covers. */
 function saveEdits(album: AlbumListItem, saved: ReadonlySet<string>) {
@@ -132,20 +133,20 @@ function AlbumFields({ artwork }: { artwork: AlbumListItem["artwork"] }) {
             onPress={() => router.push(edits.routes.artists)}
           />
           <LinkRow
-            label={edits.tracks.length === 0 ? "Add Songs" : "Edit Songs"}
+            label={edits.tracks.length === 0 ? "Add Songs" : "Songs"}
             value={
               edits.tracks.length === 0
                 ? undefined
                 : songCount(edits.tracks.length)
             }
-            onPress={() =>
-              router.push(
-                edits.tracks.length === 0
-                  ? edits.routes.addSongs
-                  : edits.routes.songs,
-              )
-            }
+            onPress={() => router.push(edits.routes.addSongs)}
           />
+          {edits.tracks.length > 1 && (
+            <LinkRow
+              label="Reorder Songs"
+              onPress={() => router.push(edits.routes.songs)}
+            />
+          )}
         </FieldGroup.Section>
       </FieldGroup>
     </NativeHost>
@@ -185,7 +186,7 @@ function EditForm({ album }: { album: AlbumListItem }) {
   );
 }
 
-/** Edit Album: artwork, name, year, artists, and Edit Songs. */
+/** Edit Album: artwork, name, year, artists, songs, and their order. */
 export function EditAlbumScreen() {
   const id = useIdParam();
   const album = useLibraryQuery({
@@ -257,11 +258,32 @@ export function EditAlbumArtistsScreen() {
 }
 
 /**
- * Edit Songs: add from the library, drag to reorder, swipe to remove. Taking
- * a song off leaves it in the library. A new order sets track numbers 1 to n
- * (as 2.5.2 did).
+ * Reorder Songs: drag to change the album's order. A new order sets track
+ * numbers 1 to n (as 2.5.2 did).
  */
 export function EditAlbumTracksScreen() {
+  const edits = draft.useValue();
+  return (
+    <>
+      <Stack.Screen options={{ title: "Reorder Songs" }} />
+      <ReorderList
+        rows={edits.tracks}
+        onMove={(from, to) =>
+          draft.update((current) => ({
+            tracks: moveItems(current.tracks, from, to),
+          }))
+        }
+      />
+    </>
+  );
+}
+
+/**
+ * The checklist of songs: new ones join the end of the sheet's tracks at once
+ * and move to this album when the sheet saves; unchecked ones leave the
+ * sheet's tracks, and stay in the library.
+ */
+export function AddAlbumSongsScreen() {
   const navigation = useNavigation();
   const edits = draft.useValue();
   const id = useIdParam();
@@ -288,40 +310,14 @@ export function EditAlbumTracksScreen() {
     );
   }
   return (
-    <>
-      <Stack.Screen options={{ title: "Edit Songs" }} />
-      <ReorderList
-        rows={edits.tracks}
-        onAdd={() => router.push(edits.routes.addSongs)}
-        onMove={(from, to) =>
-          draft.update((current) => ({
-            tracks: moveItems(current.tracks, from, to),
-          }))
-        }
-        onDelete={(indices) => {
-          const tracks = removeItems(edits.tracks, indices);
-          draft.update(() => ({ tracks }));
-          offerIfEmptied(tracks.length);
-        }}
-      />
-    </>
-  );
-}
-
-/**
- * Add Songs: they join the end of the sheet's tracks at once, and move to
- * this album when the sheet saves.
- */
-export function AddAlbumSongsScreen() {
-  const edits = draft.useValue();
-  return (
     <SongPicker
-      added={new Set(trackIds(edits))}
-      onDone={(songs) => {
-        draft.update((current) => ({
-          tracks: [...current.tracks, ...songs.map(toRow)],
-        }));
+      present={trackIds(edits)}
+      onDone={(pick) => {
+        const tracks = applySongPick(edits.tracks, pick, toRow);
+        draft.update(() => ({ tracks }));
         router.back();
+        offerIfEmptied(tracks.length);
+        return true;
       }}
     />
   );

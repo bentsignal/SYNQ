@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 
 import type { PlaylistListItem } from "@synq/db";
 import { getPlaylist, listPlaylistSongs } from "@synq/db";
@@ -16,7 +16,6 @@ import {
 } from "../collection-header";
 import { playlistMenu } from "../collection-menu";
 import { collectionSummary } from "../format";
-import { openLibraryScreen } from "../links";
 import { useIdParam } from "../params";
 import { PlayShuffleButtons } from "../play-shuffle-buttons";
 import { useLibraryQuery } from "../queries";
@@ -24,10 +23,22 @@ import { SONG_ROW_HEIGHT, SongRow } from "../song-row";
 import { playlistSongSort } from "../sort";
 import { sortMenuItems } from "../sort-menu";
 
+function pickSongs(playlist: PlaylistListItem) {
+  router.push({
+    params: { id: String(playlist.id) },
+    pathname: "/playlist-songs/[id]",
+  });
+}
+
 function PlaylistMenu({ playlist }: { playlist: PlaylistListItem }) {
   const sort = playlistSongSort.useValue(playlist.id);
   return (
     <Stack.Toolbar placement="right">
+      <Stack.Toolbar.Button
+        icon="plus"
+        accessibilityLabel="Add Songs"
+        onPress={() => pickSongs(playlist)}
+      />
       <Stack.Toolbar.Menu icon="ellipsis" accessibilityLabel="More">
         {sortMenuItems({
           id: playlist.id,
@@ -101,8 +112,8 @@ function Playlist({ playlist }: { playlist: PlaylistListItem }) {
             title={liked ? "No Liked Songs" : "No Songs Yet"}
             actions={[
               {
-                label: "Browse Songs",
-                onPress: () => openLibraryScreen({ screen: "songs" }),
+                label: "Add Songs",
+                onPress: () => pickSongs(playlist),
               },
             ]}
           />

@@ -65,7 +65,7 @@ const TOOLBAR_SHEET = {
 
 /**
  * An edit or create sheet with its own stack (the form, and the lists it
- * pushes such as Edit Songs), as a page sheet: a form sheet can't hold a stack.
+ * pushes such as Reorder Songs), as a page sheet: a form sheet can't hold a stack.
  */
 const EDIT_SHEET = { presentation: "modal" } as const;
 
@@ -89,6 +89,8 @@ function RootStack() {
           title: "Add to Playlist",
         }}
       />
+      <Stack.Screen name="playlist-songs/[id]" options={EDIT_SHEET} />
+      <Stack.Screen name="album-songs/[id]" options={EDIT_SHEET} />
       <Stack.Screen name="edit-playlist/[id]" options={EDIT_SHEET} />
       <Stack.Screen name="edit-album/[id]" options={EDIT_SHEET} />
       <Stack.Screen name="edit-artist/[id]" options={EDIT_SHEET} />

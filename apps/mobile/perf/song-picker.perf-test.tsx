@@ -31,12 +31,7 @@ test("choosing a song in the picker", async () => {
   await measureRenders(
     <>
       {SONGS.map((item) => (
-        <PickerRow
-          key={item.id}
-          song={item}
-          added={false}
-          selection={selection}
-        />
+        <PickerRow key={item.id} song={item} selection={selection} />
       ))}
     </>,
     {

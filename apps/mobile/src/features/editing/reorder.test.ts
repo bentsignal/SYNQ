@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { moveItems, removeItems } from "./reorder.ts";
+import { moveItems } from "./reorder.ts";
 
 const items = ["a", "b", "c", "d", "e"];
 
@@ -22,8 +22,4 @@ void test("moves several, keeping their order", () => {
 void test("leaves the list alone when nothing moves", () => {
   assert.deepEqual(moveItems(items, [2], 2), items);
   assert.deepEqual(moveItems(items, [2], 3), items);
-});
-
-void test("removes the deleted rows", () => {
-  assert.deepEqual(removeItems(items, [1, 3]), ["a", "c", "e"]);
 });

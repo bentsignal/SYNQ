@@ -68,7 +68,7 @@ export function trackIds(edits: AlbumDraft) {
  * artwork. Choosing or removing a cover in the sheet wins.
  */
 export function coverFromTracks(
-  edits: AlbumDraft,
+  edits: { artwork: ArtworkChange; tracks: readonly ReorderRow[] },
   hasCover: boolean,
   saved: ReadonlySet<string>,
 ) {

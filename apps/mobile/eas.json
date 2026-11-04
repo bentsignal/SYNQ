@@ -14,7 +14,8 @@
       "distribution": "internal",
       "environment": "development",
       "env": {
-        "APP_VARIANT": "development"
+        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_DOWNLOADS": "1"
       },
       "channel": "development"
     },
@@ -29,7 +30,8 @@
       "distribution": "internal",
       "environment": "development",
       "env": {
-        "APP_VARIANT": "development"
+        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_DOWNLOADS": "1"
       },
       "ios": {
         "buildConfiguration": "Release"

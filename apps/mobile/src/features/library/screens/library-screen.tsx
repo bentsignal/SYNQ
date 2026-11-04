@@ -14,6 +14,7 @@ import { playSongs } from "~/features/player/actions";
 import { names, UNKNOWN_ARTIST } from "../format";
 import { LibraryLinkRow } from "../library-link-row";
 import {
+  DOWNLOAD_ACTION,
   IMPORT_ACTIONS,
   LIBRARY_ROWS,
   openImport,
@@ -139,6 +140,14 @@ function LibraryToolbar() {
           >
             Wi-Fi Transfer
           </Stack.Toolbar.MenuAction>
+          {DOWNLOAD_ACTION === null ? null : (
+            <Stack.Toolbar.MenuAction
+              icon="arrow.down.circle"
+              onPress={DOWNLOAD_ACTION.onPress}
+            >
+              {DOWNLOAD_ACTION.label}
+            </Stack.Toolbar.MenuAction>
+          )}
         </Stack.Toolbar.Menu>
         <Stack.Toolbar.MenuAction
           icon="music.note.list"

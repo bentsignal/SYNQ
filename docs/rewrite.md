@@ -30,6 +30,15 @@ that makes them.
 - Feature parity with 2.5.2 (see "Feature checklist"), minus Premium and
   the ad (see "Free").
 
+### Download
+
+Download sends a link to a server the person runs and imports what comes back
+(Shawn, November 2026). It's in SYNQ Dev and left out of store builds at bundle
+time; putting it in a store build is a separate decision for Shawn. The contract
+is public here, the server isn't: it lives in a separate private repository, so
+a takedown there can't reach this one. See
+[download-servers.md](download-servers.md).
+
 ### Free
 
 SYNQ 3.0 is completely free (Shawn, October 2026). There is no Premium

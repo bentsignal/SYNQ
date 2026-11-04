@@ -129,3 +129,10 @@ jobs:
       - name: Export the iOS bundle
         working-directory: apps/mobile
         run: pnpm exec expo export --platform ios --output-dir "$RUNNER_TEMP/export"
+      # Store builds leave Download out altogether (docs/download-servers.md).
+      - name: Check Download isn't in the store bundle
+        run: |
+          if find "$RUNNER_TEMP/export" -name '*.hbc' -exec strings -a {} + | grep -qE 'download-server-token|v1/downloads'; then
+            echo "::error::Download's code reached the store bundle."
+            exit 1
+          fi

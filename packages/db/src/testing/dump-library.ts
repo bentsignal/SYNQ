@@ -13,12 +13,26 @@ import {
   songs,
 } from "../schema.ts";
 
+/**
+ * Without a row's pin and last play: they're 3.0's, so 2.5.2's expected data
+ * has neither, and `home.test.ts` checks an import leaves them blank.
+ */
+function library<Row extends { lastPlayedAt: unknown; pinnedAt: unknown }>(
+  rows: readonly Row[],
+) {
+  return rows.map(
+    ({ lastPlayedAt: _played, pinnedAt: _pinned, ...row }) => row,
+  );
+}
+
 export function dumpLibrary(db: LibraryDb) {
   return {
-    songs: db.select().from(songs).orderBy(asc(songs.id)).all(),
-    artists: db.select().from(artists).orderBy(asc(artists.id)).all(),
-    albums: db.select().from(albums).orderBy(asc(albums.id)).all(),
-    playlists: db.select().from(playlists).orderBy(asc(playlists.id)).all(),
+    songs: library(db.select().from(songs).orderBy(asc(songs.id)).all()),
+    artists: library(db.select().from(artists).orderBy(asc(artists.id)).all()),
+    albums: library(db.select().from(albums).orderBy(asc(albums.id)).all()),
+    playlists: library(
+      db.select().from(playlists).orderBy(asc(playlists.id)).all(),
+    ),
     songArtists: db
       .select()
       .from(songArtists)

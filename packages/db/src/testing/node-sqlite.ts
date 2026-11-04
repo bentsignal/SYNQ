@@ -113,12 +113,15 @@ export class NodeExpoDatabase {
 }
 
 /** Opens a library database the way the app does: foreign keys on, migrations applied. */
-export async function openTestLibraryDb(path = ":memory:") {
+export async function openTestLibraryDb(
+  path = ":memory:",
+  migrations: Parameters<typeof migrate>[1] = libraryMigrations,
+) {
   const client = new NodeExpoDatabase(path);
   client.execSync("PRAGMA foreign_keys = ON;");
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- the driver's types want expo-sqlite's class; ours implements the subset it calls
   const expoClient = client as never;
   const db = drizzle(expoClient, { schema });
-  await migrate(db, libraryMigrations);
+  await migrate(db, migrations);
   return { db, client };
 }

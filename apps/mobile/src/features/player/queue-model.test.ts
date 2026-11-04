@@ -14,6 +14,7 @@ import {
   shuffleQueue,
   unshuffleQueue,
   upNextMove,
+  withCurrentKey,
 } from "./queue-model.ts";
 
 /** A repeatable "random" sequence. */
@@ -248,4 +249,29 @@ void test("an empty queue has no neighbors", () => {
     neighbors(buildQueue([], { shuffle: false, startIndex: null }), "all"),
     [],
   );
+});
+
+void test("withCurrentKey renames only the current entry, everywhere it's listed", () => {
+  const built = buildQueue([1, 2, 3], {
+    random: () => 0,
+    shuffle: true,
+    startIndex: 1,
+  });
+  const before = built.entries.filter((entry) => entry.songId !== 2);
+  const queue = withCurrentKey(built, "kept");
+  assert.equal(queue.currentKey, "kept");
+  assert.deepEqual(queue.entries[0], {
+    key: "kept",
+    queued: false,
+    songId: 2,
+  });
+  assert.deepEqual(
+    queue.entries.filter((entry) => entry.songId !== 2),
+    before,
+  );
+  assert.deepEqual(queue.original, [
+    built.entries.find((entry) => entry.songId === 1)?.key,
+    "kept",
+    built.entries.find((entry) => entry.songId === 3)?.key,
+  ]);
 });

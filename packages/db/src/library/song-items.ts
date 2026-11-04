@@ -38,6 +38,8 @@ export interface SongListItem {
   albums: AlbumCredit[];
   /** First album (by album order) with artwork, else the song's own, else null (placeholder). */
   artwork: ArtworkRef | null;
+  /** When it was pinned to the Library tab; null when it isn't. */
+  pinnedAt: number | null;
 }
 
 /**
@@ -120,6 +122,7 @@ export function toSongItem(
     artists: artistCredits,
     albums: albumCredits,
     artwork: resolveSongArtwork(row, albumCredits),
+    pinnedAt: row.pinnedAt,
   };
 }
 

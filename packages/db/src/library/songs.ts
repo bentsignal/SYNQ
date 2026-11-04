@@ -20,6 +20,11 @@ export interface ListSongsOptions {
   search?: string;
 }
 
+/** Whether the library has any music. */
+export function hasSongs(db: LibraryDb) {
+  return db.select({ id: songs.id }).from(songs).limit(1).get() !== undefined;
+}
+
 /** The whole library (2.5.2's Songs tab). Defaults to newest first, like 2.5.2. */
 export function listSongs(db: LibraryDb, options: ListSongsOptions = {}) {
   const items = loadSongItems(db).filter((song) =>

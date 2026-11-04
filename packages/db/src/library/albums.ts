@@ -27,6 +27,8 @@ export interface AlbumListItem {
   artists: ArtistCredit[];
   songCount: number;
   durationMs: number;
+  /** When it was pinned to the Library tab; null when it isn't. */
+  pinnedAt: number | null;
 }
 
 export type AlbumSort = "name" | "year" | "addedAt";
@@ -95,6 +97,7 @@ export function loadAlbumItems(db: LibraryDb, where?: SQL) {
       year: albums.year,
       artworkVersion: albums.artworkVersion,
       addedAt: albums.addedAt,
+      pinnedAt: albums.pinnedAt,
       songCount: sql<number>`count(${songs.id})`,
       durationMs: sql<number>`coalesce(sum(${songs.durationMs}), 0)`,
     })

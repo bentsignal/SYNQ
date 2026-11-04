@@ -19,6 +19,7 @@ function song(id: number) {
     id,
     mimeType: "audio/mp4",
     modifiedSinceExport: false,
+    pinnedAt: null,
     title: `Song ${id}`,
   } satisfies SongListItem;
 }

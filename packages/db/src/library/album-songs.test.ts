@@ -8,7 +8,6 @@ import {
   createAlbum,
   createArtist,
   createPlaylist,
-  editSong,
   getAlbum,
   getSong,
   listAlbumTracks,
@@ -68,21 +67,6 @@ void describe("adding songs to an album", () => {
     assert.ok(before && after);
     assert.equal(after.songCount, before.songCount - 1);
     assert.deepEqual(after.artwork, before.artwork);
-  });
-
-  void test("takes a song 2.5.2 put on two albums off both", () => {
-    const { albumId, songId } = songOnAlbum();
-    const second = newAlbum("Second");
-    editSong(db, songId, {
-      albums: [{ album: { id: albumId } }, { album: { id: second.id } }],
-    });
-    const target = newAlbum();
-    addSongsToAlbum(db, target.id, [songId]);
-    assert.deepEqual(
-      getSong(db, songId)?.albums.map((album) => album.id),
-      [target.id],
-    );
-    assert.equal(getAlbum(db, second.id)?.songCount, 0);
   });
 });
 

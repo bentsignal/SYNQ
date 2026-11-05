@@ -33,6 +33,10 @@ function refOf(pick: Pick) {
   return "id" in pick ? { id: pick.id } : { name: pick.name };
 }
 
+function albumOf([pick]: readonly Pick[]) {
+  return pick === undefined ? null : { album: refOf(pick) };
+}
+
 /**
  * Saves the song's tags, then its artwork: on the album it's using when the
  * switch is on, else on the song. Removing the song's artwork never touches an
@@ -42,7 +46,7 @@ function save(song: SongDetail) {
   const edits = draft.get();
   const edited = tryWrite("Couldn't Save Song", (db) =>
     editSong(db, song.id, {
-      albums: edits.albums.map((pick) => ({ album: refOf(pick) })),
+      album: albumOf(edits.albums),
       artists: edits.artists.map(refOf),
       title: edits.title,
       useAlbumArtwork: edits.useAlbumArtwork,

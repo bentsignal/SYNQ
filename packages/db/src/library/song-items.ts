@@ -34,7 +34,7 @@ export interface SongListItem {
   modifiedSinceExport: boolean;
   /** Credit order. */
   artists: ArtistCredit[];
-  /** The song's album order; the first is its primary album. */
+  /** The song's album, if it has one: a list of at most one. */
   albums: AlbumCredit[];
   /** What it shows: see `resolveSongArtwork`. Null is the placeholder. */
   artwork: ArtworkRef | null;

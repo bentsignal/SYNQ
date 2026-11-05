@@ -43,7 +43,7 @@ through `PRAGMA table_info`, so all of these import.
 | `playlists` id 2 | `playlists` id 2, `kind = 'liked'` | Keeps the user's name ("Favs ♥"); `NULL`/blank → "Liked Songs". Recreated if its row is missing |
 | other `playlists` | `playlists`, `kind = 'user'` | Ids and names preserved |
 | `artistSongs` (artistId, songId) | `song_artists` (song_id, artist_id, position) | Position = rowid order per song (2.5.2 listed credits by rowid) |
-| `albumSongs` (albumId, songId, track) | `album_songs` (album_id, song_id, track, position) | Position = rowid order per song (the first is the primary album, whose cover wins). Track: first non-null across duplicates; packed m4a values decoded (see "Edge cases"); missing column → `NULL` |
+| `albumSongs` (albumId, songId, track) | `album_songs` (album_id, song_id, track, position) | One album per song: a song on several keeps the first, in rowid order, whose album has a cover, else the first (`song-albums-collapsed`; docs/rewrite.md → One album per song). Position 0. Track: first non-null across duplicates; packed m4a values decoded (see "Edge cases"); missing column → `NULL` |
 | `artistsAlbums` (artistId, albumId) | `album_artists` (album_id, artist_id, position) | Position = rowid order per album |
 | `playlistSongs` (id, playlistId, songId) | `playlist_songs` (id, playlist_id, song_id, position) | Playlist 1 rows dropped. Ids preserved. Position = 1..n in `playlistSongs.id` order, the order songs were added (see "Playlist order") |
 | `sqlite_sequence` | `sqlite_sequence` | Each counter is raised to at least 2.5.2's value, so an id 2.5.2 handed out (and whose folder may linger) is never reissued |

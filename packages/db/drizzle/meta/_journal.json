@@ -22,6 +22,13 @@
       "when": 1793823989580,
       "tag": "0002_confused_lady_mastermind",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1793917389322,
+      "tag": "0003_one_album_per_song",
+      "breakpoints": true
     }
   ]
 }

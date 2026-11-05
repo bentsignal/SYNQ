@@ -147,11 +147,11 @@ void describe("addSongs", () => {
 });
 
 void describe("editSong", () => {
-  void test("replaces artists and albums, keeps known tracks, marks modified", () => {
+  void test("replaces artists and album, keeps a known track, marks modified", () => {
     const result = editSong(db, 3, {
       title: " ON (Live) ",
       artists: [{ id: 4 }, { name: "Guest" }],
-      albums: [{ album: { id: 3 } }, { album: { name: "Live Set" }, track: 2 }],
+      album: { album: { name: "Live Set" }, track: 2 },
     });
     assert.deepEqual(result.changed, [
       "album_artists",
@@ -168,11 +168,14 @@ void describe("editSong", () => {
     );
     assert.deepEqual(
       result.value.albums.map((a) => [a.name, a.track]),
-      [
-        ["Map of the Soul: 7", null],
-        ["Live Set", 2],
-      ],
+      [["Live Set", 2]],
     );
+    const same = editSong(db, 3, { album: { album: { name: "Live Set" } } });
+    assert.deepEqual(
+      same.value.albums.map((a) => [a.name, a.track]),
+      [["Live Set", 2]],
+    );
+    assert.deepEqual(editSong(db, 3, { album: null }).value.albums, []);
     assert.equal(result.value.modifiedSinceExport, true);
     markSongsExported(db, [3]);
     assert.equal(getSong(db, 3)?.modifiedSinceExport, false);

@@ -17,7 +17,7 @@ import { chunked } from "./text.ts";
 
 /**
  * Moves songs to the end of an album, in the given order. A song is on one
- * album (Shawn, November 2026), so each leaves every album it was on. Songs
+ * album (docs/rewrite.md → One album per song), so each leaves its old one. Songs
  * already on the album are left where they are, and reported in `skipped`.
  * Albums the songs leave stay, even when emptied, as `deleteSongs` keeps
  * them, with their covers; `emptied` names the ones left without songs.
@@ -158,10 +158,7 @@ export function setAlbumTracks(
   return written({ emptied }, ["album_songs", "album_artists", "songs"]);
 }
 
-/**
- * Takes songs off every album they're on and puts them on this one, returning
- * the albums they left. Songs 2.5.2 put on several albums leave all of them.
- */
+/** Takes songs off the album they're on and puts them on this one, returning the albums they left. */
 function moveToAlbum(
   tx: LibraryDb,
   albumId: number,

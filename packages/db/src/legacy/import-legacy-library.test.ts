@@ -34,7 +34,7 @@ void describe("importLegacyLibrary (synthetic 2.5.2 install)", () => {
       albums: 6,
       playlists: 3,
       songArtists: 7,
-      albumSongs: 6,
+      albumSongs: 5,
       albumArtists: 6,
       playlistSongs: 9,
     });
@@ -62,6 +62,7 @@ void describe("importLegacyLibrary (synthetic 2.5.2 install)", () => {
       "orphan-join-rows",
       "packed-track-number",
       "partial-artwork",
+      "song-albums-collapsed",
       "title-from-file-name",
     ]);
     assert.deepEqual(idsOf(warnings, "audio-file-missing"), [7]);
@@ -70,6 +71,7 @@ void describe("importLegacyLibrary (synthetic 2.5.2 install)", () => {
     assert.deepEqual(idsOf(warnings, "hidden-song-imported"), [10]);
     assert.deepEqual(idsOf(warnings, "title-from-file-name"), [14, 15]);
     assert.deepEqual(idsOf(warnings, "packed-track-number"), [16]);
+    assert.deepEqual(idsOf(warnings, "song-albums-collapsed"), [2]);
     assert.match(
       messageOf(warnings, "orphan-join-rows"),
       /artistSongs 2, albumSongs 1, artistsAlbums 1, playlistSongs 2/,

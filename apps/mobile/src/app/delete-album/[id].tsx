@@ -19,10 +19,9 @@ function deleteSongsLabel(count: number) {
 }
 
 /**
- * Asks before deleting an album with songs only it holds, and whether they go
- * too; songs on another album stay either way. The name and count come as
- * parameters, so the sheet stays as it was while it closes over the deleted
- * album.
+ * Asks before deleting an album with songs, and whether they go too. The name
+ * and count come as parameters, so the sheet stays as it was while it closes
+ * over the deleted album.
  */
 export default function DeleteAlbumScreen() {
   const id = useIdParam();

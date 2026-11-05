@@ -1,4 +1,4 @@
-import { and, eq, inArray, ne, notInArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import type { WriteOptions } from "./changes.ts";
@@ -159,38 +159,19 @@ export function deleteSongs(
   );
 }
 
-/** The songs on this album and no other: what deleting it with its songs takes. */
-export function listAlbumOnlySongIds(db: LibraryDb, albumId: number) {
-  return db
-    .select({ id: albumSongs.songId })
-    .from(albumSongs)
-    .where(
-      and(
-        eq(albumSongs.albumId, albumId),
-        notInArray(
-          albumSongs.songId,
-          db
-            .select({ id: albumSongs.songId })
-            .from(albumSongs)
-            .where(ne(albumSongs.albumId, albumId)),
-        ),
-      ),
-    )
-    .all()
-    .map((row) => row.id);
-}
-
-/**
- * Deletes an album and the songs only it holds, all or nothing. A song on
- * another album too stays in the library, on that album.
- */
+/** Deletes an album and every song on it, all or nothing. */
 export function deleteAlbumAndSongs(
   db: LibraryDb,
   id: number,
   options?: WriteOptions,
 ) {
   const value = db.transaction((tx) => {
-    const songIds = listAlbumOnlySongIds(tx, id);
+    const songIds = tx
+      .select({ id: albumSongs.songId })
+      .from(albumSongs)
+      .where(eq(albumSongs.albumId, id))
+      .all()
+      .map((r) => r.id);
     const deleted = deleteSongs(tx, songIds, options).value;
     const album = deleteAlbum(tx, id).value;
     return {

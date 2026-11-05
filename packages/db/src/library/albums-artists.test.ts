@@ -47,8 +47,8 @@ void describe("albums and artists", () => {
       album.artists.map((a) => a.id),
       [2, 1],
     );
-    editSong(db, 4, { albums: [{ album: { id: album.id }, track: 2 }] });
-    editSong(db, 12, { albums: [{ album: { id: album.id }, track: 1 }] });
+    editSong(db, 4, { album: { album: { id: album.id }, track: 2 } });
+    editSong(db, 12, { album: { album: { id: album.id }, track: 1 } });
     assert.deepEqual(ids(listAlbumTracks(db, album.id)), [12, 4]);
     reorderAlbumTracks(db, album.id, [4, 12]);
     assert.deepEqual(

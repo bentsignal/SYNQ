@@ -38,6 +38,9 @@ repeat. This is the one hard constraint on 3.0.
   iOS remembers the choice by name (`apps/mobile/assets/icons/README.md`).
 - Anything that touches stored data says how a 2.5.2 install upgrades
   through it, in its PR, with a test. See docs/rewrite.md → Data.
+- One exception, Shawn's call (November 2026): a song is on one album. A
+  2.5.2 song on several keeps one, the first with a cover, else the first
+  (docs/rewrite.md → One album per song).
 
 ## Project knowledge
 

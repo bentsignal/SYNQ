@@ -33,6 +33,9 @@ export function planImport(
     songIds: new Set(songs.map((s) => s.id)),
     artistIds: new Set(artists.map((a) => a.id)),
     albumIds: new Set(albums.map((a) => a.id)),
+    coveredAlbumIds: new Set(
+      albums.filter((a) => a.artworkVersion !== null).map((a) => a.id),
+    ),
     playlistIds: new Set(playlists.map((p) => p.id)),
   });
   warnAboutArtwork(context, {

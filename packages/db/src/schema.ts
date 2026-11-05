@@ -115,8 +115,9 @@ export const songArtists = sqliteTable(
 );
 
 /**
- * A song's albums. `position` orders a song's albums (0 is its primary album,
- * whose artwork wins); `track` orders an album's songs.
+ * A song's album: one each (`album_songs_song_idx` is unique; docs/rewrite.md →
+ * One album per song). `track` orders an album's songs. `position` is from
+ * when a song could have several, and is 0.
  */
 export const albumSongs = sqliteTable(
   "album_songs",
@@ -132,7 +133,7 @@ export const albumSongs = sqliteTable(
   },
   (t) => [
     primaryKey({ columns: [t.albumId, t.songId] }),
-    index("album_songs_song_idx").on(t.songId, t.position),
+    uniqueIndex("album_songs_song_idx").on(t.songId),
   ],
 );
 

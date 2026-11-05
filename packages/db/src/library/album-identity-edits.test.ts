@@ -99,7 +99,7 @@ void describe("editing a song's album", () => {
   void test("a pick by id is exactly that album", () => {
     const { abba, queen } = twoHits();
     const edited = editSong(db, queen.id, {
-      albums: [{ album: { id: abba.albumId ?? 0 } }],
+      album: { album: { id: abba.albumId ?? 0 } },
     });
     assert.equal(edited.value.albums[0]?.id, abba.albumId);
   });
@@ -108,7 +108,7 @@ void describe("editing a song's album", () => {
     const { abba, queen } = twoHits();
     const [extra] = importBatch(db, song("Other", "ABBA"));
     const edited = editSong(db, extra?.id ?? 0, {
-      albums: [{ album: { name: "HITS" } }],
+      album: { album: { name: "HITS" } },
     });
     const [album] = edited.value.albums;
     assert.ok(album);
@@ -120,7 +120,7 @@ void describe("editing a song's album", () => {
     twoHits();
     const [extra] = importBatch(db, song("Other", "Elton John"));
     const edited = editSong(db, extra?.id ?? 0, {
-      albums: [{ album: { name: "Hits" } }],
+      album: { album: { name: "Hits" } },
     });
     const album = listAlbums(db).find(
       (candidate) => candidate.id === edited.value.albums[0]?.id,
@@ -135,7 +135,7 @@ void describe("editing a song's album", () => {
   void test("a brand new name is credited to the song's artists", () => {
     const [extra] = importBatch(db, song("Other", "A"));
     const edited = editSong(db, extra?.id ?? 0, {
-      albums: [{ album: { name: "Fresh" } }],
+      album: { album: { name: "Fresh" } },
     });
     const album = listAlbums(db).find(
       (candidate) => candidate.id === edited.value.albums[0]?.id,
@@ -149,7 +149,7 @@ void describe("editing a song's album", () => {
   void test("the artists edited in the same save decide", () => {
     const { abba, queen } = twoHits();
     const edited = editSong(db, queen.id, {
-      albums: [{ album: { name: "Hits" } }],
+      album: { album: { name: "Hits" } },
       artists: [{ name: "ABBA" }],
     });
     assert.equal(edited.value.albums[0]?.id, abba.albumId);
@@ -157,7 +157,7 @@ void describe("editing a song's album", () => {
 
   void test("a move leaves the other same-named album's songs where they are", () => {
     const { abba, queen } = twoHits();
-    editSong(db, queen.id, { albums: [{ album: { id: abba.albumId ?? 0 } }] });
+    editSong(db, queen.id, { album: { album: { id: abba.albumId ?? 0 } } });
     assert.equal(listAlbumTracks(db, abba.albumId ?? 0).length, 2);
     assert.equal(listAlbumTracks(db, queen.albumId ?? 0).length, 0);
   });

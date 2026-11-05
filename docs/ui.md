@@ -87,9 +87,8 @@ numbers.
   page leaves out Play and Shuffle (they're buttons there) and Go to
   Artist (the header links to them). A collection with no songs offers
   only Pin, Edit, and Delete. Liked Songs has no Delete. Deleting an album with
-  songs only it holds opens a small sheet (an alert can't hold a switch) with
-  "Also Delete 12 Songs" on by default, counting only those: a song on another
-  album stays either way. Any other album gets the usual alert. Collection rows
+  songs opens a small sheet (an alert can't hold a switch) with "Also Delete
+  12 Songs" on by default; an empty album gets the usual alert. Collection rows
   and the Library tab's and an artist's cards are `NativeRow`s without the
   `ellipsis` button or a separator, so a long press lifts them natively and
   lists cost what song rows cost. Cards (`card`) have no tap highlight at all. The queue's rows have no menu either; they

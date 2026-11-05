@@ -35,6 +35,7 @@ export type {
   ArtistCredit,
   SongListItem,
 } from "./library/song-items.ts";
+export { coverAlbum } from "./library/song-items.ts";
 export * from "./library/song-files.ts";
 export * from "./library/song-writes.ts";
 export * from "./library/songs.ts";

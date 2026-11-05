@@ -194,8 +194,13 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   or took it off in the song's own Edit Info. An album that was already empty
   never asks.
 - **Artist**: artwork, name.
-- **Song**: artwork, title, artists, albums (toggle lists with search).
-  Setting a cover on a song with an album sets the album's cover (2.5.2).
+- **Song**: artwork, Use Album Artwork, title, artists, albums (toggle lists with
+  search). See docs/rewrite.md → Song artwork. The switch shows only on a song
+  with an album. On, Edit Artwork asks whether to change the album's artwork or
+  the song's: Album Artwork picks a photo for the album, Song Artwork picks one
+  for the song and turns the switch off, once a photo is chosen. There's no
+  Remove while it's on, since the cover isn't the song's. Off, Edit Artwork is
+  Choose Photo and Remove Photo on the song alone.
 - **New Playlist / Album**: the same form as editing, with no field focused
   so the keyboard doesn't hide Add Songs, so someone can pick a picture and
   songs before it exists. With no songs yet,

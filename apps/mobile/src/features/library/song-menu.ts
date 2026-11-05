@@ -2,12 +2,7 @@ import { router } from "expo-router";
 
 import type { SongListItem } from "@synq/db";
 
-import type {
-  MenuAction,
-  MenuGroups,
-  MenuItem,
-  MenuSubmenu,
-} from "~/components/menu";
+import type { MenuAction, MenuGroups, MenuItem } from "~/components/menu";
 import { exportFailed, exportSongs } from "~/features/export/export";
 import { addToQueue, playNext } from "~/features/player/actions";
 import { showQueueToast } from "~/features/player/queue-toast-store";
@@ -18,7 +13,7 @@ import {
   removeFromPlaylist,
   setLiked,
 } from "./actions";
-import { openLibraryScreen } from "./links";
+import { goToMenu } from "./go-to-menu";
 
 /** Where a song row is, which changes what its menu offers. */
 export interface SongMenuPlace {
@@ -26,7 +21,7 @@ export interface SongMenuPlace {
   liked: boolean;
   /** The user playlist the row is in: adds Remove from Playlist. */
   playlistId?: number;
-  /** The album page the row is on: drops Go to Album, adds Remove from Album. */
+  /** The album page the row is on: drops it from Go to Album, adds Remove from Album. */
   albumId?: number;
   /** The artist page the row is on: drops Go to Artist for them. */
   artistId?: number;
@@ -35,39 +30,6 @@ export interface SongMenuPlace {
 /** Shares the song with the library's current tags written in (features/export). */
 function shareSong(song: SongListItem) {
   exportSongs([song.id]).catch(exportFailed("Couldn't Share Song"));
-}
-
-function goToArtist(song: SongListItem, place: SongMenuPlace) {
-  const artists = song.artists.filter((artist) => artist.id !== place.artistId);
-  const [only] = artists;
-  if (only === undefined) return [];
-  if (artists.length === 1) {
-    return [
-      {
-        icon: "music.microphone",
-        key: "artist",
-        label: "Go to Artist",
-        onPress: () => openLibraryScreen({ id: only.id, screen: "artist" }),
-      } satisfies MenuAction,
-    ];
-  }
-  return [
-    {
-      icon: "music.microphone",
-      items: artists.map(
-        (artist) =>
-          ({
-            icon: "music.microphone",
-            key: `artist-${artist.id}`,
-            label: artist.name,
-            onPress: () =>
-              openLibraryScreen({ id: artist.id, screen: "artist" }),
-          }) satisfies MenuAction,
-      ),
-      key: "artists",
-      label: "Go to Artist",
-    } satisfies MenuSubmenu,
-  ];
 }
 
 /** Taking the song off where it is, then out of the library. */
@@ -111,7 +73,6 @@ function removeGroup(
  * row's ellipsis menu and its long-press menu.
  */
 export function songMenu(song: SongListItem, place: SongMenuPlace) {
-  const album = song.albums.find((credit) => credit.id !== place.albumId);
   const queue = [
     {
       icon: "text.line.first.and.arrowtriangle.forward",
@@ -159,17 +120,14 @@ export function songMenu(song: SongListItem, place: SongMenuPlace) {
     pinAction({ id: song.id, kind: "song" }, song.pinnedAt),
   ] satisfies MenuItem[];
   const go = [
-    ...(album === undefined
-      ? []
-      : [
-          {
-            icon: "square.stack",
-            key: "album",
-            label: "Go to Album",
-            onPress: () => openLibraryScreen({ id: album.id, screen: "album" }),
-          } satisfies MenuAction,
-        ]),
-    ...goToArtist(song, place),
+    ...goToMenu(
+      "album",
+      song.albums.filter((album) => album.id !== place.albumId),
+    ),
+    ...goToMenu(
+      "artist",
+      song.artists.filter((artist) => artist.id !== place.artistId),
+    ),
   ] satisfies MenuItem[];
   const edit = [
     {

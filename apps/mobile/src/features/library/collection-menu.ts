@@ -8,12 +8,7 @@ import type {
 } from "@synq/db";
 import { getArtistDetail, listAlbumTracks, listPlaylistSongs } from "@synq/db";
 
-import type {
-  MenuAction,
-  MenuGroups,
-  MenuItem,
-  MenuSubmenu,
-} from "~/components/menu";
+import type { MenuAction, MenuGroups, MenuItem } from "~/components/menu";
 import type { PlaybackSource } from "~/features/player/actions";
 import {
   exportAlbum,
@@ -30,7 +25,7 @@ import {
   pinAction,
 } from "./actions";
 import { libraryDb } from "./database";
-import { openLibraryScreen } from "./links";
+import { goToMenu } from "./go-to-menu";
 import { playlistSongSort } from "./sort";
 
 /** Whether a menu is on a row in a list or on the collection's own page. */
@@ -187,36 +182,7 @@ function goToArtists(
   place: CollectionMenuPlace,
 ) {
   // The page's header links to its artists already.
-  if (place.onPage === true) return [];
-  const [only] = artists;
-  if (only === undefined) return [];
-  if (artists.length === 1) {
-    return [
-      {
-        icon: "music.microphone",
-        key: "artist",
-        label: "Go to Artist",
-        onPress: () => openLibraryScreen({ id: only.id, screen: "artist" }),
-      } satisfies MenuAction,
-    ];
-  }
-  return [
-    {
-      icon: "music.microphone",
-      items: artists.map(
-        (artist) =>
-          ({
-            icon: "music.microphone",
-            key: `artist-${artist.id}`,
-            label: artist.name,
-            onPress: () =>
-              openLibraryScreen({ id: artist.id, screen: "artist" }),
-          }) satisfies MenuAction,
-      ),
-      key: "artists",
-      label: "Go to Artist",
-    } satisfies MenuSubmenu,
-  ];
+  return place.onPage === true ? [] : goToMenu("artist", artists);
 }
 
 export function playlistMenu(

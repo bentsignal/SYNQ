@@ -41,7 +41,7 @@ const MENU = [
       icon: "music.microphone",
       items: [mara, lind],
       key: "artists",
-      label: "Go to Artist",
+      label: "Go to Artists",
     },
   ],
   [remove],
@@ -58,7 +58,7 @@ void test("sends a menu as groups of items with their place as the id", () => {
         ],
         id: "1.0",
         image: "music.microphone",
-        title: "Go to Artist",
+        title: "Go to Artists",
       },
     ],
     [

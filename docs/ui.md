@@ -44,7 +44,8 @@ numbers.
   `shuffle` Shuffle).
 - **Song menu** (the ellipsis and the context menu, one data definition):
   Play Next, Add to Queue, Add to Playlist…, Add to Liked / Remove from Liked,
-  Pin / Unpin, Go to Album, Go to Artist, Edit Info, Share (export with tags), Remove
+  Pin / Unpin, Go to Album, Go to Artist (Go to Albums and Go to Artists,
+  submenus listing each by name, when there are several), Edit Info, Share (export with tags), Remove
   from Playlist (inside a user playlist), Delete from Library (destructive,
   confirmed with an alert: cancel first, destructive second). Run list
   changes after the menu closes (Vera's `afterMenuCloses`).

@@ -70,6 +70,7 @@ export function ScreenList<Item>({
   const known = useRef(props.data ?? []);
   const insertion = useRef(false);
   const lastIndex = useRef(new Map<string, number>());
+  const loaded = useRef(false);
   function shouldHold(item: Item, index: number, data: readonly Item[]) {
     const { keyExtractor } = props;
     // Called for each row in view when the data changes; the first decides.
@@ -110,7 +111,8 @@ export function ScreenList<Item>({
     props.onScroll?.(event);
   }
   // With no rows, Legend List cut its header short (an empty playlist lost
-  // its summary line and empty state), so a plain scroll view shows both.
+  // its summary line and empty state), so a plain scroll view shows both,
+  // and calls `onLoad` once it has laid out, as the list would.
   if ((props.data ?? []).length === 0) {
     return (
       <ScrollView
@@ -118,6 +120,11 @@ export function ScreenList<Item>({
         alwaysBounceVertical
         keyboardDismissMode="on-drag"
         style={[{ backgroundColor, flex: 1 }, props.style]}
+        onLayout={() => {
+          if (loaded.current) return;
+          loaded.current = true;
+          props.onLoad?.({ elapsedTimeInMs: 0 });
+        }}
         onScroll={props.onScroll}
         scrollEventThrottle={props.scrollEventThrottle}
       >

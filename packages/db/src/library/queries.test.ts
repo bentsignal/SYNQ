@@ -57,7 +57,7 @@ void describe("songs", () => {
   void test("sorts by primary album then track", () => {
     assert.deepEqual(
       ids(listSongs(db, { sort: "album", order: "asc" })).slice(0, 6),
-      [16, 1, 2, 5, 3, 6],
+      [16, 2, 1, 5, 3, 6],
     );
   });
 
@@ -69,18 +69,16 @@ void describe("songs", () => {
     assert.deepEqual(ids(listSongs(db, { search: "駆け" })), [12]);
   });
 
-  void test("song detail: credits in order, artwork from the first album that has some", () => {
+  void test("song detail: credits in order, and the album whose cover it showed", () => {
     const song = getSong(db, 2);
     assert.ok(song);
     assert.deepEqual(song.artists, [{ id: 2, name: "Kali Uchis" }]);
+    // 2.5.2 had it on Isolation too, which has no cover, so it showed
+    // Compilation's; it keeps Compilation (`oneAlbumEach`).
     assert.deepEqual(
       song.albums.map((a) => [a.id, a.name, a.track]),
-      [
-        [2, "Isolation", 3],
-        [6, "Compilation", 9],
-      ],
+      [[6, "Compilation", 9]],
     );
-    // Isolation has no cover, so Compilation's wins (2.5.2's precedence).
     assert.deepEqual(song.artwork, {
       kind: "album",
       id: 6,
@@ -189,8 +187,11 @@ void describe("albums", () => {
 
   void test("tracks in track order", () => {
     assert.deepEqual(
-      listAlbumTracks(db, 2).map((s) => [s.id, s.track]),
-      [[2, 3]],
+      listAlbumTracks(db, 6).map((s) => [s.id, s.track]),
+      [
+        [16, 2],
+        [2, 9],
+      ],
     );
     assert.deepEqual(ids(listAlbumTracks(db, 1)), [1]);
   });

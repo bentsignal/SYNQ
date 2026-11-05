@@ -8,7 +8,7 @@ import { changesArtworkTarget } from "./song-artwork";
 export interface SongDraft {
   title: string;
   artists: readonly Pick[];
-  /** In album order: the first is the song's primary album. */
+  /** The song's album, or none: one at most (`ChoiceList`'s `single`). */
   albums: readonly Pick[];
   /** Applies to the album's cover or the song's own: see `artworkAlbum`. */
   artwork: ArtworkChange;

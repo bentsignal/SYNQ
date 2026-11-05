@@ -18,7 +18,6 @@ import {
 } from "@synq/db";
 
 import type { MenuAction } from "~/components/menu";
-import { afterMenuCloses } from "~/components/menu";
 import { forgetSongs } from "~/features/player/actions";
 import { selectionTick } from "~/lib/haptics";
 import { emptyAlbumPrompt } from "./empty-album-prompt";
@@ -219,9 +218,6 @@ export function removeAlbum(
     if (deleted === undefined) return false;
     forgetSongs(deleted.ids);
     deleteLibraryFolders(deleted.deletePaths);
-    // After the sheet this came from has closed: iOS can't show an alert from
-    // a sheet on its way out.
-    afterMenuCloses(() => offerToDeleteEmptyAlbums(deleted.emptied));
     return true;
   }
   const deleted = tryWrite("Couldn't Delete Album", (db) =>

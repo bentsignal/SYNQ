@@ -16,19 +16,18 @@ import { appendAlbumArtists } from "./song-writes.ts";
 import { chunked } from "./text.ts";
 
 /**
- * Adds songs to the end of an album, in the given order. Each song moves out
- * of its primary album and this one becomes its primary (a second album it's
- * also on stays). Songs already on the album are left where they are, and
- * reported in `skipped`.
+ * Moves songs to the end of an album, in the given order. A song is on one
+ * album (docs/rewrite.md → One album per song), so each leaves its old one. Songs
+ * already on the album are left where they are, and reported in `skipped`.
+ * Albums the songs leave stay, even when emptied, as `deleteSongs` keeps
+ * them, with their covers; `emptied` names the ones left without songs.
  *
  * New tracks number on from the last one. An unnumbered track sorts after
  * every numbered one, so when the album has any, its tracks are first
  * numbered 1..n in their current order, or the new ones wouldn't land last.
  * An album with no artists takes the added songs' artists (as an import
  * credits them), so one built from existing songs isn't left unattributed;
- * an album that has artists keeps its credits. Albums a song leaves are kept
- * even when emptied, as `deleteSongs` keeps them, with their covers; `emptied`
- * names the ones this left with no songs, so the app can offer to delete them.
+ * an album that has artists keeps its credits.
  */
 export function addSongsToAlbum(
   db: LibraryDb,
@@ -159,59 +158,32 @@ export function setAlbumTracks(
   return written({ emptied }, ["album_songs", "album_artists", "songs"]);
 }
 
-/**
- * Replaces each song's primary album with this one, keeping its place in the
- * song's album order so any other album stays secondary. Returns the albums
- * they left.
- */
+/** Takes songs off the album they're on and puts them on this one, returning the albums they left. */
 function moveToAlbum(
   tx: LibraryDb,
   albumId: number,
   songIds: readonly number[],
   firstTrack: number,
 ) {
-  const primaries = new Map<number, { albumId: number; position: number }>();
+  const left = new Set<number>();
   for (const ids of chunked(songIds)) {
-    const rows = tx
-      .select({
-        albumId: albumSongs.albumId,
-        position: albumSongs.position,
-        songId: albumSongs.songId,
-      })
+    for (const row of tx
+      .select({ albumId: albumSongs.albumId })
       .from(albumSongs)
       .where(inArray(albumSongs.songId, ids))
-      .orderBy(asc(albumSongs.songId), asc(albumSongs.position))
-      .all();
-    for (const row of rows) {
-      if (!primaries.has(row.songId)) primaries.set(row.songId, row);
+      .all()) {
+      left.add(row.albumId);
     }
-  }
-  const leaving = new Map<number, number[]>();
-  for (const [songId, primary] of primaries) {
-    const list = leaving.get(primary.albumId);
-    if (list) list.push(songId);
-    else leaving.set(primary.albumId, [songId]);
-  }
-  for (const [oldAlbumId, ids] of leaving) {
-    for (const chunk of chunked(ids)) {
-      tx.delete(albumSongs)
-        .where(
-          and(
-            eq(albumSongs.albumId, oldAlbumId),
-            inArray(albumSongs.songId, chunk),
-          ),
-        )
-        .run();
-    }
+    tx.delete(albumSongs).where(inArray(albumSongs.songId, ids)).run();
   }
   const rows = songIds.map((songId, index) => ({
     albumId,
-    position: primaries.get(songId)?.position ?? 0,
+    position: 0,
     songId,
     track: firstTrack + index,
   }));
   for (const chunk of chunked(rows)) tx.insert(albumSongs).values(chunk).run();
-  return [...leaving.keys()];
+  return [...left];
 }
 
 function creditArtistsIfNone(

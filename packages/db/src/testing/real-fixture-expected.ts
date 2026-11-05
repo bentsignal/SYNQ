@@ -130,13 +130,14 @@ const SONG_ARTISTS = {
   20: [7],
 };
 
-/** Song → [album, track] in albumSongs rowid order (the first is the primary album). */
+/**
+ * Song → [album, track]. 2.5.2 also had Overpass (2) on Mixtape Vol. 1 #2 and
+ * Lost Signal (17) on Mixtape Vol. 1 #3; each keeps one album, the first with
+ * a cover, else the first (`oneAlbumEach`).
+ */
 const SONG_ALBUMS = {
   1: [[1, 1]],
-  2: [
-    [1, 2],
-    [5, 2],
-  ],
+  2: [[1, 2]],
   3: [[1, 3]],
   4: [[1, 4]],
   5: [[1, 5]],
@@ -147,10 +148,7 @@ const SONG_ALBUMS = {
   9: [[3, 7]],
   10: [[5, 4]],
   11: [[5, 1]],
-  17: [
-    [3, 5],
-    [5, 3],
-  ],
+  17: [[3, 5]],
   19: [[4, 2]],
   20: [[4, 1]],
 };

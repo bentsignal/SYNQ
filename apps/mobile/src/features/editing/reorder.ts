@@ -15,12 +15,3 @@ export function moveItems<Item>(
   const insertAt = to - from.filter((index) => index < to).length;
   return [...rest.slice(0, insertAt), ...moved, ...rest.slice(insertAt)];
 }
-
-/** The list without the items at `indices` (`onDelete`). */
-export function removeItems<Item>(
-  items: readonly Item[],
-  indices: readonly number[],
-) {
-  const removing = new Set(indices);
-  return items.filter((_, index) => !removing.has(index));
-}

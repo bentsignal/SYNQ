@@ -9,7 +9,7 @@ export interface MenuAction {
   onPress: () => void;
 }
 
-/** A submenu, such as Go to Artist when a song credits several. */
+/** A submenu, such as Go to Artists when a song credits several. */
 export interface MenuSubmenu {
   key: string;
   label: string;

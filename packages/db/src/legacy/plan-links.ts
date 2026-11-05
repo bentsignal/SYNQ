@@ -1,18 +1,21 @@
 /** Deduplicates and renumbers 2.5.2's join tables, dropping rows whose ends are gone. */
 import type { PlanContext } from "./plan-context.ts";
 import type { LegacyLinkRow } from "./read-legacy-db.ts";
+import { oneAlbumEach } from "../library/one-album.ts";
 import { LEGACY_LIBRARY_PLAYLIST_ID } from "./plan-context.ts";
 
 export interface PlannedIds {
   songIds: ReadonlySet<number>;
   artistIds: ReadonlySet<number>;
   albumIds: ReadonlySet<number>;
+  /** Albums with a cover: a song on several keeps one of these first. */
+  coveredAlbumIds: ReadonlySet<number>;
   playlistIds: ReadonlySet<number>;
 }
 
 export function planLinks(
   { snapshot, warnings }: PlanContext,
-  { songIds, artistIds, albumIds, playlistIds }: PlannedIds,
+  { songIds, artistIds, albumIds, coveredAlbumIds, playlistIds }: PlannedIds,
 ) {
   const tally = {
     orphans: new Map<string, number>(),
@@ -35,7 +38,7 @@ export function planLinks(
     position,
   }));
 
-  const albumSongs = linkRows(
+  const allAlbumSongs = linkRows(
     {
       table: "albumSongs",
       links: snapshot.albumSongs,
@@ -51,6 +54,9 @@ export function planLinks(
     if (track !== stored) packedTracks.push(link.right);
     return { albumId: link.left, songId: link.right, track, position };
   });
+  const albumSongs = oneAlbumEach(allAlbumSongs, (id) =>
+    coveredAlbumIds.has(id),
+  ).map((row) => ({ ...row, position: 0 }));
 
   const albumArtists = linkRows(
     {
@@ -95,6 +101,16 @@ export function planLinks(
     warnings.push({
       code: "duplicate-join-rows",
       message: `Dropped duplicate rows: ${describe(tally.duplicates)}`,
+    });
+  }
+  if (albumSongs.length < allAlbumSongs.length) {
+    const collapsed = new Set(
+      allAlbumSongs.filter((row) => row.position > 0).map((row) => row.songId),
+    );
+    warnings.push({
+      code: "song-albums-collapsed",
+      message: `Kept one album for each song on several (${collapsed.size})`,
+      ids: [...collapsed].sort((a, b) => a - b),
     });
   }
   if (packedTracks.length > 0) {

@@ -44,7 +44,8 @@ numbers.
   `shuffle` Shuffle).
 - **Song menu** (the ellipsis and the context menu, one data definition):
   Play Next, Add to Queue, Add to Playlist…, Add to Liked / Remove from Liked,
-  Pin / Unpin, Go to Album, Go to Artist, Edit Info, Share (export with tags), Remove
+  Pin / Unpin, Go to Album (not on an album page), Go to Artist (a Go to
+  Artists submenu listing each by name when there are several), Edit Info, Share (export with tags), Remove
   from Playlist (inside a user playlist), Delete from Library (destructive,
   confirmed with an alert: cancel first, destructive second). Run list
   changes after the menu closes (Vera's `afterMenuCloses`).
@@ -92,21 +93,25 @@ numbers.
   `ellipsis` button or a separator, so a long press lifts them natively and
   lists cost what song rows cost. Cards (`card`) have no tap highlight at all. The queue's rows have no menu either; they
   drag and swipe instead.
-- **Song picker** (`src/features/editing/song-picker.tsx`): add several
-  songs from the library at once, from Edit Songs and New Playlist / Album.
-  The Songs list's sort in a Legend List of plain React Native rows (no
+- **Song picker** (`src/features/editing/song-picker.tsx`): a checklist of
+  the library for an album's or a playlist's songs. One tap puts a song in or
+  takes it out. It opens as its own sheet from the `plus` beside the `ellipsis`
+  on a playlist or album page and from Add Songs in its empty state, saving at
+  Done, and inside the edit and create sheets from Add/Remove Songs, saving with the
+  sheet. The songs already there come first and start checked, then the rest
+  in the Songs list's sort, in a Legend List of plain React Native rows (no
   native host per row, so 3,000 songs scroll freely), with a circle that
   fills with a check; the bar's search narrows what's listed and choices
   stay through it. The title counts them ("3 Selected"); Select All applies
-  to what's listed; a song already there is dimmed with a gray check. Back
-  discards, Done (`checkmark`, prominent) adds them in the order chosen.
+  to what's listed. Back or Cancel discards. Done (`checkmark`, prominent)
+  waits for a change: songs that stay keep their place, even if unchecked and
+  checked again, and new ones go at the end in the order chosen.
 - **Empty states** (`EmptyState`, one component for every empty page and
   every "no results"): a small `subtle` symbol (26 pt), a short `muted` title,
   and only the actions that help, as quiet capsules on `fill`, sitting in the
   upper part of the page. A page that's empty and has no artwork drops its
   collection header, so there's no large placeholder: its name moves to the
-  bar and the state stands alone (Liked Songs: "No Liked Songs" + Browse
-  Songs).
+  bar and the state stands alone (Liked Songs: "No Liked Songs" + Add Songs).
 - **Errors**: `Alert.alert("Couldn't <Verb> <Noun>", "Try again.")`.
 
 ## Tabs
@@ -178,26 +183,27 @@ of 140 pt album cards, then "Songs".
 
 Native forms (`FieldGroup`) with Cancel (`xmark`) and Done (`checkmark`,
 prominent) in the toolbar. The small sheets (New Artist, Add to Playlist)
-are form sheets; the edit and create sheets push lists (Edit Songs, Add
-Songs, Artists, Albums) inside their own stack, which a form sheet can't
+are form sheets; the edit and create sheets push lists (the song picker,
+Reorder Songs, Artists, Albums) inside their own stack, which a form sheet can't
 hold, so they're page sheets, and Done saves everything the sheet changed
 (`src/features/editing/draft.ts`):
 - **Playlist**: artwork (tap to choose a photo: the system's picker, then Move and Scale over
   it, ours, since the system's own editor comes only with its old picker, which
   takes about five seconds to open), name,
-  and Edit Songs (a SwiftUI `List` in edit mode: an Add Songs row on top
-  opening the song picker, drag to reorder, swipe to remove).
-- **Album**: artwork, name, year, artists (toggle list), Edit Songs (same
-  native list). Adding a song moves it here: see docs/rewrite.md → Adding
-  a song to an album. Albums left empty stay, but whatever empties one offers to
+  Add/Remove Songs (the song picker), and, with two songs or more, Reorder Songs (a
+  SwiftUI `List` in edit mode: drag to reorder).
+- **Album**: artwork, name, year, artists (toggle list), Add/Remove Songs, and
+  Reorder Songs (same as a playlist's). A song is on one album, so adding one moves it here: see
+  docs/rewrite.md → Adding a song to an album. Albums left empty stay, but whatever empties one offers to
   delete it, in an alert (Keep, then a destructive Delete), at that moment:
-  removing the last song in Edit Songs, Remove from Album or Delete from Library
-  on its last song, or saving an edit that moved another album's last song here
-  or took it off in the song's own Edit Info. An album that was already empty
+  unchecking the last song in the song picker, adding its last song to another
+  album, Remove from Album or Delete from Library on its last song, or moving it
+  in the song's own Edit Info. An album that was already empty
   never asks.
 - **Artist**: artwork, name.
-- **Song**: artwork, Use Album Artwork, title, artists, albums (toggle lists with
-  search). See docs/rewrite.md → Song artwork. The switch shows only on a song
+- **Song**: artwork, Use Album Artwork, title, artists (a toggle list), album
+  (one choice: picking one goes back to the form, and tapping the checked one
+  clears it), both with search. See docs/rewrite.md → Song artwork. The switch shows only on a song
   with an album. On, Edit Artwork asks whether to change the album's artwork or
   the song's: Album Artwork picks a photo for the album, Song Artwork picks one
   for the song and turns the switch off, once a photo is chosen. There's no
@@ -211,8 +217,7 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   artists.
 - **New Playlist / Album**: the same form as editing, with no field focused
   so the keyboard doesn't hide Add Songs, so someone can pick a picture and
-  songs before it exists. With no songs yet,
-  Add Songs goes straight to the picker. From Add to Playlist, New Playlist
+  songs before it exists. From Add to Playlist, New Playlist
   starts with those songs and Done closes both sheets.
 - **New Artist**: a small form sheet with the name field focused.
 - **Add to Playlist**: a form sheet listing playlists (Liked Songs first)

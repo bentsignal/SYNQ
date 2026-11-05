@@ -159,11 +159,7 @@ export function deleteSongs(
   );
 }
 
-/**
- * Deletes an album and every song on it, all or nothing. A song on another
- * album too goes from there as well, as it does in `deleteSongs`, and an album
- * that leaves empty is reported.
- */
+/** Deletes an album and every song on it, all or nothing. */
 export function deleteAlbumAndSongs(
   db: LibraryDb,
   id: number,
@@ -180,7 +176,6 @@ export function deleteAlbumAndSongs(
     const album = deleteAlbum(tx, id).value;
     return {
       deletePaths: [...deleted.deletePaths, ...album.deletePaths],
-      emptied: deleted.emptied.filter((emptied) => emptied.id !== id),
       ids: deleted.ids,
     };
   });

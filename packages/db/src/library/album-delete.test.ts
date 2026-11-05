@@ -9,7 +9,6 @@ import {
   createAlbum,
   createPlaylist,
   deleteAlbumAndSongs,
-  editSong,
   getAlbum,
   getSong,
   listAlbumTracks,
@@ -79,28 +78,12 @@ void describe("deleting an album and its songs", () => {
     );
   });
 
-  void test("reports another album left empty, not the deleted one", () => {
-    const { id, songIds } = albumWithSongs("Doomed", 1);
-    const other = album("Other");
-    const [songId] = songIds;
-    assert.ok(songId !== undefined);
-    editSong(db, songId, {
-      albums: [{ album: { id } }, { album: { id: other.id } }],
-    });
-
-    const { value } = deleteAlbumAndSongs(db, id);
-
-    assert.deepEqual(value.emptied, [{ id: other.id, name: "Other" }]);
-    assert.equal(getAlbum(db, other.id)?.songCount, 0);
-  });
-
   void test("deletes an album with no songs", () => {
     const empty = album("Empty");
     const before = listSongs(db).length;
 
     assert.deepEqual(deleteAlbumAndSongs(db, empty.id).value, {
       deletePaths: [`albums/${empty.id}`],
-      emptied: [],
       ids: [],
     });
     assert.equal(listSongs(db).length, before);

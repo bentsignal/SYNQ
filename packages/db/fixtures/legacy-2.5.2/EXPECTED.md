@@ -228,7 +228,7 @@ Files in the directory: `a9d1cbf71942327e98b40cf5ef38a960`, `manifest.json`
 | Bogus m4a track numbers | Blueprints 196609/196610/196611 (2.5.2 read iTunes `trkn` "n/total" as one int: `track = n + total·65536`) | **decision for Shawn**: decode (`track & 0xFFFF` → 1, 2, 3) or keep raw. Either way the album order stays Foundations → Scaffold & Steel → Keystone |
 | Track from file name | Lost Signal (`05 Lost Signal.mp3`, no tag) → 5 | keep 5 |
 | Track from title prefix | Interlude (tag title `07 Interlude`) → title `Interlude`, track 7 | keep |
-| Song in two albums | Overpass (Night Drive #2, Mixtape #2), Lost Signal (Transmissions #5, Mixtape #3) | first albumSongs row is the primary album; artwork follows the first album that has art |
+| Song in two albums | Overpass (Night Drive #2, Mixtape #2), Lost Signal (Transmissions #5, Mixtape #3) | 3.0 keeps one album each: Overpass keeps Night Drive (the first with a cover), Lost Signal keeps Transmissions (neither has one, so the first). See docs/rewrite.md → One album per song |
 | Comma names | tag `Marlow, The Architect` was split into artists "Marlow" + "The Architect" at import | migrate as two artists (that's what 2.5.2 shows); don't try to re-join |
 | Album name case | `night drive` (song 5's tag) merged into "Night Drive" | one album |
 | Stale denormalized columns | `songs.artists` / `songs.album` for 2, 10, 11, 17 | ignore them; use the join tables |

@@ -12,7 +12,8 @@ that makes them.
 - **Every 2.5.2 user's library survives the update untouched**: songs,
   files, artwork, artists, albums, track numbers, playlists and their order,
   Liked Songs (including a renamed one), theme, app icon, haptics, and shuffle
-  and repeat. This is the one hard constraint.
+  and repeat. This is the one hard constraint. Its one exception: a song on
+  several albums keeps one (see One album per song).
 - Code that is easy to extend: Vera's conventions, lint rules, React Doctor,
   perf gates, simulator workflow, and agent skills.
 - A native-feeling iOS app (native tabs with the mini player as the tab bar
@@ -160,8 +161,9 @@ columns and names):
 - `artists`: `id`, `name`, `artwork_version`, `added_at`, Home columns.
 - `albums`: `id`, `name`, `year`, `artwork_version`, `added_at`, Home columns.
 - `song_artists`: `song_id`, `artist_id`, `position` (unique pair).
-- `album_songs`: `album_id`, `song_id`, `track` (nullable), `position` (the
-  song's album order; the first is its primary album) (unique pair).
+- `album_songs`: `album_id`, `song_id` (unique: one album per song), `track`
+  (nullable), `position` (0; it ordered a song's albums when it could have
+  several).
 - `album_artists`: `album_id`, `artist_id`, `position` (unique pair).
 - `playlists`: `id`, `name`, `kind` (`liked` for Liked Songs, else `user`),
   `artwork_version`, `created_at`, `updated_at`, Home columns. Liked Songs is a playlist
@@ -173,9 +175,9 @@ columns and names):
 
 Durations are **milliseconds** everywhere in 3.0 (2.5.2 stored seconds).
 
-A song's artwork is its first album (by `album_songs.position`) that has
-artwork, else its own, else the placeholder (2.5.2's precedence), unless its
-`use_album_artwork` is off: see Song artwork.
+A song's artwork is its album's, if it has some, else its own, else the
+placeholder (2.5.2's precedence), unless its `use_album_artwork` is off: see
+Song artwork.
 
 Preferences (accent, haptics, shuffle, repeat, review bookkeeping) and the playback session (queue song ids, index, position,
 source) live in `expo-sqlite/kv-store` behind a small typed store, read
@@ -244,19 +246,41 @@ November 2026; `docs/ui.md` → Editing has the sheet).
 - **Backups.** A new song keeps the backup's setting; a song on both sides keeps
   this library's. An older backup is migrated first, so its songs are on.
 
+### One album per song
+
+A song is on one album (Shawn, November 2026). 2.5.2, and 3.0 until then,
+let a song be on several, which confused more than it helped: Go to Album had
+to pick one, and adding a song to a second album left it showing the first.
+`album_songs.song_id` is unique, so the database holds one row per song.
+
+A song on several keeps one: the first, in its album order, whose album has a
+cover, so the artwork it shows doesn't change, else the first. The others
+lose the song and stay, even if that empties them, as every write leaves an
+emptied album. Track numbers on the kept album stay. No file moves or is
+deleted. The same rule (`oneAlbumEach`, `src/library/one-album.ts`) runs in
+three places:
+
+- **A 2.5.2 upgrade**: the importer keeps one, and reports the songs in a
+  `song-albums-collapsed` warning. In the captured 2.5.2 fixture, Overpass
+  keeps Night Drive (Mixtape Vol. 1 has no cover) and Lost Signal keeps
+  Transmissions (neither has one).
+- **A 3.0 library** made before this: migration
+  `drizzle/0003_one_album_per_song.sql` collapses it in SQL, then adds the
+  unique index.
+- **Restoring a backup** made before this: the merge carries one album row per
+  song.
+
 ### Adding a song to an album
 
-Adding a song from an album's Edit Songs (or New Album) moves it there
-(`addSongsToAlbum`). No schema change, so a 2.5.2 library upgrades through
-it untouched, and no audio or artwork file moves or is deleted.
+Adding a song from an album's song picker (or New Album) moves it there
+(`addSongsToAlbum`), and Edit Info's Album is a single choice.
 
-- It leaves its primary album; this one becomes primary. A second album
-  it's also on stays second.
+- It leaves the album it was on.
 - It lands at the end: tracks number on from the last one. An unnumbered
   track sorts after every numbered one, so an album with any gets numbered
   1..n in its current order first.
-- An album left without a cover copies the first added song's, as an import
-  gives a new album its first song's. Otherwise moving a song would lose its
+- An album with no cover copies the first added song's, as an import gives a
+  new album its first song's. Otherwise moving a song would lose its
   artwork, since an album's cover stays with that album.
 - An album with no artists takes the added songs' artists; one that has
   artists keeps them, and a track by someone else shows them under its

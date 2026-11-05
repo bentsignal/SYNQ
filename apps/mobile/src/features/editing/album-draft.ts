@@ -63,12 +63,11 @@ export function trackIds(edits: AlbumDraft) {
 }
 
 /**
- * An album left without a cover takes its first added track's: moving a song
- * here leaves its old album's cover behind, so it would otherwise lose its
- * artwork. Choosing or removing a cover in the sheet wins.
+ * An album with no cover takes its first added track's, as an import gives a
+ * new album its first song's. Choosing or removing a cover in the sheet wins.
  */
 export function coverFromTracks(
-  edits: AlbumDraft,
+  edits: { artwork: ArtworkChange; tracks: readonly ReorderRow[] },
   hasCover: boolean,
   saved: ReadonlySet<string>,
 ) {

@@ -6,7 +6,6 @@ import {
   addSongsToAlbum,
   createAlbum,
   deleteSongs,
-  editSong,
   getAlbum,
   listEmptyAlbums,
   listSongs,
@@ -80,21 +79,6 @@ void describe("albums left empty", () => {
     assert.ok((getAlbum(db, albumId)?.songCount ?? 0) > 1);
     const target = newAlbum();
     assert.deepEqual(setAlbumTracks(db, target.id, [songId]).value.emptied, []);
-  });
-
-  void test("a song still on its second album empties only the first", () => {
-    const { album, songId } = single("Single");
-    const second = newAlbum("Second");
-    editSong(db, songId, {
-      albums: [{ album: { id: album.id } }, { album: { id: second.id } }],
-    });
-    const target = newAlbum();
-    const result = setAlbumTracks(db, target.id, [songId]);
-    assert.deepEqual(
-      result.value.emptied.map((item) => item.id),
-      [album.id],
-    );
-    assert.equal(getAlbum(db, second.id)?.songCount, 1);
   });
 
   void test("an older empty album is never named", () => {

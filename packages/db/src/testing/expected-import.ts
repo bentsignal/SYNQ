@@ -248,8 +248,8 @@ export const EXPECTED_LIBRARY = {
   ],
   albumSongs: [
     { albumId: 1, songId: 1, track: 1, position: 0 },
-    { albumId: 2, songId: 2, track: 3, position: 0 },
-    { albumId: 6, songId: 2, track: 9, position: 1 },
+    // Song 2 was on albums 2 and 6; it keeps 6, the first with a cover.
+    { albumId: 6, songId: 2, track: 9, position: 0 },
     { albumId: 3, songId: 3, track: null, position: 0 },
     { albumId: 4, songId: 5, track: 12, position: 0 },
     { albumId: 6, songId: 16, track: 2, position: 0 },

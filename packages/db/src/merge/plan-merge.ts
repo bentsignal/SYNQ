@@ -7,6 +7,7 @@
 import type { PathIndex } from "./file-index.ts";
 import type { MergeIds } from "./plan-files.ts";
 import type { LibrarySnapshot } from "./types.ts";
+import { oneAlbumEach } from "../library/one-album.ts";
 import { carriedAlbumArtists, planAlbums } from "./plan-albums.ts";
 import { PlanFiles } from "./plan-files.ts";
 import { matchNames, newPairs, pairKey, planNamedRows } from "./plan-names.ts";
@@ -154,11 +155,15 @@ export function planMerge(options: PlanOptions) {
     song.targets,
     carry,
   );
-  const memberships = carriedRows(
-    backup.albumSongs,
-    current.albumSongs,
-    song.targets,
-    carry,
+  // A backup from before a song had one album can still have several.
+  const covered = new Set(
+    backup.albums
+      .filter((row) => row.artworkVersion !== null)
+      .map((row) => row.id),
+  );
+  const memberships = oneAlbumEach(
+    carriedRows(backup.albumSongs, current.albumSongs, song.targets, carry),
+    (id) => covered.has(id),
   );
   const albumContext = {
     backup,

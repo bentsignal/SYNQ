@@ -38,13 +38,16 @@ export const EFFECTIVE_ARTWORK = {
   20: ["album", 4],
 };
 
-/** Album → song ids in track order, as 2.5.2 showed them. */
+/**
+ * Album → song ids in track order, as 2.5.2 showed them, less Overpass (2)
+ * and Lost Signal (17) on Mixtape Vol. 1: each keeps its other album.
+ */
 export const ALBUM_TRACKS = {
   1: [1, 2, 3, 4, 5],
   2: [6, 7, 8],
   3: [17, 9],
   4: [20, 19],
-  5: [11, 2, 17, 10],
+  5: [11, 10],
 };
 
 export const EXPECTED_SETTINGS = {
@@ -81,6 +84,11 @@ export const EXPECTED_WARNINGS = [
     message: "Dropped orphan rows: artistSongs 1, playlistSongs 2",
   },
   {
+    code: "song-albums-collapsed",
+    message: "Kept one album for each song on several (2)",
+    ids: [2, 17],
+  },
+  {
     code: "packed-track-number",
     message: "Decoded packed m4a track numbers (3)",
     ids: [6, 7, 8],
@@ -93,7 +101,7 @@ export const EXPECTED_COUNTS = {
   albums: 5,
   playlists: 4,
   songArtists: 27,
-  albumSongs: 16,
+  albumSongs: 14,
   albumArtists: 11,
   playlistSongs: 21,
 };

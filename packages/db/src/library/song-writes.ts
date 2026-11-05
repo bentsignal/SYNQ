@@ -162,10 +162,10 @@ export interface EditSongInput {
   /** Replaces the song's artists, in credit order. */
   artists?: readonly ArtistRef[];
   /**
-   * Replaces the song's albums, in album order (the first is primary).
-   * `track` undefined keeps the song's current track on that album.
+   * Replaces the song's album (null for none). `track` undefined keeps the
+   * song's current track when the album stays the same.
    */
-  albums?: readonly { album: AlbumRef; track?: number | null }[];
+  album?: { album: AlbumRef; track?: number | null } | null;
   /** Whether its album's cover comes before its own artwork. */
   useAlbumArtwork?: boolean;
 }
@@ -197,7 +197,7 @@ export function editSong(
     const context = { tx, resolver: new EntityResolver(tx, now), changed, now };
 
     if (input.artists) replaceArtists(context, id, input.artists);
-    if (input.albums) replaceAlbums(context, id, input.albums);
+    if (input.album !== undefined) replaceAlbum(context, id, input.album);
     if (context.resolver.createdArtists) changed.add("artists");
     if (context.resolver.createdAlbums) changed.add("albums");
   });
@@ -228,35 +228,26 @@ function replaceArtists(
   changed.add("song_artists");
 }
 
-function replaceAlbums(
+function replaceAlbum(
   context: WriteContext,
   id: number,
-  entries: NonNullable<EditSongInput["albums"]>,
+  entry: NonNullable<EditSongInput["album"]> | null,
 ) {
   const { tx, changed } = context;
-  const previous = new Map(
-    tx
-      .select({ albumId: albumSongs.albumId, track: albumSongs.track })
-      .from(albumSongs)
-      .where(eq(albumSongs.songId, id))
-      .all()
-      .map((r) => [r.albumId, r.track]),
-  );
-  const seen = new Set<number>();
-  const rows = [];
-  for (const entry of entries) {
-    const albumId = albumForEdit(context, id, entry.album);
-    if (seen.has(albumId)) continue;
-    seen.add(albumId);
-    const track =
-      entry.track === undefined
-        ? (previous.get(albumId) ?? null)
-        : positiveOrNull(entry.track);
-    rows.push({ albumId, songId: id, track, position: rows.length });
-  }
+  const previous = tx
+    .select({ albumId: albumSongs.albumId, track: albumSongs.track })
+    .from(albumSongs)
+    .where(eq(albumSongs.songId, id))
+    .get();
+  const albumId = entry && albumForEdit(context, id, entry.album);
   tx.delete(albumSongs).where(eq(albumSongs.songId, id)).run();
-  if (rows.length > 0) tx.insert(albumSongs).values(rows).run();
   changed.add("album_songs");
+  if (entry === null || albumId === null) return;
+  const kept = previous?.albumId === albumId ? previous.track : null;
+  const track = entry.track === undefined ? kept : positiveOrNull(entry.track);
+  tx.insert(albumSongs)
+    .values({ albumId, songId: id, track, position: 0 })
+    .run();
 }
 
 export { appendAlbumArtists } from "./song-albums.ts";

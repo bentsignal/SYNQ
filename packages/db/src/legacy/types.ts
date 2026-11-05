@@ -67,6 +67,8 @@ export type LegacyImportWarningCode =
   | "orphan-join-rows"
   /** Repeated join rows were dropped, keeping the first. */
   | "duplicate-join-rows"
+  /** Songs on several albums kept one (`oneAlbumEach`); `ids` are the songs. */
+  | "song-albums-collapsed"
   /** An m4a track number stored packed with its total (`total << 16 | n`); decoded to `n`. */
   | "packed-track-number"
   /** Only one of `cover_full.jpg` / `cover_small.jpg` exists. */

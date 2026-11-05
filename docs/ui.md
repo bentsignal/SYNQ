@@ -203,6 +203,12 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   for the song and turns the switch off, once a photo is chosen. There's no
   Remove while it's on, since the cover isn't the song's. Off, Edit Artwork is
   Choose Photo and Remove Photo on the song alone.
+- **Artists and Albums lists**: `plus` in the bar, opposite Back, opens New
+  Artist or New Album over the list; Done closes it and the new one is already
+  chosen. It's saved at that point, so canceling the edit sheet keeps it.
+  Typing a name that isn't listed also offers it as a new one, created when
+  the edit sheet saves. New Album opened from a song starts with the song's
+  artists.
 - **New Playlist / Album**: the same form as editing, with no field focused
   so the keyboard doesn't hide Add Songs, so someone can pick a picture and
   songs before it exists. With no songs yet,

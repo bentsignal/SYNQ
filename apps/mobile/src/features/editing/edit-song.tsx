@@ -12,7 +12,6 @@ import {
   listEmptyAlbums,
 } from "@synq/db";
 
-import type { ArtworkChange } from "./artwork-change";
 import type { Pick } from "./pick";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
@@ -21,26 +20,14 @@ import { libraryDb } from "~/features/library/database";
 import { dotted, names } from "~/features/library/format";
 import { useIdParam } from "~/features/library/params";
 import { useLibraryQuery } from "~/features/library/queries";
+import { useArtistOptions } from "./artist-options";
 import { KEEP_ARTWORK, saveArtworkChange } from "./artwork-change";
 import { ArtworkField } from "./artwork-field";
 import { ChoiceList } from "./choice-list";
-import { createDraft } from "./draft";
-import { useArtistOptions } from "./edit-album";
 import { LinkRow } from "./link-row";
 import { SheetToolbar } from "./sheet-toolbar";
-import { artworkAlbum, changesArtworkTarget } from "./song-artwork";
-
-interface SongDraft {
-  title: string;
-  artists: readonly Pick[];
-  /** In album order: the first is the song's primary album. */
-  albums: readonly Pick[];
-  /** Applies to the album's cover or the song's own: see `artworkAlbum`. */
-  artwork: ArtworkChange;
-  useAlbumArtwork: boolean;
-}
-
-const draft = createDraft<SongDraft>("song");
+import { artworkAlbum } from "./song-artwork";
+import { chooseAlbums, draft } from "./song-draft";
 
 function refOf(pick: Pick) {
   return "id" in pick ? { id: pick.id } : { name: pick.name };
@@ -188,6 +175,9 @@ export function EditSongArtistsScreen() {
         options={artists}
         picked={edits.artists}
         onChange={(picked) => draft.update(() => ({ artists: picked }))}
+        onNew={() =>
+          router.push({ params: { pickFor: "song" }, pathname: "/new-artist" })
+        }
       />
     </>
   );
@@ -216,16 +206,9 @@ export function EditSongAlbumsScreen() {
         options={albums}
         picked={edits.albums}
         canAddNamed={(name) => canAddAlbumNamed(name, albums, artistNames)}
-        onChange={(picked) =>
-          draft.update((current) => ({
-            albums: picked,
-            artwork: changesArtworkTarget(current, {
-              ...current,
-              albums: picked,
-            })
-              ? KEEP_ARTWORK
-              : current.artwork,
-          }))
+        onChange={chooseAlbums}
+        onNew={() =>
+          router.push({ params: { pickFor: "song" }, pathname: "/new-album" })
         }
       />
     </>

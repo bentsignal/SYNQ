@@ -68,12 +68,25 @@ function ChoiceRow({
   );
 }
 
+function NewButton({ noun, onPress }: { noun: string; onPress: () => void }) {
+  return (
+    <Stack.Toolbar placement="right">
+      <Stack.Toolbar.Button
+        icon="plus"
+        accessibilityLabel={`New ${noun}`}
+        onPress={onPress}
+      />
+    </Stack.Toolbar>
+  );
+}
+
 /**
  * Picks artists or albums for an edit sheet: the chosen ones first, in
  * credit order (the first album is the song's primary one), then every
- * other, filtered by the bar's search field. Typing a name that isn't
- * there offers it as a new one; `canAddNamed` can offer one that is, for
- * albums, where two can share a name.
+ * other, filtered by the bar's search field. The bar's `plus` opens the
+ * sheet that creates one. Typing a name that isn't there also offers it as a
+ * new one; `canAddNamed` can offer one that is, for albums, where two can
+ * share a name.
  */
 export function ChoiceList({
   noun,
@@ -81,6 +94,7 @@ export function ChoiceList({
   picked,
   canAddNamed,
   onChange,
+  onNew,
 }: {
   /** "Artist" or "Album", for the search field and the New row. */
   noun: string;
@@ -93,6 +107,7 @@ export function ChoiceList({
   picked: readonly Pick[];
   canAddNamed?: (name: string) => boolean;
   onChange: (picked: Pick[]) => void;
+  onNew: () => void;
 }) {
   const search = useSearchText();
   const typed = search.query.trim();
@@ -117,6 +132,7 @@ export function ChoiceList({
   }
   return (
     <>
+      <NewButton noun={noun} onPress={onNew} />
       <Stack.SearchBar
         placeholder={`Search or Add ${noun}`}
         onChangeText={(event) => search.onChangeText(event.nativeEvent.text)}

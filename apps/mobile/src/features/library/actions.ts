@@ -10,6 +10,7 @@ import {
   deletePlaylist,
   deleteSongs,
   LibraryError,
+  listAlbumOnlySongIds,
   removeSongsFromAlbum,
   removeSongsFromPlaylist,
   setPinned,
@@ -18,9 +19,9 @@ import {
 } from "@synq/db";
 
 import type { MenuAction } from "~/components/menu";
-import { afterMenuCloses } from "~/components/menu";
 import { forgetSongs } from "~/features/player/actions";
 import { selectionTick } from "~/lib/haptics";
+import { libraryDb } from "./database";
 import { emptyAlbumPrompt } from "./empty-album-prompt";
 import { deleteLibraryFolders } from "./files";
 import { writeLibrary } from "./queries";
@@ -175,20 +176,22 @@ export function confirmDeletePlaylist(
 }
 
 /**
- * Asks before deleting an album. One with songs opens a sheet, since an alert
- * can't hold the choice to delete them too; an empty one has nothing to choose.
+ * Asks before deleting an album. One with songs only it holds opens a sheet,
+ * since an alert can't hold the choice to delete them too. Otherwise there's
+ * nothing to choose: its songs, if any, are on other albums and stay.
  */
 export function confirmDeleteAlbum(album: {
   id: number;
   name: string;
   songCount: number;
 }) {
-  if (album.songCount > 0) {
+  const deletable = listAlbumOnlySongIds(libraryDb(), album.id).length;
+  if (deletable > 0) {
     router.push({
       params: {
         id: String(album.id),
         name: album.name,
-        songs: String(album.songCount),
+        songs: String(deletable),
       },
       pathname: "/delete-album/[id]",
     });
@@ -196,7 +199,10 @@ export function confirmDeleteAlbum(album: {
   }
   confirm({
     action: "Delete Album",
-    message: `“${album.name}” will be deleted.`,
+    message:
+      album.songCount > 0
+        ? `“${album.name}” will be deleted. Its songs stay in your library.`
+        : `“${album.name}” will be deleted.`,
     remove: () => {
       removeAlbum(album.id, { withSongs: false });
     },
@@ -205,8 +211,8 @@ export function confirmDeleteAlbum(album: {
 }
 
 /**
- * Deletes an album, and its songs when asked: their rows, then their folders,
- * and drops them from the queue. Returns whether it worked.
+ * Deletes an album, and when asked the songs only it holds: their rows, then
+ * their folders, and drops them from the queue. Returns whether it worked.
  */
 export function removeAlbum(
   albumId: number,
@@ -219,9 +225,6 @@ export function removeAlbum(
     if (deleted === undefined) return false;
     forgetSongs(deleted.ids);
     deleteLibraryFolders(deleted.deletePaths);
-    // After the sheet this came from has closed: iOS can't show an alert from
-    // a sheet on its way out.
-    afterMenuCloses(() => offerToDeleteEmptyAlbums(deleted.emptied));
     return true;
   }
   const deleted = tryWrite("Couldn't Delete Album", (db) =>

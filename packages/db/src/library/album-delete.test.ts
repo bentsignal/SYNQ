@@ -12,6 +12,7 @@ import {
   editSong,
   getAlbum,
   getSong,
+  listAlbumOnlySongIds,
   listAlbumTracks,
   listPlaylistSongs,
   listSongs,
@@ -30,7 +31,7 @@ function album(name: string) {
   return createAlbum(db, { name }).value;
 }
 
-/** A new album holding the first `count` songs of a 2.5.2 library. */
+/** A new album that is the only one holding the first `count` songs of a 2.5.2 library. */
 function albumWithSongs(name: string, count: number) {
   const created = album(name);
   const songIds = listSongs(db)
@@ -38,6 +39,9 @@ function albumWithSongs(name: string, count: number) {
     .map((song) => song.id);
   assert.equal(songIds.length, count);
   addSongsToAlbum(db, created.id, songIds);
+  for (const songId of songIds) {
+    editSong(db, songId, { albums: [{ album: { id: created.id } }] });
+  }
   return { id: created.id, songIds };
 }
 
@@ -79,19 +83,40 @@ void describe("deleting an album and its songs", () => {
     );
   });
 
-  void test("reports another album left empty, not the deleted one", () => {
-    const { id, songIds } = albumWithSongs("Doomed", 1);
+  void test("keeps a song that's on another album, on that album", () => {
+    const { id, songIds } = albumWithSongs("Doomed", 2);
+    const [shared, only] = songIds;
+    assert.ok(shared !== undefined && only !== undefined);
     const other = album("Other");
-    const [songId] = songIds;
-    assert.ok(songId !== undefined);
-    editSong(db, songId, {
-      albums: [{ album: { id } }, { album: { id: other.id } }],
-    });
+    addSongsToAlbum(db, other.id, [shared]);
+    assert.deepEqual(listAlbumOnlySongIds(db, id), [only]);
 
     const { value } = deleteAlbumAndSongs(db, id);
 
-    assert.deepEqual(value.emptied, [{ id: other.id, name: "Other" }]);
-    assert.equal(getAlbum(db, other.id)?.songCount, 0);
+    assert.deepEqual(value.ids, [only]);
+    assert.deepEqual(value.deletePaths, [`library/${only}`, `albums/${id}`]);
+    assert.equal(getAlbum(db, id), null);
+    assert.equal(getSong(db, only), null);
+    assert.deepEqual(
+      getSong(db, shared)?.albums.map((item) => item.id),
+      [other.id],
+    );
+    assert.equal(getAlbum(db, other.id)?.songCount, 1);
+  });
+
+  void test("deletes no songs when they're all on other albums", () => {
+    const { id, songIds } = albumWithSongs("Doomed", 2);
+    const other = album("Other");
+    addSongsToAlbum(db, other.id, songIds);
+    const before = listSongs(db).length;
+    assert.deepEqual(listAlbumOnlySongIds(db, id), []);
+
+    assert.deepEqual(deleteAlbumAndSongs(db, id).value, {
+      deletePaths: [`albums/${id}`],
+      ids: [],
+    });
+    assert.equal(listSongs(db).length, before);
+    assert.equal(getAlbum(db, other.id)?.songCount, 2);
   });
 
   void test("deletes an album with no songs", () => {
@@ -100,7 +125,6 @@ void describe("deleting an album and its songs", () => {
 
     assert.deepEqual(deleteAlbumAndSongs(db, empty.id).value, {
       deletePaths: [`albums/${empty.id}`],
-      emptied: [],
       ids: [],
     });
     assert.equal(listSongs(db).length, before);

@@ -264,7 +264,7 @@ through it untouched, and no audio or artwork file moves or is deleted.
 - Adding never empties another album. Taking the last song off this one offers
   to delete it (docs/ui.md → Editing); only a confirmed Delete removes one, and
   its songs stay. Deleting an album from its menu is the one delete that can take
-  its songs along (docs/ui.md → Collection menu). Nothing asks about an album a
+  songs along, and only ones on no other album (docs/ui.md → Collection menu). Nothing asks about an album a
   2.5.2 library already had empty.
 
 ### Migrating a 2.5.2 install

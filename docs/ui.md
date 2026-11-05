@@ -94,7 +94,7 @@ numbers.
   the library for an album's or a playlist's songs. One tap puts a song in or
   takes it out. It opens as its own sheet from the `plus` beside the `ellipsis`
   on a playlist or album page and from Add Songs in its empty state, saving at
-  Done, and inside the edit and create sheets from Songs, saving with the
+  Done, and inside the edit and create sheets from Add/Remove Songs, saving with the
   sheet. The songs already there come first and start checked, then the rest
   in the Songs list's sort, in a Legend List of plain React Native rows (no
   native host per row, so 3,000 songs scroll freely), with a circle that
@@ -187,10 +187,10 @@ hold, so they're page sheets, and Done saves everything the sheet changed
 - **Playlist**: artwork (tap to choose a photo: the system's picker, then Move and Scale over
   it, ours, since the system's own editor comes only with its old picker, which
   takes about five seconds to open), name,
-  Songs (the song picker), and, with two songs or more, Reorder Songs (a
+  Add/Remove Songs (the song picker), and, with two songs or more, Reorder Songs (a
   SwiftUI `List` in edit mode: drag to reorder).
-- **Album**: artwork, name, year, artists (toggle list), Songs, and Reorder
-  Songs (same as a playlist's). Adding a song moves it here: see docs/rewrite.md → Adding
+- **Album**: artwork, name, year, artists (toggle list), Add/Remove Songs, and
+  Reorder Songs (same as a playlist's). Adding a song moves it here: see docs/rewrite.md → Adding
   a song to an album. Albums left empty stay, but whatever empties one offers to
   delete it, in an alert (Keep, then a destructive Delete), at that moment:
   unchecking the last song in the song picker, Remove from Album or Delete from Library

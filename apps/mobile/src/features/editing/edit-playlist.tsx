@@ -160,7 +160,7 @@ function PlaylistFields({
         </FieldGroup.Section>
         <FieldGroup.Section>
           <LinkRow
-            label={edits.songs.length === 0 ? "Add Songs" : "Songs"}
+            label={edits.songs.length === 0 ? "Add Songs" : "Add/Remove Songs"}
             value={
               edits.songs.length === 0
                 ? undefined

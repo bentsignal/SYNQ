@@ -133,7 +133,7 @@ function AlbumFields({ artwork }: { artwork: AlbumListItem["artwork"] }) {
             onPress={() => router.push(edits.routes.artists)}
           />
           <LinkRow
-            label={edits.tracks.length === 0 ? "Add Songs" : "Songs"}
+            label={edits.tracks.length === 0 ? "Add Songs" : "Add/Remove Songs"}
             value={
               edits.tracks.length === 0
                 ? undefined

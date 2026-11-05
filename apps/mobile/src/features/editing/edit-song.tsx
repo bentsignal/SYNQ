@@ -136,7 +136,7 @@ function Form({ song }: { song: SongDetail }) {
               }
             />
             <LinkRow
-              label="Albums"
+              label="Album"
               value={names(edits.albums) || "None"}
               onPress={() =>
                 router.push({
@@ -152,7 +152,7 @@ function Form({ song }: { song: SongDetail }) {
   );
 }
 
-/** Edit Info: artwork, title, artists, and albums. */
+/** Edit Info: artwork, title, artists, and album. */
 export function EditSongScreen() {
   const id = useIdParam();
   const song = useLibraryQuery({
@@ -200,11 +200,12 @@ export function EditSongAlbumsScreen() {
   const artistNames = edits.artists.map((artist) => artist.name);
   return (
     <>
-      <Stack.Screen options={{ title: "Albums" }} />
+      <Stack.Screen options={{ title: "Album" }} />
       <ChoiceList
         noun="Album"
         options={albums}
         picked={edits.albums}
+        single
         canAddNamed={(name) => canAddAlbumNamed(name, albums, artistNames)}
         onChange={chooseAlbums}
         onNew={() =>

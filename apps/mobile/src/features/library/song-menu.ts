@@ -21,7 +21,7 @@ export interface SongMenuPlace {
   liked: boolean;
   /** The user playlist the row is in: adds Remove from Playlist. */
   playlistId?: number;
-  /** The album page the row is on: drops it from Go to Album, adds Remove from Album. */
+  /** The album page the row is on: drops Go to Album, adds Remove from Album. */
   albumId?: number;
   /** The artist page the row is on: drops Go to Artist for them. */
   artistId?: number;
@@ -120,9 +120,10 @@ export function songMenu(song: SongListItem, place: SongMenuPlace) {
     pinAction({ id: song.id, kind: "song" }, song.pinnedAt),
   ] satisfies MenuItem[];
   const go = [
+    // A song is on one album, so its album page has nowhere else to go.
     ...goToMenu(
       "album",
-      song.albums.filter((album) => album.id !== place.albumId),
+      place.albumId === undefined ? song.albums.slice(0, 1) : [],
     ),
     ...goToMenu(
       "artist",

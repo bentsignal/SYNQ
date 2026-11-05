@@ -7,8 +7,8 @@ const KINDS = {
 } as const;
 
 /**
- * Go to Album or Go to Artist for one, or a Go to Albums or Go to Artists
- * submenu listing each by name for several (docs/ui.md → Song menu).
+ * Go to Album or Go to Artist for one, or a Go to Artists submenu listing
+ * each by name for several (docs/ui.md → Song menu).
  */
 export function goToMenu(
   kind: keyof typeof KINDS,

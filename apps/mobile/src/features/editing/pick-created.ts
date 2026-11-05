@@ -33,10 +33,10 @@ function albumPick(id: number) {
   };
 }
 
-/** Only a song's Albums list makes an album. */
+/** Only a song's Album list makes an album, and it becomes the song's one. */
 export function pickNewAlbum(id: number) {
   const pick = albumPick(id);
-  if (pick !== undefined) chooseAlbums([...songDraft.get().albums, pick]);
+  if (pick !== undefined) chooseAlbums([pick]);
 }
 
 /** Its photo is written after its sheet closes, so the song's sheet catches up. */

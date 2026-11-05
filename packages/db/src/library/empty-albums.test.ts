@@ -6,6 +6,7 @@ import {
   addSongsToAlbum,
   createAlbum,
   deleteSongs,
+  editSong,
   getAlbum,
   listEmptyAlbums,
   listSongs,
@@ -41,12 +42,12 @@ void describe("albums left empty", () => {
     return { album, songId };
   }
 
-  void test("adding an album's last song elsewhere doesn't empty it", () => {
+  void test("moving an album's last song out names it, and keeps it", () => {
     const { album, songId } = single("Single");
     const target = newAlbum();
-    setAlbumTracks(db, target.id, [songId]);
-    assert.equal(getAlbum(db, album.id)?.songCount, 1);
-    assert.equal(getAlbum(db, target.id)?.songCount, 1);
+    const result = setAlbumTracks(db, target.id, [songId]);
+    assert.deepEqual(result.value.emptied, [{ id: album.id, name: "Single" }]);
+    assert.equal(getAlbum(db, album.id)?.songCount, 0);
   });
 
   void test("taking off an album's last song names it, and keeps it", () => {
@@ -74,9 +75,38 @@ void describe("albums left empty", () => {
     assert.deepEqual(deleteSongs(db, [songId]).value.emptied, []);
   });
 
-  void test("a sheet can empty its own album, which stays", () => {
+  void test("an album with songs left isn't named", () => {
+    const { albumId, songId } = songOnAlbum();
+    assert.ok((getAlbum(db, albumId)?.songCount ?? 0) > 1);
+    const target = newAlbum();
+    assert.deepEqual(setAlbumTracks(db, target.id, [songId]).value.emptied, []);
+  });
+
+  void test("a song 2.5.2 put on two albums empties both", () => {
+    const { album, songId } = single("Single");
+    const second = newAlbum("Second");
+    editSong(db, songId, {
+      albums: [{ album: { id: album.id } }, { album: { id: second.id } }],
+    });
+    const target = newAlbum();
+    const result = setAlbumTracks(db, target.id, [songId]);
+    assert.deepEqual(
+      result.value.emptied.map((item) => item.id).sort((a, b) => a - b),
+      [album.id, second.id].sort((a, b) => a - b),
+    );
+  });
+
+  void test("an older empty album is never named", () => {
+    const older = newAlbum("Older");
+    const { songId } = single("Single");
+    const target = newAlbum();
+    const { emptied } = setAlbumTracks(db, target.id, [songId]).value;
+    assert.ok(!emptied.some((item) => item.id === older.id));
+  });
+
+  void test("emptying the album itself isn't reported", () => {
     const { album } = single("Single");
-    setAlbumTracks(db, album.id, []);
+    assert.deepEqual(setAlbumTracks(db, album.id, []).value.emptied, []);
     assert.equal(getAlbum(db, album.id)?.songCount, 0);
   });
 

@@ -161,7 +161,9 @@ columns and names):
 - `albums`: `id`, `name`, `year`, `artwork_version`, `added_at`, Home columns.
 - `song_artists`: `song_id`, `artist_id`, `position` (unique pair).
 - `album_songs`: `album_id`, `song_id`, `track` (nullable), `position` (the
-  song's album order; the first is its primary album) (unique pair).
+  song's album order; the first is its primary album) (unique pair). 3.0
+  puts a song on one album; only 2.5.2 libraries have songs on several (see
+  Adding a song to an album).
 - `album_artists`: `album_id`, `artist_id`, `position` (unique pair).
 - `playlists`: `id`, `name`, `kind` (`liked` for Liked Songs, else `user`),
   `artwork_version`, `created_at`, `updated_at`, Home columns. Liked Songs is a playlist
@@ -246,26 +248,32 @@ November 2026; `docs/ui.md` → Editing has the sheet).
 
 ### Adding a song to an album
 
-Adding a song from an album's song picker (or New Album) puts it on that album
-as well (`addSongsToAlbum`). No schema change, so a 2.5.2 library upgrades
-through it untouched, and no audio or artwork file moves or is deleted.
+A song is on one album (Shawn, November 2026). Being on several was more
+confusing than useful: a song's menu had to choose which album Go to Album
+opened. Adding a song from an album's song picker (or New Album) moves it there
+(`addSongsToAlbum`), and Edit Info's Album is a single choice. No schema change:
+`album_songs` still allows several, so a 2.5.2 library that put a song on two
+albums upgrades untouched and keeps both until that song is moved or its album
+changed. No audio or artwork file moves or is deleted.
 
-- It stays on every album it's already on, and its primary album stays
-  primary, so its artwork and the album on its row don't change. This one is
-  primary only for a song with no album. Each album keeps its own track number.
+- It leaves every album it was on, and this one becomes its album.
 - It lands at the end: tracks number on from the last one. An unnumbered
   track sorts after every numbered one, so an album with any gets numbered
   1..n in its current order first.
 - An album with no cover copies the first added song's, as an import gives a
-  new album its first song's.
+  new album its first song's. Otherwise moving a song would lose its
+  artwork, since an album's cover stays with that album.
 - An album with no artists takes the added songs' artists; one that has
   artists keeps them, and a track by someone else shows them under its
   title.
-- Adding never empties another album. Taking the last song off this one offers
-  to delete it (docs/ui.md → Editing); only a confirmed Delete removes one, and
-  its songs stay. Deleting an album from its menu is the one delete that can take
-  songs along, and only ones on no other album (docs/ui.md → Collection menu). Nothing asks about an album a
-  2.5.2 library already had empty.
+- The album it leaves stays, even when emptied, with its cover: albums left
+  without songs are kept, as `deleteSongs` keeps them and as 2.5.2 did. The
+  write reports the albums it emptied, and the app offers to delete them once
+  (docs/ui.md → Editing); only a confirmed Delete removes one, and its songs
+  stay. Deleting an album from its menu is the one delete that can take its
+  songs along, and never one a 2.5.2 library also put on another album
+  (docs/ui.md → Collection menu). Nothing asks about an album a 2.5.2 library
+  already had empty.
 
 ### Migrating a 2.5.2 install
 

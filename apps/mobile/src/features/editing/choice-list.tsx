@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import {
   Button,
   HStack,
@@ -80,18 +80,29 @@ function NewButton({ noun, onPress }: { noun: string; onPress: () => void }) {
   );
 }
 
+function detailOf(
+  pick: Pick,
+  options: readonly { id: number; detail?: string }[],
+) {
+  return "id" in pick
+    ? options.find((option) => option.id === pick.id)?.detail
+    : "New";
+}
+
 /**
  * Picks artists or albums for an edit sheet: the chosen ones first, in
  * credit order (the first album is the song's primary one), then every
  * other, filtered by the bar's search field. The bar's `plus` opens the
  * sheet that creates one. Typing a name that isn't there also offers it as a
  * new one; `canAddNamed` can offer one that is, for albums, where two can
- * share a name.
+ * share a name. `single` (a song's album) keeps one choice: picking one
+ * replaces it and goes back to the form.
  */
 export function ChoiceList({
   noun,
   options,
   picked,
+  single = false,
   canAddNamed,
   onChange,
   onNew,
@@ -105,6 +116,7 @@ export function ChoiceList({
     artworkVersion?: number | null;
   }[];
   picked: readonly Pick[];
+  single?: boolean;
   canAddNamed?: (name: string) => boolean;
   onChange: (picked: Pick[]) => void;
   onNew: () => void;
@@ -125,10 +137,9 @@ export function ChoiceList({
     (canAddNamed === undefined
       ? [...options, ...picked].some(sameName)
       : !canAddNamed(typed));
-  function detailOf(pick: Pick) {
-    return "id" in pick
-      ? options.find((option) => option.id === pick.id)?.detail
-      : "New";
+  function choose(pick: Pick) {
+    onChange(single ? [pick] : [...picked, pick]);
+    if (single) router.back();
   }
   return (
     <>
@@ -145,7 +156,7 @@ export function ChoiceList({
               <Button
                 label={`New ${noun} “${typed}”`}
                 systemImage="plus.circle.fill"
-                onPress={() => onChange([...picked, { name: typed }])}
+                onPress={() => choose({ name: typed })}
               />
             </Section>
           )}
@@ -155,7 +166,7 @@ export function ChoiceList({
                 <ChoiceRow
                   key={pickKey(pick)}
                   label={pick.name}
-                  detail={detailOf(pick)}
+                  detail={detailOf(pick, options)}
                   checked
                   onPress={() =>
                     onChange(
@@ -176,7 +187,7 @@ export function ChoiceList({
                   label={option.name}
                   detail={option.detail}
                   checked={false}
-                  onPress={() => onChange([...picked, option])}
+                  onPress={() => choose(option)}
                 />
               ))}
             </Section>

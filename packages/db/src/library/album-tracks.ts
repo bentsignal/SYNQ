@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, max } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import {
@@ -16,10 +16,11 @@ import { appendAlbumArtists } from "./song-writes.ts";
 import { chunked } from "./text.ts";
 
 /**
- * Adds songs to the end of an album, in the given order. Each song stays on
- * the albums it's already on, and its primary album stays primary; this one
- * becomes primary only for a song with no album. Songs already on the album
- * are left where they are, and reported in `skipped`.
+ * Moves songs to the end of an album, in the given order. A song is on one
+ * album (Shawn, November 2026), so each leaves every album it was on. Songs
+ * already on the album are left where they are, and reported in `skipped`.
+ * Albums the songs leave stay, even when emptied, as `deleteSongs` keeps
+ * them, with their covers; `emptied` names the ones left without songs.
  *
  * New tracks number on from the last one. An unnumbered track sorts after
  * every numbered one, so when the album has any, its tracks are first
@@ -57,7 +58,7 @@ export function addSongsToAlbum(
     );
     const added = wanted.filter((id) => existing.has(id) && !present.has(id));
     const skipped = wanted.filter((id) => !existing.has(id) || present.has(id));
-    if (added.length === 0) return { added, skipped };
+    if (added.length === 0) return { added, emptied: [], skipped };
 
     const numbered = tracks.every((track) => track.track !== null);
     if (!numbered) {
@@ -76,10 +77,10 @@ export function addSongsToAlbum(
     const last = numbered
       ? Math.max(0, ...tracks.map((track) => track.track ?? 0))
       : tracks.length;
-    appendToAlbum(tx, albumId, added, last + 1);
+    const left = moveToAlbum(tx, albumId, added, last + 1);
     creditArtistsIfNone(tx, albumId, added);
     markModified(tx, added);
-    return { added, skipped };
+    return { added, emptied: listEmptyAlbums(tx, left), skipped };
   });
   return written(
     result,
@@ -125,14 +126,15 @@ export function removeSongsFromAlbum(
  * Makes an album hold exactly these songs in this order (an edit sheet's
  * Done). Tracks only renumber 1..n if the order the numbers already give
  * differs, so saving a sheet that didn't reorder leaves the album's own
- * numbers alone.
+ * numbers alone. `emptied` names the other albums the added songs left with
+ * no songs.
  */
 export function setAlbumTracks(
   db: LibraryDb,
   albumId: number,
   songIds: readonly number[],
 ) {
-  db.transaction((tx) => {
+  const emptied = db.transaction((tx) => {
     const wanted = uniqueIds(songIds);
     const wantedSet = new Set(wanted);
     const current = listAlbumTracks(tx, albumId).map((track) => track.id);
@@ -142,7 +144,7 @@ export function setAlbumTracks(
       albumId,
       current.filter((id) => !wantedSet.has(id)),
     );
-    addSongsToAlbum(
+    const added = addSongsToAlbum(
       tx,
       albumId,
       wanted.filter((id) => !currentSet.has(id)),
@@ -151,38 +153,40 @@ export function setAlbumTracks(
     if (order.some((id, index) => id !== wanted[index])) {
       reorderAlbumTracks(tx, albumId, wanted);
     }
+    return added.value.emptied;
   });
-  return written(undefined, ["album_songs", "album_artists", "songs"]);
+  return written({ emptied }, ["album_songs", "album_artists", "songs"]);
 }
 
-/** Puts songs on an album after the albums each is already on. */
-function appendToAlbum(
+/**
+ * Takes songs off every album they're on and puts them on this one, returning
+ * the albums they left. Songs 2.5.2 put on several albums leave all of them.
+ */
+function moveToAlbum(
   tx: LibraryDb,
   albumId: number,
   songIds: readonly number[],
   firstTrack: number,
 ) {
-  const lastPositions = new Map(
-    chunked(songIds).flatMap((ids) =>
-      tx
-        .select({ last: max(albumSongs.position), songId: albumSongs.songId })
-        .from(albumSongs)
-        .where(inArray(albumSongs.songId, ids))
-        .groupBy(albumSongs.songId)
-        .all()
-        .map((row) => [row.songId, row.last ?? 0] as const),
-    ),
-  );
-  const rows = songIds.map((songId, index) => {
-    const last = lastPositions.get(songId);
-    return {
-      albumId,
-      position: last === undefined ? 0 : last + 1,
-      songId,
-      track: firstTrack + index,
-    };
-  });
+  const left = new Set<number>();
+  for (const ids of chunked(songIds)) {
+    for (const row of tx
+      .select({ albumId: albumSongs.albumId })
+      .from(albumSongs)
+      .where(inArray(albumSongs.songId, ids))
+      .all()) {
+      left.add(row.albumId);
+    }
+    tx.delete(albumSongs).where(inArray(albumSongs.songId, ids)).run();
+  }
+  const rows = songIds.map((songId, index) => ({
+    albumId,
+    position: 0,
+    songId,
+    track: firstTrack + index,
+  }));
   for (const chunk of chunked(rows)) tx.insert(albumSongs).values(chunk).run();
+  return [...left];
 }
 
 function creditArtistsIfNone(

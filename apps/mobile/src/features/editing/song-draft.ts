@@ -8,7 +8,10 @@ import { changesArtworkTarget } from "./song-artwork";
 export interface SongDraft {
   title: string;
   artists: readonly Pick[];
-  /** In album order: the first is the song's primary album. */
+  /**
+   * The song's album. Only a 2.5.2 library has a song on several, in album
+   * order, kept until the album is changed.
+   */
   albums: readonly Pick[];
   /** Applies to the album's cover or the song's own: see `artworkAlbum`. */
   artwork: ArtworkChange;

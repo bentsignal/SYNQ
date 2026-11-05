@@ -19,10 +19,11 @@ for the area you're changing (`docs/`, package READMEs,
 what you build, ask before building. Otherwise pick the sensible default
 and say so in the PR.
 
-**2.5.2 data is sacred.** If the change touches the database, files under
-`Documents/`, preferences, or the app icon, work out how a 2.5.2 install
-upgrades through it before you write code, and test that path
-(docs/rewrite.md → Migrating a 2.5.2 install).
+**Every library survives the update.** If the change touches the database,
+files under `Documents/`, preferences, or the app icon, work out how an
+existing library gets through it before you write code: a schema change is a
+migration with a test (AGENTS.md → Stored data). Leave the 2.5.2 importer
+(`packages/db/src/legacy/`) alone unless your schema change breaks its tests.
 
 For a change to an existing screen, bring the simulator up (step 4) and take
 the "before" screenshots now, before you edit anything. Then `down` it while
@@ -121,7 +122,7 @@ gh pr create --base <base> --title "<title>" --body-file <body.md>
 ```
 
 Follow `.github/pull_request_template.md`: summary, evidence, how it was
-tested, what it does to 2.5.2 data, and whether native code changed. Link
+tested, what it does to stored data, and whether native code changed. Link
 it to the thread with the T3 `link_pull_request` tool. Review your own diff
 (`gh pr diff`) as a skeptical reviewer would, and fix what you find. Wait
 for CI and fix failures. If the "📱 Native Change" label appears, the

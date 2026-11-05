@@ -21,26 +21,29 @@ SYNQ has only ever shipped on iOS, and 3.0 is iOS only. Don't write Android
 code, `.android.tsx` files, or Android config. Keep native modules'
 JavaScript API platform-neutral so Android can be added later.
 
-## The 2.5.2 data invariant
+## Stored data
 
-**Every 2.5.2 user's library survives the update untouched**: songs and
-their files, artwork, artists, albums, track numbers, playlists and their
-order, Liked Songs (renamed or not), theme, app icon, haptics, and shuffle and
-repeat. This is the one hard constraint on 3.0.
+**Every library survives every update**: songs and their files, artwork,
+artists, albums, track numbers, playlists and their order, Liked Songs,
+preferences, and the app icon.
 
-- Audio and artwork stay where 2.5.2 put them under `Documents/`, stored
-  as paths relative to `Documents/`. Never move, rename, or delete them.
-- The 2.5.2 database (`Documents/SQLite/synq.db`) and AsyncStorage are read
-  once, read-only, by the importer in `packages/db`, in one transaction.
-  A failure rolls back and retries on the next launch; the app never shows
-  an empty library instead.
+- A schema change is a migration on top of the last one (`pnpm db:generate`
+  in `packages/db`), with a test that runs it on a database from before it.
+  Data a migration changes or drops is a decision for Shawn, in the PR.
+- Audio and artwork stay where they are under `Documents/`, stored as paths
+  relative to `Documents/`. Never move, rename, or delete them, except by
+  deleting what they belong to.
 - Alternate app icon names (`icon-blue`, `icon-mint`, ...) never change:
   iOS remembers the choice by name (`apps/mobile/assets/icons/README.md`).
-- Anything that touches stored data says how a 2.5.2 install upgrades
-  through it, in its PR, with a test. See docs/rewrite.md → Data.
-- One exception, Shawn's call (November 2026): a song is on one album. A
-  2.5.2 song on several keeps one, the first with a cover, else the first
-  (docs/rewrite.md → One album per song).
+
+**The 2.5.2 importer is done.** `packages/db/src/legacy/` reads a 2.5.2
+library once, on the first launch of 3.x, and writes it into the current
+schema; a failure rolls back and retries on the next launch. It and its
+fixtures (`packages/db/fixtures/legacy-2.5.2/`) are restricted: change them
+only when Shawn asks, or when a schema change breaks its tests, and then
+only to write the new schema. Its tests run the synthetic and the captured
+2.5.2 libraries through it on every PR, so a feature doesn't need to think
+about 2.5.2 beyond keeping them green.
 
 ## Project knowledge
 

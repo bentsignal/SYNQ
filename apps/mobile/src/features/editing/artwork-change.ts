@@ -14,11 +14,13 @@ export const KEEP_ARTWORK = { kind: "keep" } as const satisfies ArtworkChange;
 /**
  * Saves an artwork change after its sheet has closed, reporting a failure
  * with an alert. Album and song covers mark their songs modified (setArtwork).
+ * `onWritten` runs once a picked photo is saved, which is after the sheet closes.
  */
 export function saveArtworkChange(
   change: ArtworkChange,
   kind: ArtworkKind,
   id: number,
+  onWritten?: () => void,
 ) {
   if (change.kind === "keep") return;
   if (change.kind === "removed") {
@@ -29,7 +31,8 @@ export function saveArtworkChange(
     }
     return;
   }
-  void writeArtwork({ id, kind, uri: change.uri, width: change.width }).catch(
+  void writeArtwork({ id, kind, uri: change.uri, width: change.width }).then(
+    onWritten,
     () => failed("Couldn't Save Artwork"),
   );
 }

@@ -85,8 +85,10 @@ numbers.
   Add to Queue; Add to Playlist…, Pin; Go to Artist; Edit, Export; Delete. Its
   page leaves out Play and Shuffle (they're buttons there) and Go to
   Artist (the header links to them). A collection with no songs offers
-  only Pin, Edit, and Delete. Liked Songs has no Delete. Collection rows and
-  the Library tab's and an artist's cards are `NativeRow`s without the
+  only Pin, Edit, and Delete. Liked Songs has no Delete. Deleting an album with
+  songs opens a small sheet (an alert can't hold a switch) with "Also Delete
+  12 Songs" on by default; an empty album gets the usual alert. Collection rows
+  and the Library tab's and an artist's cards are `NativeRow`s without the
   `ellipsis` button or a separator, so a long press lifts them natively and
   lists cost what song rows cost. Cards (`card`) have no tap highlight at all. The queue's rows have no menu either; they
   drag and swipe instead.
@@ -204,6 +206,12 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   for the song and turns the switch off, once a photo is chosen. There's no
   Remove while it's on, since the cover isn't the song's. Off, Edit Artwork is
   Choose Photo and Remove Photo on the song alone.
+- **Artists and Albums lists**: `plus` in the bar, opposite Back, opens New
+  Artist or New Album over the list; Done closes it and the new one is already
+  chosen. It's saved at that point, so canceling the edit sheet keeps it.
+  Typing a name that isn't listed also offers it as a new one, created when
+  the edit sheet saves. New Album opened from a song starts with the song's
+  artists.
 - **New Playlist / Album**: the same form as editing, with no field focused
   so the keyboard doesn't hide Add Songs, so someone can pick a picture and
   songs before it exists. From Add to Playlist, New Playlist

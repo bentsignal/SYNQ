@@ -48,24 +48,19 @@ function saveEdits(album: AlbumListItem, saved: ReadonlySet<string>) {
   const cover = coverFromTracks(edits, album.artwork !== null, saved);
   const updated = tryWrite("Couldn't Save Album", (db) =>
     db.transaction((tx) => {
-      const result = updateAlbum(tx, album.id, {
+      updateAlbum(tx, album.id, {
         artistIds: artistIds(tx, edits.artists),
         name: edits.name,
         year: parseYear(edits.year),
       });
-      const { emptied } = setAlbumTracks(tx, album.id, trackIds(edits)).value;
-      return written({ emptied, id: result.value.id }, [
-        "albums",
-        "album_songs",
-        "songs",
-      ]);
+      setAlbumTracks(tx, album.id, trackIds(edits));
+      return written(true, ["albums", "album_songs", "songs"]);
     }),
   );
   if (updated === undefined) return;
   if (cover !== null) copyCoverToAlbum(album.id, cover);
   router.back();
   saveArtworkChange(edits.artwork, "album", album.id);
-  offerToDeleteEmptyAlbums(updated.emptied);
 }
 
 /** Creates the album with its songs, then covers. False keeps the sheet up. */
@@ -79,12 +74,8 @@ function saveNew() {
         name: edits.name,
         year: parseYear(edits.year),
       }).value;
-      const { emptied } = setAlbumTracks(tx, album.id, trackIds(edits)).value;
-      return written({ emptied, id: album.id }, [
-        "albums",
-        "album_songs",
-        "album_artists",
-      ]);
+      setAlbumTracks(tx, album.id, trackIds(edits));
+      return written(album, ["albums", "album_songs", "album_artists"]);
     }),
   );
   if (created === undefined) return false;
@@ -92,7 +83,6 @@ function saveNew() {
   router.back();
   openLibraryScreen({ id: created.id, screen: "album" });
   saveArtworkChange(edits.artwork, "album", created.id);
-  offerToDeleteEmptyAlbums(created.emptied);
   return true;
 }
 
@@ -280,8 +270,8 @@ export function EditAlbumTracksScreen() {
 
 /**
  * The checklist of songs: new ones join the end of the sheet's tracks at once
- * and move to this album when the sheet saves; unchecked ones leave the
- * sheet's tracks, and stay in the library.
+ * and join this album, staying on any others, when the sheet saves; unchecked
+ * ones leave the sheet's tracks, and stay in the library.
  */
 export function AddAlbumSongsScreen() {
   const navigation = useNavigation();

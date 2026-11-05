@@ -8,7 +8,6 @@ import {
   createAlbum,
   createArtist,
   createPlaylist,
-  editSong,
   getAlbum,
   getSong,
   listAlbumTracks,
@@ -51,36 +50,67 @@ function tracksOf(albumId: number) {
 }
 
 void describe("adding songs to an album", () => {
-  void test("moves a song out of its old album, keeping the old album", () => {
+  void test("leaves a song on its old album, which stays its primary", () => {
     const { albumId, songId } = songOnAlbum();
     const before = getAlbum(db, albumId);
     const target = newAlbum();
     const result = addSongsToAlbum(db, target.id, [songId]);
     assert.deepEqual(result.value.added, [songId]);
-    assert.deepEqual(result.value.skipped, []);
     assert.ok(result.changed.includes("album_songs"));
     assert.deepEqual(
       getSong(db, songId)?.albums.map((album) => album.id),
-      [target.id],
+      [albumId, target.id],
     );
-    assert.ok(!ids(listAlbumTracks(db, albumId)).includes(songId));
+    assert.ok(ids(listAlbumTracks(db, albumId)).includes(songId));
     const after = getAlbum(db, albumId);
     assert.ok(before && after);
-    assert.equal(after.songCount, before.songCount - 1);
+    assert.equal(after.songCount, before.songCount);
     assert.deepEqual(after.artwork, before.artwork);
   });
 
-  void test("keeps a second album as a second album", () => {
+  void test("a song can join any number of albums, in the order added", () => {
     const { albumId, songId } = songOnAlbum();
     const second = newAlbum("Second");
-    editSong(db, songId, {
-      albums: [{ album: { id: albumId } }, { album: { id: second.id } }],
-    });
+    const third = newAlbum("Third");
+    addSongsToAlbum(db, second.id, [songId]);
+    addSongsToAlbum(db, third.id, [songId]);
+    assert.deepEqual(
+      getSong(db, songId)?.albums.map((album) => album.id),
+      [albumId, second.id, third.id],
+    );
+  });
+
+  void test("keeps each album's own track number", () => {
+    const { albumId, songId } = songOnAlbum();
+    const trackBefore = tracksOf(albumId).find(([id]) => id === songId);
+    const target = newAlbum();
+    addSongsToAlbum(db, target.id, [songId]);
+    assert.deepEqual(tracksOf(target.id), [[songId, 1]]);
+    assert.deepEqual(
+      tracksOf(albumId).find(([id]) => id === songId),
+      trackBefore,
+    );
+  });
+
+  void test("taking a song off the new album leaves it on the old one", () => {
+    const { albumId, songId } = songOnAlbum();
+    const target = newAlbum();
+    addSongsToAlbum(db, target.id, [songId]);
+    removeSongsFromAlbum(db, target.id, [songId]);
+    assert.deepEqual(
+      getSong(db, songId)?.albums.map((album) => album.id),
+      [albumId],
+    );
+  });
+
+  void test("the album is primary for a song with no album", () => {
+    const { albumId, songId } = songOnAlbum();
+    removeSongsFromAlbum(db, albumId, [songId]);
     const target = newAlbum();
     addSongsToAlbum(db, target.id, [songId]);
     assert.deepEqual(
       getSong(db, songId)?.albums.map((album) => album.id),
-      [target.id, second.id],
+      [target.id],
     );
   });
 });
@@ -142,11 +172,7 @@ void describe("what else adding songs to an album does", () => {
     assert.ok(a && b);
     addSongsToAlbum(db, target.id, [a]);
     const result = addSongsToAlbum(db, target.id, [a, b, 999_999]);
-    assert.deepEqual(result.value, {
-      added: [b],
-      emptied: [],
-      skipped: [a, 999_999],
-    });
+    assert.deepEqual(result.value, { added: [b], skipped: [a, 999_999] });
     assert.deepEqual(tracksOf(target.id), [
       [a, 1],
       [b, 2],
@@ -175,7 +201,7 @@ void describe("what else adding songs to an album does", () => {
     );
   });
 
-  void test("marks moved songs modified, since their tags are stale", () => {
+  void test("marks added songs modified, since their tags are stale", () => {
     const { songId } = songOnAlbum();
     markSongsExported(db, [songId]);
     addSongsToAlbum(db, newAlbum().id, [songId]);

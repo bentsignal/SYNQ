@@ -246,26 +246,24 @@ November 2026; `docs/ui.md` → Editing has the sheet).
 
 ### Adding a song to an album
 
-Adding a song from an album's song picker (or New Album) moves it there
-(`addSongsToAlbum`). No schema change, so a 2.5.2 library upgrades through
-it untouched, and no audio or artwork file moves or is deleted.
+Adding a song from an album's song picker (or New Album) puts it on that album
+as well (`addSongsToAlbum`). No schema change, so a 2.5.2 library upgrades
+through it untouched, and no audio or artwork file moves or is deleted.
 
-- It leaves its primary album; this one becomes primary. A second album
-  it's also on stays second.
+- It stays on every album it's already on, and its primary album stays
+  primary, so its artwork and the album on its row don't change. This one is
+  primary only for a song with no album. Each album keeps its own track number.
 - It lands at the end: tracks number on from the last one. An unnumbered
   track sorts after every numbered one, so an album with any gets numbered
   1..n in its current order first.
-- An album left without a cover copies the first added song's, as an import
-  gives a new album its first song's. Otherwise moving a song would lose its
-  artwork, since an album's cover stays with that album.
+- An album with no cover copies the first added song's, as an import gives a
+  new album its first song's.
 - An album with no artists takes the added songs' artists; one that has
   artists keeps them, and a track by someone else shows them under its
   title.
-- The album it leaves stays, even when emptied, with its cover: albums left
-  without songs are kept, as `deleteSongs` keeps them and as 2.5.2 did. The
-  write reports the albums it emptied, and the app offers to delete them once
-  (docs/ui.md → Editing); only a confirmed Delete removes one, and its songs
-  stay. Nothing asks about an album a 2.5.2 library already had empty.
+- Adding never empties another album. Taking the last song off this one offers
+  to delete it (docs/ui.md → Editing); only a confirmed Delete removes one, and
+  its songs stay. Nothing asks about an album a 2.5.2 library already had empty.
 
 ### Migrating a 2.5.2 install
 

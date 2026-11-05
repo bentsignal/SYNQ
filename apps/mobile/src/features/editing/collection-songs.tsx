@@ -56,8 +56,8 @@ export function PlaylistSongsScreen() {
 
 /**
  * An album's songs, from its page. Saving does what Edit Album's Done does for
- * its songs: moves added songs here, gives a coverless album a cover, and
- * offers to delete any album this emptied, this one included.
+ * its songs: adds songs here, leaving them on their other albums, and gives a
+ * coverless album a cover. Taking the last song off offers to delete the album.
  */
 export function AlbumSongsScreen() {
   const id = useIdParam();
@@ -80,12 +80,8 @@ export function AlbumSongsScreen() {
         const wanted = [...kept, ...added.map((song) => song.id)];
         const updated = tryWrite("Couldn't Save Album", (db) =>
           db.transaction((tx) => {
-            const { emptied } = setAlbumTracks(tx, id, wanted).value;
-            return written({ emptied }, [
-              "album_songs",
-              "album_artists",
-              "songs",
-            ]);
+            setAlbumTracks(tx, id, wanted);
+            return written(true, ["album_songs", "album_artists", "songs"]);
           }),
         );
         if (updated === undefined) return false;
@@ -96,9 +92,7 @@ export function AlbumSongsScreen() {
         );
         if (cover !== null) copyCoverToAlbum(id, cover);
         close();
-        offerToDeleteEmptyAlbums(
-          wanted.length === 0 ? [...updated.emptied, album] : updated.emptied,
-        );
+        if (wanted.length === 0) offerToDeleteEmptyAlbums([album]);
         return true;
       }}
     />

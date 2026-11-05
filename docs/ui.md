@@ -190,12 +190,11 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   Add/Remove Songs (the song picker), and, with two songs or more, Reorder Songs (a
   SwiftUI `List` in edit mode: drag to reorder).
 - **Album**: artwork, name, year, artists (toggle list), Add/Remove Songs, and
-  Reorder Songs (same as a playlist's). Adding a song moves it here: see docs/rewrite.md → Adding
+  Reorder Songs (same as a playlist's). Adding a song leaves it on its other albums: see docs/rewrite.md → Adding
   a song to an album. Albums left empty stay, but whatever empties one offers to
   delete it, in an alert (Keep, then a destructive Delete), at that moment:
   unchecking the last song in the song picker, Remove from Album or Delete from Library
-  on its last song, or saving an edit that moved another album's last song here
-  or took it off in the song's own Edit Info. An album that was already empty
+  on its last song, or taking it off in the song's own Edit Info. An album that was already empty
   never asks.
 - **Artist**: artwork, name.
 - **Song**: artwork, Use Album Artwork, title, artists, albums (toggle lists with

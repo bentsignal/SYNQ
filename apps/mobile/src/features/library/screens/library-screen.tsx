@@ -19,6 +19,7 @@ import { playsArrive, playsLeave } from "~/features/player/record-play";
 import { HomeCard } from "../home-card";
 import { CARD_GAP, CARD_PADDING, cardHeight } from "../home-layout";
 import { RECENTS_KEY } from "../home-queries";
+import { revealWhenSettled } from "../launch-splash";
 import { LibraryLinkRow } from "../library-link-row";
 import {
   DOWNLOAD_ACTION,
@@ -184,6 +185,8 @@ function LibraryHome() {
         if (recents.hasMore) setLimit(limit + RECENTS_PAGE);
       }}
       onEndReachedThreshold={1}
+      // The app's first screen: the splash lifts once it has laid out.
+      onLoad={revealWhenSettled}
       renderItem={({ item: row }) =>
         row.type === "heading" ? (
           <View
@@ -227,7 +230,7 @@ export default function LibraryScreen() {
       {hasMusic ? (
         <LibraryHome />
       ) : (
-        <ScreenScroll>
+        <ScreenScroll onLayout={revealWhenSettled}>
           <EmptyState
             icon="music.note.house"
             title="No Music Yet"

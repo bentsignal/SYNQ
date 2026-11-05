@@ -3,7 +3,6 @@ import "~/global.css";
 import { useWindowDimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useCSSVariable } from "uniwind";
 
@@ -13,13 +12,14 @@ import { ExportBanner } from "~/features/export/export-banner";
 import { ImportActivity } from "~/features/import/import-activity";
 import { wifiSheetDetent } from "~/features/import/transfer-link";
 import { installWifiTransfer } from "~/features/import/wifi-transfer";
+import { holdSplash } from "~/features/library/launch-splash";
 import { LibraryGate } from "~/features/library/library-gate";
 import { QueueToast } from "~/features/player/queue-toast";
 import { applyStoredPreferences } from "~/features/preferences/store";
 import { queryClient } from "~/lib/query-client";
 
-// The splash is a plain background, so the app fades in over it.
-SplashScreen.setOptions({ duration: 250, fade: true });
+// The splash is a plain background, up until the Library tab has laid out.
+holdSplash();
 applyStoredPreferences();
 installDevAutomation();
 installWifiTransfer();

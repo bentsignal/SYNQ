@@ -14,6 +14,8 @@ function song(id: number) {
     albums: [{ artworkVersion: null, id: 1, name: "Northbound", track: id }],
     artists: [{ id: 1, name: "Mara Lind" }],
     artwork: null,
+    ownArtwork: null,
+    useAlbumArtwork: true,
     durationMs: 200_000,
     filePath: `library/${id}/song.m4a`,
     id,

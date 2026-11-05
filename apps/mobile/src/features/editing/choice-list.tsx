@@ -84,7 +84,12 @@ export function ChoiceList({
 }: {
   /** "Artist" or "Album", for the search field and the New row. */
   noun: string;
-  options: readonly { id: number; name: string; detail?: string }[];
+  options: readonly {
+    id: number;
+    name: string;
+    detail?: string;
+    artworkVersion?: number | null;
+  }[];
   picked: readonly Pick[];
   canAddNamed?: (name: string) => boolean;
   onChange: (picked: Pick[]) => void;
@@ -155,9 +160,7 @@ export function ChoiceList({
                   label={option.name}
                   detail={option.detail}
                   checked={false}
-                  onPress={() =>
-                    onChange([...picked, { id: option.id, name: option.name }])
-                  }
+                  onPress={() => onChange([...picked, option])}
                 />
               ))}
             </Section>

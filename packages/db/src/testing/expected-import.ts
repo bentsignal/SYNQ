@@ -13,6 +13,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 13,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 2,
@@ -23,6 +24,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 12,
       modifiedSinceExport: true,
+      useAlbumArtwork: true,
     },
     {
       id: 3,
@@ -33,6 +35,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: ms(COVER_MTIMES.song3),
       addedAt: NOW - 11,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 4,
@@ -43,6 +46,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 10,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 5,
@@ -53,6 +57,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 9,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 6,
@@ -63,6 +68,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: ms(COVER_MTIMES.song6),
       addedAt: NOW - 8,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 7,
@@ -73,6 +79,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 7,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 8,
@@ -83,6 +90,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 6,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 10,
@@ -93,6 +101,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 5,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 12,
@@ -103,6 +112,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 4,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 14,
@@ -113,6 +123,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 3,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 15,
@@ -123,6 +134,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 2,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
     {
       id: 16,
@@ -133,6 +145,7 @@ export const EXPECTED_LIBRARY = {
       artworkVersion: null,
       addedAt: NOW - 1,
       modifiedSinceExport: false,
+      useAlbumArtwork: true,
     },
   ],
   artists: [

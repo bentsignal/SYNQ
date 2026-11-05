@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { Image } from "expo-image";
 import { Button, Menu, RNHostView, VStack } from "@expo/ui/swift-ui";
 import {
@@ -12,6 +12,7 @@ import type { ArtworkRef } from "@synq/db";
 import type { ArtworkChange } from "./artwork-change";
 import type { ArtworkPlaceholder } from "~/components/artwork";
 import { Artwork } from "~/components/artwork";
+import { afterMenuCloses } from "~/components/menu";
 import { failed } from "~/features/library/actions";
 import { synqMedia, synqMediaAvailable } from "~/features/media/native";
 
@@ -64,25 +65,56 @@ function Preview({
  * The artwork at the top of an edit form: the cover as it will be saved,
  * and Choose Photo (the photo library, then Move and Scale), with Remove Photo
  * when there's one to remove. Goes first in a `FieldGroup`.
+ *
+ * On a song using its album's artwork, it asks first whether to change the
+ * album's or only the song's, and offers no Remove: a cover that every song on
+ * an album shows is removed from Edit Album, where that's plain.
  */
 export function ArtworkField({
   artwork,
   change,
   placeholder,
+  sharedWith,
   onChange,
 }: {
   /** The saved artwork. */
   artwork: ArtworkRef | null;
   change: ArtworkChange;
   placeholder: ArtworkPlaceholder;
+  /** A song using this album's artwork, and what to do with a photo just for it. */
+  sharedWith?: {
+    albumName: string;
+    onChooseForSong: (change: ArtworkChange) => void;
+  };
   onChange: (change: ArtworkChange) => void;
 }) {
   const hasArtwork =
     change.kind === "picked" || (change.kind === "keep" && artwork !== null);
-  function choose() {
+  function choose(onPicked = onChange) {
     void pickPhoto().then(
-      (picked) => picked !== null && onChange(picked),
+      (picked) => picked !== null && onPicked(picked),
       () => failed("Couldn't Open Photos"),
+    );
+  }
+  function askWhose({
+    albumName,
+    onChooseForSong,
+  }: NonNullable<typeof sharedWith>) {
+    // The picker can't open until the alert has gone.
+    Alert.alert(
+      "Edit Album or Song Artwork?",
+      `Album artwork changes every song on “${albumName}” that uses it.`,
+      [
+        { style: "cancel", text: "Cancel" },
+        {
+          onPress: () => afterMenuCloses(() => choose()),
+          text: "Album Artwork",
+        },
+        {
+          onPress: () => afterMenuCloses(() => choose(onChooseForSong)),
+          text: "Song Artwork",
+        },
+      ],
     );
   }
   return (
@@ -102,12 +134,18 @@ export function ArtworkField({
           />
         </View>
       </RNHostView>
-      {hasArtwork ? (
+      {sharedWith !== undefined ? (
+        <Button
+          label={hasArtwork ? "Edit Artwork" : "Add Artwork"}
+          modifiers={[buttonStyle("borderless")]}
+          onPress={() => askWhose(sharedWith)}
+        />
+      ) : hasArtwork ? (
         <Menu label="Edit Artwork" modifiers={[buttonStyle("borderless")]}>
           <Button
             label="Choose Photo"
             systemImage="photo.on.rectangle"
-            onPress={choose}
+            onPress={() => choose()}
           />
           <Button
             label="Remove Photo"
@@ -120,7 +158,7 @@ export function ArtworkField({
         <Button
           label="Add Artwork"
           modifiers={[buttonStyle("borderless")]}
-          onPress={choose}
+          onPress={() => choose()}
         />
       )}
     </VStack>

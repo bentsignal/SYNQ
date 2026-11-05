@@ -89,6 +89,19 @@ function RootStack() {
           title: "Add to Playlist",
         }}
       />
+      <Stack.Screen
+        name="delete-album/[id]"
+        options={{
+          // Clear, so iOS 26's glass shows through at this partial detent.
+          contentStyle: { backgroundColor: "transparent" },
+          headerShown: true,
+          headerTransparent: true,
+          presentation: "formSheet",
+          sheetAllowedDetents: "fitToContents",
+          sheetGrabberVisible: true,
+          title: "Delete Album?",
+        }}
+      />
       <Stack.Screen name="edit-playlist/[id]" options={EDIT_SHEET} />
       <Stack.Screen name="edit-album/[id]" options={EDIT_SHEET} />
       <Stack.Screen name="edit-artist/[id]" options={EDIT_SHEET} />

@@ -1,9 +1,11 @@
 import { Alert } from "react-native";
+import { router } from "expo-router";
 
 import type { HomeRef, LibraryDb, WriteResult } from "@synq/db";
 import {
   addSongsToPlaylist,
   deleteAlbum,
+  deleteAlbumAndSongs,
   deleteArtist,
   deletePlaylist,
   deleteSongs,
@@ -16,6 +18,7 @@ import {
 } from "@synq/db";
 
 import type { MenuAction } from "~/components/menu";
+import { afterMenuCloses } from "~/components/menu";
 import { forgetSongs } from "~/features/player/actions";
 import { selectionTick } from "~/lib/haptics";
 import { emptyAlbumPrompt } from "./empty-album-prompt";
@@ -171,23 +174,62 @@ export function confirmDeletePlaylist(
   });
 }
 
-export function confirmDeleteAlbum(
-  album: { id: number; name: string },
-  onDeleted?: () => void,
-) {
+/**
+ * Asks before deleting an album. One with songs opens a sheet, since an alert
+ * can't hold the choice to delete them too; an empty one has nothing to choose.
+ */
+export function confirmDeleteAlbum(album: {
+  id: number;
+  name: string;
+  songCount: number;
+}) {
+  if (album.songCount > 0) {
+    router.push({
+      params: {
+        id: String(album.id),
+        name: album.name,
+        songs: String(album.songCount),
+      },
+      pathname: "/delete-album/[id]",
+    });
+    return;
+  }
   confirm({
     action: "Delete Album",
-    message: `“${album.name}” will be deleted. Its songs stay in your library.`,
+    message: `“${album.name}” will be deleted.`,
     remove: () => {
-      const deleted = tryWrite("Couldn't Delete Album", (db) =>
-        deleteAlbum(db, album.id),
-      );
-      if (deleted === undefined) return;
-      onDeleted?.();
-      deleteLibraryFolders(deleted.deletePaths);
+      removeAlbum(album.id, { withSongs: false });
     },
     title: "Delete Album?",
   });
+}
+
+/**
+ * Deletes an album, and its songs when asked: their rows, then their folders,
+ * and drops them from the queue. Returns whether it worked.
+ */
+export function removeAlbum(
+  albumId: number,
+  { withSongs }: { withSongs: boolean },
+) {
+  if (withSongs) {
+    const deleted = tryWrite("Couldn't Delete Album", (db) =>
+      deleteAlbumAndSongs(db, albumId),
+    );
+    if (deleted === undefined) return false;
+    forgetSongs(deleted.ids);
+    deleteLibraryFolders(deleted.deletePaths);
+    // After the sheet this came from has closed: iOS can't show an alert from
+    // a sheet on its way out.
+    afterMenuCloses(() => offerToDeleteEmptyAlbums(deleted.emptied));
+    return true;
+  }
+  const deleted = tryWrite("Couldn't Delete Album", (db) =>
+    deleteAlbum(db, albumId),
+  );
+  if (deleted === undefined) return false;
+  deleteLibraryFolders(deleted.deletePaths);
+  return true;
 }
 
 /**

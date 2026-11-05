@@ -5,7 +5,7 @@ import type { WriteOptions } from "./changes.ts";
 import type { SongListItem } from "./song-items.ts";
 import type { SortOrder } from "./text.ts";
 import { albumSongs, playlists, playlistSongs, songs } from "../schema.ts";
-import { listEmptyAlbums } from "./albums.ts";
+import { deleteAlbum, listEmptyAlbums } from "./albums.ts";
 import { artworkDir } from "./artwork.ts";
 import { nowFrom, written } from "./changes.ts";
 import { uniqueIds } from "./find-or-create.ts";
@@ -157,4 +157,40 @@ export function deleteSongs(
     },
     ["songs", "song_artists", "album_songs", "playlist_songs", "playlists"],
   );
+}
+
+/**
+ * Deletes an album and every song on it, all or nothing. A song on another
+ * album too goes from there as well, as it does in `deleteSongs`, and an album
+ * that leaves empty is reported.
+ */
+export function deleteAlbumAndSongs(
+  db: LibraryDb,
+  id: number,
+  options?: WriteOptions,
+) {
+  const value = db.transaction((tx) => {
+    const songIds = tx
+      .select({ id: albumSongs.songId })
+      .from(albumSongs)
+      .where(eq(albumSongs.albumId, id))
+      .all()
+      .map((r) => r.id);
+    const deleted = deleteSongs(tx, songIds, options).value;
+    const album = deleteAlbum(tx, id).value;
+    return {
+      deletePaths: [...deleted.deletePaths, ...album.deletePaths],
+      emptied: deleted.emptied.filter((emptied) => emptied.id !== id),
+      ids: deleted.ids,
+    };
+  });
+  return written(value, [
+    "albums",
+    "album_artists",
+    "album_songs",
+    "songs",
+    "song_artists",
+    "playlist_songs",
+    "playlists",
+  ]);
 }

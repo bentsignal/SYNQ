@@ -1,0 +1,1 @@
+ALTER TABLE `songs` ADD `use_album_artwork` integer DEFAULT true NOT NULL;

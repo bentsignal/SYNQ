@@ -68,6 +68,18 @@ function ChoiceRow({
   );
 }
 
+function NewButton({ noun, onPress }: { noun: string; onPress: () => void }) {
+  return (
+    <Stack.Toolbar placement="right">
+      <Stack.Toolbar.Button
+        icon="plus"
+        accessibilityLabel={`New ${noun}`}
+        onPress={onPress}
+      />
+    </Stack.Toolbar>
+  );
+}
+
 /**
  * Picks artists or albums for an edit sheet: the chosen ones first, in
  * credit order (the first album is the song's primary one), then every
@@ -86,7 +98,12 @@ export function ChoiceList({
 }: {
   /** "Artist" or "Album", for the search field and the New row. */
   noun: string;
-  options: readonly { id: number; name: string; detail?: string }[];
+  options: readonly {
+    id: number;
+    name: string;
+    detail?: string;
+    artworkVersion?: number | null;
+  }[];
   picked: readonly Pick[];
   canAddNamed?: (name: string) => boolean;
   onChange: (picked: Pick[]) => void;
@@ -115,13 +132,7 @@ export function ChoiceList({
   }
   return (
     <>
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button
-          icon="plus"
-          accessibilityLabel={`New ${noun}`}
-          onPress={onNew}
-        />
-      </Stack.Toolbar>
+      <NewButton noun={noun} onPress={onNew} />
       <Stack.SearchBar
         placeholder={`Search or Add ${noun}`}
         onChangeText={(event) => search.onChangeText(event.nativeEvent.text)}
@@ -165,9 +176,7 @@ export function ChoiceList({
                   label={option.name}
                   detail={option.detail}
                   checked={false}
-                  onPress={() =>
-                    onChange([...picked, { id: option.id, name: option.name }])
-                  }
+                  onPress={() => onChange([...picked, option])}
                 />
               ))}
             </Section>

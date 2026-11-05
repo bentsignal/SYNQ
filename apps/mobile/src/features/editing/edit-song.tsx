@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { router, Stack } from "expo-router";
-import { FieldGroup } from "@expo/ui";
+import { FieldGroup, Switch } from "@expo/ui";
 
 import type { SongDetail } from "@synq/db";
 import {
   canAddAlbumNamed,
+  coverAlbum,
   editSong,
   getSong,
   listAlbums,
@@ -25,15 +26,17 @@ import { ArtworkField } from "./artwork-field";
 import { ChoiceList } from "./choice-list";
 import { LinkRow } from "./link-row";
 import { SheetToolbar } from "./sheet-toolbar";
-import { draft } from "./song-draft";
+import { artworkAlbum } from "./song-artwork";
+import { chooseAlbums, draft } from "./song-draft";
 
 function refOf(pick: Pick) {
   return "id" in pick ? { id: pick.id } : { name: pick.name };
 }
 
 /**
- * Saves the song's tags, then its artwork: on its primary album when it
- * has one (2.5.2 set the album's cover from a song), else on the song.
+ * Saves the song's tags, then its artwork: on the album it's using when the
+ * switch is on, else on the song. Removing the song's artwork never touches an
+ * album's cover.
  */
 function save(song: SongDetail) {
   const edits = draft.get();
@@ -42,11 +45,12 @@ function save(song: SongDetail) {
       albums: edits.albums.map((pick) => ({ album: refOf(pick) })),
       artists: edits.artists.map(refOf),
       title: edits.title,
+      useAlbumArtwork: edits.useAlbumArtwork,
     }),
   );
   if (edited === undefined) return;
   router.back();
-  const [album] = edited.albums;
+  const album = edits.useAlbumArtwork ? coverAlbum(edited.albums) : undefined;
   if (album === undefined) saveArtworkChange(edits.artwork, "song", song.id);
   else saveArtworkChange(edits.artwork, "album", album.id);
   const kept = new Set(edited.albums.map((item) => item.id));
@@ -65,9 +69,11 @@ function Form({ song }: { song: SongDetail }) {
       artists: song.artists,
       artwork: KEEP_ARTWORK,
       title: song.title,
+      useAlbumArtwork: song.useAlbumArtwork,
     }),
   );
   const edits = draft.useValue();
+  const album = artworkAlbum(edits);
   return (
     <>
       <SheetToolbar
@@ -80,12 +86,36 @@ function Form({ song }: { song: SongDetail }) {
         <FieldGroup>
           <FieldGroup.Section>
             <ArtworkField
-              artwork={song.artwork}
+              artwork={album?.cover ?? song.ownArtwork}
               change={edits.artwork}
               placeholder="song"
-              onChange={(artwork) => draft.update(() => ({ artwork }))}
+              sharedWith={
+                album && {
+                  albumName: album.name,
+                  onChooseForSong: (change) =>
+                    draft.update(() => ({
+                      artwork: change,
+                      useAlbumArtwork: false,
+                    })),
+                }
+              }
+              onChange={(change) => draft.update(() => ({ artwork: change }))}
             />
           </FieldGroup.Section>
+          {edits.albums.length > 0 && (
+            <FieldGroup.Section>
+              <Switch
+                label="Use Album Artwork"
+                value={edits.useAlbumArtwork}
+                onValueChange={(useAlbumArtwork) =>
+                  draft.update(() => ({
+                    artwork: KEEP_ARTWORK,
+                    useAlbumArtwork,
+                  }))
+                }
+              />
+            </FieldGroup.Section>
+          )}
           <FieldGroup.Section title="Title">
             <TextInput
               defaultValue={song.title}
@@ -162,6 +192,7 @@ export function EditSongAlbumsScreen() {
       items.map((album) => ({
         artists: album.artists,
         detail: dotted(names(album.artists), album.year),
+        artworkVersion: album.artwork?.version ?? null,
         id: album.id,
         name: album.name,
       })),
@@ -175,7 +206,7 @@ export function EditSongAlbumsScreen() {
         options={albums}
         picked={edits.albums}
         canAddNamed={(name) => canAddAlbumNamed(name, albums, artistNames)}
-        onChange={(picked) => draft.update(() => ({ albums: picked }))}
+        onChange={chooseAlbums}
         onNew={() =>
           router.push({ params: { pickFor: "song" }, pathname: "/new-album" })
         }

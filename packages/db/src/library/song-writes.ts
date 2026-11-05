@@ -166,6 +166,8 @@ export interface EditSongInput {
    * `track` undefined keeps the song's current track on that album.
    */
   albums?: readonly { album: AlbumRef; track?: number | null }[];
+  /** Whether its album's cover comes before its own artwork. */
+  useAlbumArtwork?: boolean;
 }
 
 /** Edits a song's tags; marks it modified since export (its file's tags are now stale). */
@@ -183,6 +185,9 @@ export function editSong(
         .update(songs)
         .set({
           ...(input.title !== undefined && { title: input.title.trim() }),
+          ...(input.useAlbumArtwork !== undefined && {
+            useAlbumArtwork: input.useAlbumArtwork,
+          }),
           modifiedSinceExport: true,
         })
         .where(eq(songs.id, id))

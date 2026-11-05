@@ -10,7 +10,7 @@ import { openLibraryScreen } from "~/features/library/links";
 import { coverFromTracks, draft, parseYear, trackIds } from "./album-draft";
 import { saveArtworkChange } from "./artwork-change";
 import { artistIds } from "./pick";
-import { pickNewAlbum } from "./pick-created";
+import { pickNewAlbum, refreshPickedAlbum } from "./pick-created";
 
 /** Saves the sheet: fields and tracks together, then covers. */
 export function saveEdits(album: AlbumListItem, saved: ReadonlySet<string>) {
@@ -53,7 +53,7 @@ export function saveNew(pickFor: PickFor | undefined) {
         year: parseYear(edits.year),
       }).value;
       const { emptied } = setAlbumTracks(tx, album.id, trackIds(edits)).value;
-      return written({ emptied, id: album.id, name: album.name }, [
+      return written({ emptied, id: album.id }, [
         "albums",
         "album_songs",
         "album_artists",
@@ -66,9 +66,11 @@ export function saveNew(pickFor: PickFor | undefined) {
   if (pickFor === undefined) {
     openLibraryScreen({ id: created.id, screen: "album" });
   } else {
-    pickNewAlbum(created);
+    pickNewAlbum(created.id);
   }
-  saveArtworkChange(edits.artwork, "album", created.id);
+  saveArtworkChange(edits.artwork, "album", created.id, () => {
+    if (pickFor !== undefined) refreshPickedAlbum(created.id);
+  });
   offerToDeleteEmptyAlbums(created.emptied);
   return true;
 }

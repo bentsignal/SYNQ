@@ -6,19 +6,40 @@ import { useQuery } from "@tanstack/react-query";
 
 import { SymbolIcon } from "~/components/symbol-icon";
 import { openLibrary } from "./database";
+import { libraryOpened, revealApp } from "./launch-splash";
 
 /** A normal launch opens the library well before this, so it never shows. */
 const SHOW_PROGRESS_AFTER_MS = 600;
 
 /**
- * Renders the app once the library is open. Until then: the splash color
- * (so a normal launch shows nothing), then the update screen while a 2.5.2
+ * Opens the library under the splash. A slow open (the 2.5.2 import) lifts it
+ * as the update screen fades in, and a failure lifts it for the error.
+ */
+function openUnderSplash() {
+  const slow = setTimeout(revealApp, SHOW_PROGRESS_AFTER_MS);
+  return openLibrary().then(
+    (open) => {
+      clearTimeout(slow);
+      libraryOpened();
+      return open;
+    },
+    (error: unknown) => {
+      clearTimeout(slow);
+      revealApp();
+      throw error;
+    },
+  );
+}
+
+/**
+ * Renders the app once the library is open. Until then: the splash (so a
+ * normal launch shows nothing), then the update screen while a 2.5.2
  * library imports, or an error with a retry. Never an empty library.
  */
 export function LibraryGate({ children }: { children: ReactNode }) {
   const startup = useQuery({
     gcTime: Infinity,
-    queryFn: openLibrary,
+    queryFn: openUnderSplash,
     queryKey: ["startup"],
     select: (open) => open,
     staleTime: Infinity,

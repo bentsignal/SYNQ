@@ -1,11 +1,11 @@
 {
   "framework": null,
-  "installCommand": "",
+  "installCommand": "pnpm install --frozen-lockfile --filter @synq/site...",
   "buildCommand": "pnpm build",
   "outputDirectory": "out",
   "cleanUrls": true,
   "trailingSlash": false,
   "git": {
-    "deploymentEnabled": false
+    "deploymentEnabled": { "**": false, "main": true }
   }
 }

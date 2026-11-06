@@ -57,18 +57,21 @@ Store's marketing, support (`/help`) and privacy (`/privacy`) links. `www.synq.c
 and the old `synq.bentsignal.com` redirect to it, set on the Vercel project's
 domains. It's a Next.js app exported to static files (`output: "export"`): every page
 is prerendered to HTML, and links between pages prefetch and navigate without a reload.
-Pushes don't deploy it. Vercel can't install this pnpm workspace from `apps/site`
-alone, so build it here and upload the result:
 
-```sh
-cd apps/site
-vercel pull --yes --environment=production --scope bsx-sh
-vercel build --prod --scope bsx-sh
-vercel deploy --prebuilt --prod --scope bsx-sh
-```
+Merging to `main` deploys it. The Vercel project (`synq`, team `bsx-sh`) is connected
+to this repository with Root Directory `apps/site`, and builds on Vercel:
 
-`engines.node` in `apps/site/package.json` pins Node 24 for the build, over the
-project's setting.
+- `apps/site/vercel.json` deploys only `main` (`git.deploymentEnabled`), installs just
+  the site's part of the workspace, and serves `out/` with clean URLs.
+- The project skips a deployment when a commit doesn't touch `apps/site` or its
+  workspace dependencies ("Skip deployments when there are no changes").
+- `ENABLE_EXPERIMENTAL_COREPACK=1` on the project makes Vercel use the pnpm version in
+  `packageManager`. The root `package.json` requires exactly that version, and
+  any other pnpm refuses to install.
+- `engines.node` in `apps/site/package.json` sets Node 24.
+
+A failed build leaves the previous deployment live. To deploy by hand, run
+`vercel deploy --prod --scope bsx-sh` from the repository root (not `apps/site`).
 
 Update its privacy policy whenever what the app collects changes.
 

@@ -25,12 +25,24 @@ export function Footer({ links }: { links: FooterLink[] }) {
       <span className="dot" aria-hidden="true">
         ·
       </span>
-      <a className="icon-link" href={DISCORD} aria-label="Discord">
+      <a
+        className="icon-link"
+        href={DISCORD}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Discord"
+      >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d={DISCORD_PATH} />
         </svg>
       </a>
-      <a className="icon-link" href={GITHUB} aria-label="GitHub">
+      <a
+        className="icon-link"
+        href={GITHUB}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="GitHub"
+      >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d={GITHUB_PATH} />
         </svg>

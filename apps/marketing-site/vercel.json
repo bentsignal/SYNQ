@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "installCommand": "pnpm install --frozen-lockfile --filter @synq/site...",
+  "installCommand": "pnpm install --frozen-lockfile --filter @synq/marketing-site...",
   "buildCommand": "pnpm build",
   "outputDirectory": "out",
   "cleanUrls": true,

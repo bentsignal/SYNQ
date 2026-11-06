@@ -74,6 +74,52 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  apps/marketing-site:
+    dependencies:
+      next:
+        specifier: ^16.4.5
+        version: 16.4.5(@types/node@24.12.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@synq/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      '@synq/prettier-config':
+        specifier: workspace:*
+        version: link:../../tooling/prettier
+      '@synq/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.12.2
+      '@types/react':
+        specifier: catalog:react19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: catalog:react19
+        version: 19.2.3(@types/react@19.2.14)
+      '@typescript/native-preview':
+        specifier: 'catalog:'
+        version: 7.0.0-dev.20260512.1
+      babel-plugin-react-compiler:
+        specifier: 'catalog:'
+        version: 1.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.4(jiti@2.7.0)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.8.2
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   apps/mobile:
     dependencies:
       '@expo/ui':
@@ -248,52 +294,6 @@ importers:
       reassure:
         specifier: ^1.6.0
         version: 1.6.0(react@19.2.3)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
-  apps/site:
-    dependencies:
-      next:
-        specifier: ^16.4.5
-        version: 16.4.5(@types/node@24.12.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react:
-        specifier: 19.2.3
-        version: 19.2.3
-      react-dom:
-        specifier: 19.2.3
-        version: 19.2.3(react@19.2.3)
-    devDependencies:
-      '@synq/eslint-config':
-        specifier: workspace:*
-        version: link:../../tooling/eslint
-      '@synq/prettier-config':
-        specifier: workspace:*
-        version: link:../../tooling/prettier
-      '@synq/tsconfig':
-        specifier: workspace:*
-        version: link:../../tooling/typescript
-      '@types/node':
-        specifier: 'catalog:'
-        version: 24.12.2
-      '@types/react':
-        specifier: catalog:react19
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: catalog:react19
-        version: 19.2.3(@types/react@19.2.14)
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260512.1
-      babel-plugin-react-compiler:
-        specifier: 'catalog:'
-        version: 1.0.0
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.4(jiti@2.7.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.2
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -7788,7 +7788,7 @@ snapshots:
       debug: 4.4.3
       expo-modules-autolinking: 57.0.13(typescript@5.9.3)
       resolve-from: 5.0.0
-      semver: 7.7.4
+      semver: 7.8.6
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -11427,7 +11427,7 @@ snapshots:
       '@babel/parser': 7.29.9
       '@istanbuljs/schema': 0.1.6
       istanbul-lib-coverage: 3.2.2
-      semver: 7.7.4
+      semver: 7.8.6
     transitivePeerDependencies:
       - supports-color
 
@@ -12022,7 +12022,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.6
 
   makeerror@1.0.12:
     dependencies:
@@ -12496,7 +12496,7 @@ snapshots:
     dependencies:
       hosted-git-info: 7.0.2
       proc-log: 4.2.0
-      semver: 7.7.4
+      semver: 7.8.6
       validate-npm-package-name: 5.0.1
 
   npm-run-path@4.0.1:
@@ -13240,8 +13240,7 @@ snapshots:
 
   semver@7.7.4: {}
 
-  semver@7.8.6:
-    optional: true
+  semver@7.8.6: {}
 
   send@0.19.2:
     dependencies:

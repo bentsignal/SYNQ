@@ -5,7 +5,9 @@
   --secondary: #9a9a9a;
   --tertiary: #6f6f6f;
   --hairline: rgb(255 255 255 / 0.1);
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    sans-serif;
 }
 
 * {
@@ -29,7 +31,9 @@ a {
   color: inherit;
   text-underline-offset: 3px;
   text-decoration-color: var(--tertiary);
-  transition: color 160ms ease, text-decoration-color 160ms ease;
+  transition:
+    color 160ms ease,
+    text-decoration-color 160ms ease;
 }
 
 a:hover {
@@ -39,6 +43,11 @@ a:hover {
 :focus-visible {
   outline: 2px solid var(--secondary);
   outline-offset: 3px;
+}
+
+/* Rises in once, when the document loads; navigating between pages doesn't replay it. */
+.enter {
+  animation: rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 /* Home: a soft light behind the icon, as if the app were lit from within. */
@@ -61,7 +70,6 @@ a:hover {
   justify-content: center;
   padding-bottom: 40px;
   text-align: center;
-  animation: rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .icon {
@@ -83,9 +91,39 @@ h1 {
   text-indent: 0.14em;
 }
 
-h1.plain {
-  letter-spacing: 0;
-  text-indent: 0;
+/* Home: the icon is the heading. */
+h1.logo {
+  margin-top: 0;
+  line-height: 0;
+}
+
+h1.logo + .line {
+  margin-top: 26px;
+}
+
+/* Help and Privacy: a quiet way back home. */
+.home-link {
+  color: var(--secondary);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.home-link:hover {
+  color: var(--text);
+}
+
+.home-link + .store {
+  margin-top: 18px;
+}
+
+/* Read by screen readers, not shown. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .line {
@@ -129,10 +167,10 @@ h1.plain {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 6px 22px;
   color: var(--secondary);
   font-size: 14px;
-  animation: rise 700ms 120ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .links a {
@@ -143,30 +181,47 @@ h1.plain {
   color: var(--text);
 }
 
+/* Both labels share one cell; the hidden one only holds the width. */
+.links .swap {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.links .swap > span {
+  grid-area: 1 / 1;
+}
+
+.links .swap .ghost {
+  visibility: hidden;
+}
+
+.links .dot {
+  margin: 0 -6px;
+  color: var(--tertiary);
+}
+
+.links .icon-link {
+  display: block;
+  /* Pulls the two icons closer together than the text links. */
+  margin-left: -6px;
+}
+
+.links .dot + .icon-link {
+  margin-left: 0;
+}
+
+.links svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
 /* Privacy */
 .page {
   max-width: 620px;
   margin: 0 auto;
   padding: 44px 24px 72px;
-}
-
-.back {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--secondary);
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.back:hover {
-  color: var(--text);
-}
-
-.back img {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
 }
 
 .page h1 {
@@ -206,8 +261,7 @@ h2 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro,
-  .links {
+  .enter {
     animation: none;
   }
 }

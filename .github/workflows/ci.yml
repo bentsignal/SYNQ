@@ -116,6 +116,18 @@ jobs:
             echo "No comparison: the base didn't measure." >> "$GITHUB_STEP_SUMMARY"
           fi
 
+  # The marketing site still exports to static files.
+  marketing-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup
+        uses: ./tooling/github/setup
+
+      - name: Build the marketing site
+        run: pnpm -F @synq/marketing-site build
+
   # The iOS JavaScript bundle still builds (Metro resolution, Babel, the
   # React Compiler), as release builds and OTA updates will bundle it.
   bundle:

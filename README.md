@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://apps.apple.com/app/id6624313712">
-    <img src="apps/site/app-store-badge.svg" alt="Download on the App Store" height="54">
+    <img src="apps/marketing-site/public/app-store-badge.svg" alt="Download on the App Store" height="54">
   </a>
 </p>
 

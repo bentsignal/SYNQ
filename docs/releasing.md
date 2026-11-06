@@ -52,15 +52,26 @@ type set to manual so nothing goes live on approval until Shawn releases it.
 
 ## Website
 
-`apps/site` is the static site at [synq.cc](https://synq.cc), behind the App
+`apps/marketing-site` is the marketing site at [synq.cc](https://synq.cc), behind the App
 Store's marketing, support (`/help`) and privacy (`/privacy`) links. `www.synq.cc`
 and the old `synq.bentsignal.com` redirect to it, set on the Vercel project's
-domains. It has no build step, and pushes don't deploy it. Deploy it by hand:
+domains. It's a Next.js app exported to static files (`output: "export"`): every page
+is prerendered to HTML, and links between pages prefetch and navigate without a reload.
 
-```sh
-cd apps/site
-vercel deploy --prod --yes --scope bsx-sh
-```
+Merging to `main` deploys it. The Vercel project (`synq`, team `bsx-sh`) is connected
+to this repository with Root Directory `apps/marketing-site`, and builds on Vercel:
+
+- `apps/marketing-site/vercel.json` deploys only `main` (`git.deploymentEnabled`), installs just
+  the marketing site's part of the workspace, and serves `out/` with clean URLs.
+- The project skips a deployment when a commit doesn't touch `apps/marketing-site` or its
+  workspace dependencies ("Skip deployments when there are no changes").
+- `ENABLE_EXPERIMENTAL_COREPACK=1` on the project makes Vercel use the pnpm version in
+  `packageManager`. The root `package.json` requires exactly that version, and
+  any other pnpm refuses to install.
+- `engines.node` in `apps/marketing-site/package.json` sets Node 24.
+
+A failed build leaves the previous deployment live. To deploy by hand, run
+`vercel deploy --prod --scope bsx-sh` from the repository root (not `apps/marketing-site`).
 
 Update its privacy policy whenever what the app collects changes.
 

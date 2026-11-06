@@ -1,0 +1,11 @@
+{
+  "framework": null,
+  "installCommand": "pnpm install --frozen-lockfile --filter @synq/marketing-site...",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "out",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "git": {
+    "deploymentEnabled": { "**": false, "main": true }
+  }
+}

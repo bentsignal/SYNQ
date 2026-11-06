@@ -101,6 +101,21 @@ h1.logo + .line {
   margin-top: 26px;
 }
 
+/* Help: a quiet way back above the email button. */
+.home-link {
+  color: var(--secondary);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.home-link:hover {
+  color: var(--text);
+}
+
+.home-link + .store {
+  margin-top: 18px;
+}
+
 /* Read by screen readers, not shown. */
 .visually-hidden {
   position: absolute;

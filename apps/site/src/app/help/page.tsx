@@ -13,17 +13,11 @@ export default function Help() {
     <div className="home">
       <main className="intro">
         <h1 className="visually-hidden">Help</h1>
-        <Link href="/">
-          <img
-            className="icon"
-            src="/icon.png"
-            alt="SYNQ"
-            width={112}
-            height={112}
-          />
+        <Link className="home-link" href="/">
+          <span aria-hidden="true">←</span> Home
         </Link>
         <a className="store" href="mailto:help@bentsignal.com">
-          Email help@bentsignal.com
+          help@bentsignal.com
         </a>
       </main>
       <Footer

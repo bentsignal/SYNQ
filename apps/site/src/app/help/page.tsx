@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { Footer } from "~/components/footer";
+import { HomeLink } from "~/components/home-link";
 
 export const metadata = {
   title: "Help",
@@ -13,19 +13,12 @@ export default function Help() {
     <div className="home">
       <main className="intro">
         <h1 className="visually-hidden">Help</h1>
-        <Link className="home-link" href="/">
-          <span aria-hidden="true">←</span> Home
-        </Link>
+        <HomeLink />
         <a className="store" href="mailto:help@bentsignal.com">
           help@bentsignal.com
         </a>
       </main>
-      <Footer
-        links={[
-          { href: "/", label: "Home" },
-          { href: "/privacy", label: "Privacy" },
-        ]}
-      />
+      <Footer page="help" />
     </div>
   );
 }

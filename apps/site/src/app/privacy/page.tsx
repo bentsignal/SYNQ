@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+
+import { HomeLink } from "~/components/home-link";
 
 export const metadata = {
   title: "Privacy Policy",
@@ -8,10 +9,7 @@ export const metadata = {
 export default function Privacy() {
   return (
     <main className="page">
-      <Link className="back" href="/">
-        <img src="/icon.png" alt="" width={26} height={26} />
-        SYNQ
-      </Link>
+      <HomeLink />
       <h1>Privacy Policy</h1>
       <p className="date">Effective November 2026, for SYNQ 3.0 and later</p>
 

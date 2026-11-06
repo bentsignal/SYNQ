@@ -34,12 +34,7 @@ export default function Home() {
           />
         </a>
       </main>
-      <Footer
-        links={[
-          { href: "/help", label: "Help" },
-          { href: "/privacy", label: "Privacy" },
-        ]}
-      />
+      <Footer page="home" />
     </div>
   );
 }

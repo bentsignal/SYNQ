@@ -101,7 +101,7 @@ h1.logo + .line {
   margin-top: 26px;
 }
 
-/* Help: a quiet way back above the email button. */
+/* Help and Privacy: a quiet way back home. */
 .home-link {
   color: var(--secondary);
   font-size: 14px;
@@ -181,6 +181,20 @@ h1.logo + .line {
   color: var(--text);
 }
 
+/* Both labels share one cell; the hidden one only holds the width. */
+.links .swap {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.links .swap > span {
+  grid-area: 1 / 1;
+}
+
+.links .swap .ghost {
+  visibility: hidden;
+}
+
 .links .dot {
   margin: 0 -6px;
   color: var(--tertiary);
@@ -208,25 +222,6 @@ h1.logo + .line {
   max-width: 620px;
   margin: 0 auto;
   padding: 44px 24px 72px;
-}
-
-.back {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--secondary);
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.back:hover {
-  color: var(--text);
-}
-
-.back img {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
 }
 
 .page h1 {

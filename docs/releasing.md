@@ -55,12 +55,20 @@ type set to manual so nothing goes live on approval until Shawn releases it.
 `apps/site` is the static site at [synq.cc](https://synq.cc), behind the App
 Store's marketing, support (`/help`) and privacy (`/privacy`) links. `www.synq.cc`
 and the old `synq.bentsignal.com` redirect to it, set on the Vercel project's
-domains. It has no build step, and pushes don't deploy it. Deploy it by hand:
+domains. It's a Next.js app exported to static files (`output: "export"`): every page
+is prerendered to HTML, and links between pages prefetch and navigate without a reload.
+Pushes don't deploy it. Vercel can't install this pnpm workspace from `apps/site`
+alone, so build it here and upload the result:
 
 ```sh
 cd apps/site
-vercel deploy --prod --yes --scope bsx-sh
+vercel pull --yes --environment=production --scope bsx-sh
+vercel build --prod --scope bsx-sh
+vercel deploy --prebuilt --prod --scope bsx-sh
 ```
+
+`engines.node` in `apps/site/package.json` pins Node 24 for the build, over the
+project's setting.
 
 Update its privacy policy whenever what the app collects changes.
 

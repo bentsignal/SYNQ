@@ -1,4 +1,8 @@
 {
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "out",
   "cleanUrls": true,
   "trailingSlash": false,
   "git": {

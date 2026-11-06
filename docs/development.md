@@ -6,7 +6,7 @@ is in [AGENTS.md](../AGENTS.md).
 ## Workspace
 
 - `apps/mobile` (`@synq/mobile`): the Expo app. See its [README](../apps/mobile/README.md).
-- `apps/site`: the website.
+- `apps/site` (`@synq/site`): the website, a static Next.js export (`pnpm -F @synq/site dev`).
 - `packages/db` (`@synq/db`): the library database and the 2.5.2 importer.
 - `packages/audio` (`@synq/audio`): native playback.
 - `tooling/{eslint,prettier,typescript,github}`: shared config, from Vera.

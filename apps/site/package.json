@@ -1,0 +1,36 @@
+{
+  "name": "@synq/site",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "build": "next build",
+    "clean": "git clean -xdf .cache .next .turbo node_modules out",
+    "dev": "next dev",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .gitignore",
+    "format:fix": "prettier --write . --ignore-path ../../.gitignore --ignore-path .gitignore",
+    "lint": "eslint --flag unstable_native_nodejs_ts_config",
+    "typecheck": "next typegen && tsgo --noEmit"
+  },
+  "dependencies": {
+    "next": "^16.2.5",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19"
+  },
+  "devDependencies": {
+    "@synq/eslint-config": "workspace:*",
+    "@synq/prettier-config": "workspace:*",
+    "@synq/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@typescript/native-preview": "catalog:",
+    "babel-plugin-react-compiler": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@synq/prettier-config"
+}

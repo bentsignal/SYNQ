@@ -54,7 +54,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: "synq",
   owner: "directedbyshawn",
   scheme: dev ? "synq-dev" : "synq",
-  version: "3.0.0",
+  version: "3.1.0",
   orientation: "portrait",
   icon: dev ? "./assets/icons/synq-dev.png" : "./assets/icons/icon-blue.png",
   // SYNQ is always dark.

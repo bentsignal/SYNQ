@@ -70,7 +70,7 @@ the production project 2.5.2 shipped from). Profiles in `eas.json`:
 | `internal`              | SYNQ Dev | Update and channel checks             |
 | `production`            | SYNQ     | TestFlight and App Store builds       |
 
-Each profile has the update channel of the same name. Version 3.0.0; build
+Each profile has the update channel of the same name. Version 3.1.0; build
 numbers come from EAS (`appVersionSource: remote`) and must continue above
 99, where the 3.0.0 TestFlight builds stopped. 2.5.2 kept its build number
 in `app.json`, so EAS's remote iOS build number still reads 1 (checked

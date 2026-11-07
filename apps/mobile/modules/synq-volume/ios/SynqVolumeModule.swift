@@ -5,6 +5,8 @@ public class SynqVolumeModule: Module {
   public func definition() -> ModuleDefinition {
     Name("SynqVolume")
 
-    View(VolumeSliderView.self) {}
+    View(VolumeSliderView.self) {
+      Events("onAvailabilityChange")
+    }
   }
 }

@@ -1,3 +1,4 @@
+import AVFoundation
 import ExpoModulesCore
 import MediaPlayer
 import UIKit
@@ -6,6 +7,11 @@ import UIKit
 /// (every image is clear): being on screen is what makes iOS leave out its own
 /// overlay, and its slider is the one way to set the volume. The bar follows
 /// that slider, which follows the hardware buttons.
+///
+/// A route that sets its own volume (CarPlay, some AirPlay speakers) has no
+/// slider: `MPVolumeView` shows the route's name instead, in white text that
+/// would sit on the bar. That text is hidden here, and the bar shows the name
+/// itself as a notice, dimmed and parted around it.
 final class VolumeSliderView: BarSliderView {
   /// How often the bar looks at the slider, which reports the hardware buttons
   /// to no one. Often enough to feel attached, and only while on screen.
@@ -14,6 +20,8 @@ final class VolumeSliderView: BarSliderView {
 
   private let volumeView = VolumeView()
   private var followTimer: Timer?
+  /// Whether the route has no volume to set, for JavaScript's speaker icons.
+  let onAvailabilityChange = EventDispatcher()
 
   #if targetEnvironment(simulator)
     /// Simulators have no system volume, and `MPVolumeView` only says "No
@@ -23,15 +31,28 @@ final class VolumeSliderView: BarSliderView {
       slider.value = 0.6
       return slider
     }()
+
+    /// Uses the real `MPVolumeView` instead, which on a simulator is in the
+    /// state CarPlay puts it in, to check the notice:
+    /// `defaults write com.directedbyshawn.synq.dev SynqSimulatorSystemVolume -bool YES`.
+    private static let usesSystemVolume = UserDefaults.standard.bool(
+      forKey: "SynqSimulatorSystemVolume")
   #endif
+
+  private var usesStandIn: Bool {
+    #if targetEnvironment(simulator)
+      return !Self.usesSystemVolume
+    #else
+      return false
+    #endif
+  }
 
   /// The slider inside `MPVolumeView`, which has no public way to reach it.
   private var slider: UISlider? {
     #if targetEnvironment(simulator)
-      return standIn
-    #else
-      return volumeView.subviews.lazy.compactMap { $0 as? UISlider }.first
+      if usesStandIn { return standIn }
     #endif
+    return volumeView.subviews.lazy.compactMap { $0 as? UISlider }.first
   }
 
   required init(appContext: AppContext? = nil) {
@@ -43,9 +64,8 @@ final class VolumeSliderView: BarSliderView {
     volumeView.setMaximumVolumeSliderImage(clear, for: .normal)
     volumeView.isUserInteractionEnabled = false
     volumeView.accessibilityElementsHidden = true
-    #if targetEnvironment(simulator)
-      volumeView.isHidden = true
-    #endif
+    volumeView.isHidden = usesStandIn
+    volumeView.didLayout = { [weak self] in self?.checkRoute(animated: true) }
     addSubview(volumeView)
     accessibilityLabel = "Volume"
   }
@@ -53,6 +73,7 @@ final class VolumeSliderView: BarSliderView {
   override func layoutSubviews() {
     super.layoutSubviews()
     volumeView.frame = bounds
+    checkRoute(animated: false)
     follow(animated: false)
   }
 
@@ -61,8 +82,10 @@ final class VolumeSliderView: BarSliderView {
     followTimer?.invalidate()
     followTimer = nil
     guard window != nil else { return }
+    checkRoute(animated: false)
     follow(animated: false)
     let timer = Timer(timeInterval: Self.followInterval, repeats: true) { [weak self] _ in
+      self?.checkRoute(animated: true)
       self?.follow(animated: true)
     }
     timer.tolerance = Self.followInterval / 2
@@ -73,6 +96,41 @@ final class VolumeSliderView: BarSliderView {
   private func follow(animated: Bool) {
     guard let slider else { return }
     show(fraction: CGFloat(normalized(slider)), animated: animated)
+  }
+
+  /// Hides `MPVolumeView`'s route name, and shows it on the bar while the
+  /// route has no volume to set: when its name is up or its slider is hidden.
+  private func checkRoute(animated: Bool) {
+    guard !usesStandIn, window != nil else { return }
+    let labels = volumeView.descendants(of: UILabel.self)
+    let shown = labels.first { isShown($0) && !($0.text ?? "").isEmpty }
+    let name = shown?.text
+    for label in labels where label.textColor != .clear {
+      label.textColor = .clear
+    }
+    // No slider yet is a view still being built, not a route without volume.
+    let sliderHidden = slider.map { !isShown($0) || !$0.isEnabled } ?? false
+    let next: String? =
+      name == nil && !sliderHidden
+      ? nil
+      : name ?? AVAudioSession.sharedInstance().currentRoute.outputs.first?.portName ?? ""
+    guard next != notice else { return }
+    let wasAvailable = notice == nil
+    setNotice(next, animated: animated)
+    accessibilityTraits = next == nil ? .adjustable : .notEnabled
+    if wasAvailable != (next == nil) {
+      onAvailabilityChange(["available": next == nil])
+    }
+  }
+
+  /// Whether `MPVolumeView` shows the view: it hides them, or fades them out.
+  private func isShown(_ view: UIView) -> Bool {
+    var current: UIView? = view
+    while let candidate = current, candidate !== volumeView {
+      if candidate.isHidden || candidate.alpha < 0.01 { return false }
+      current = candidate.superview
+    }
+    return true
   }
 
   private func normalized(_ slider: UISlider) -> Float {
@@ -105,16 +163,18 @@ final class VolumeSliderView: BarSliderView {
   }
 
   override var accessibilityValue: String? {
-    get { "\(Int((fraction * 100).rounded()))%" }
+    get { notice ?? "\(Int((fraction * 100).rounded()))%" }
     set {}
   }
 
   override func accessibilityIncrement() {
+    guard notice == nil else { return }
     setVolume(fraction: min(Float(fraction) + Self.step, 1))
     follow(animated: true)
   }
 
   override func accessibilityDecrement() {
+    guard notice == nil else { return }
     setVolume(fraction: max(Float(fraction) - Self.step, 0))
     follow(animated: true)
   }
@@ -122,7 +182,25 @@ final class VolumeSliderView: BarSliderView {
 
 /// Fills the view, with clear images that never need a usable size.
 private final class VolumeView: MPVolumeView {
+  /// Runs after each layout, so a route name `MPVolumeView` has just put up is
+  /// hidden before it draws.
+  var didLayout: (() -> Void)?
+
   override func volumeSliderRect(forBounds bounds: CGRect) -> CGRect {
     bounds
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    didLayout?()
+  }
+}
+
+extension UIView {
+  fileprivate func descendants<T: UIView>(of type: T.Type) -> [T] {
+    subviews.flatMap { view -> [T] in
+      if let match = view as? T { return [match] }
+      return view.descendants(of: type)
+    }
   }
 }

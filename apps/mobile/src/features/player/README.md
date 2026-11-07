@@ -240,9 +240,19 @@ which is how it follows the hardware buttons. iOS has no public way to reach it,
 but it has been the usual way to do this for years; if it ever stops working,
 dragging is lost and the hardware buttons still work.
 
+A route that sets its own volume (CarPlay, some AirPlay speakers) has no slider:
+`MPVolumeView` hides it and puts up the route's name in white text, which would
+sit on the bar. The view clears that text after each of `MPVolumeView`'s layouts
+and shows the name itself: the fill goes, the track dims and parts around the
+name (in the times' muted caption style), dragging stops, and an
+`onAvailabilityChange` event dims the speakers in JavaScript.
+
 Simulators have no system volume and `MPVolumeView` only says "No Volume
 Available" there, so a simulator build drives a stand-in slider, which changes
-nothing but checks the layout and the touches.
+nothing but checks the layout and the touches. To see the CarPlay state, use the
+real `MPVolumeView`, which is already in it on a simulator:
+`xcrun simctl spawn <device> defaults write com.directedbyshawn.synq.dev SynqSimulatorSystemVolume -bool YES`,
+then relaunch.
 
 ## Artwork corners
 

@@ -18,7 +18,9 @@ test("the Podfile gets one post_integrate hook, before post_install", () => {
   const twice = addPostIntegrate(once);
   assert.equal(twice, once);
   assert.equal(once.match(/post_integrate do/g)?.length, 1);
-  assert.ok(once.indexOf("post_integrate do") < once.indexOf("post_install do"));
+  assert.ok(
+    once.indexOf("post_integrate do") < once.indexOf("post_install do"),
+  );
   assert.match(once, /strip-framework-symbols\.sh/);
 });
 

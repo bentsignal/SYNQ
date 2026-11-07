@@ -1,14 +1,24 @@
 import type { SymbolViewProps } from "expo-symbols";
+import type { ViewProps } from "react-native";
+import { useState } from "react";
 import { View } from "react-native";
+import Animated from "react-native-reanimated";
 import { requireNativeView, requireOptionalNativeModule } from "expo";
 
 import { SymbolIcon } from "~/components/symbol-icon";
+
+interface NativeVolumeSliderProps extends ViewProps {
+  /** Binaries before it never call it, and their volume always shows as usable. */
+  onAvailabilityChange?: (event: {
+    nativeEvent: { available: boolean };
+  }) => void;
+}
 
 /** `modules/synq-volume`, or null in a binary built before it. */
 const NativeVolumeSlider =
   requireOptionalNativeModule("SynqVolume") === null
     ? null
-    : requireNativeView<React.ComponentProps<typeof View>>("SynqVolume");
+    : requireNativeView<NativeVolumeSliderProps>("SynqVolume");
 
 /** As tall as the scrubber's row, so the transport sits between equal rows. */
 const ROW_HEIGHT = 20;
@@ -21,20 +31,29 @@ const TOUCH_HEIGHT = 52;
  */
 const QUIET = { box: 20, edge: -2, size: 13 };
 const LOUD = { box: 29, edge: -1.5, size: 20 };
+/** The speakers while the route sets its own volume, dimmed with the bar. */
+const UNAVAILABLE_OPACITY = 0.4;
+/** The bar's own fade (`BarSliderView.growDuration`). */
+const FADE_MS = 200;
 
 /**
  * The system volume under the transport, the same bar as the timeline, with a quiet
  * speaker at each end whose outer edges line up with the scrubber's ends. It
- * follows the hardware buttons by itself. A binary without it shows nothing.
+ * follows the hardware buttons by itself. A route that sets its own volume
+ * (CarPlay) shows its name on a dimmed bar instead, and the speakers dim with
+ * it. A binary without it shows nothing.
  */
 export function VolumeSlider() {
+  const [available, setAvailable] = useState(true);
   if (NativeVolumeSlider === null) return null;
+  const opacity = available ? 1 : UNAVAILABLE_OPACITY;
   return (
     <View className="flex-row items-center" style={{ height: ROW_HEIGHT }}>
       <View style={{ alignItems: "flex-start", width: QUIET.box }}>
         <VolumeIcon
           name="speaker.fill"
           size={QUIET.size}
+          opacity={opacity}
           marginLeft={QUIET.edge}
         />
       </View>
@@ -44,11 +63,15 @@ export function VolumeSlider() {
           height: TOUCH_HEIGHT,
           marginVertical: (ROW_HEIGHT - TOUCH_HEIGHT) / 2,
         }}
+        onAvailabilityChange={({ nativeEvent }) =>
+          setAvailable(nativeEvent.available)
+        }
       />
       <View style={{ alignItems: "flex-end", width: LOUD.box }}>
         <VolumeIcon
           name="speaker.wave.3.fill"
           size={LOUD.size}
+          opacity={opacity}
           marginRight={LOUD.edge}
         />
       </View>
@@ -59,20 +82,27 @@ export function VolumeSlider() {
 function VolumeIcon({
   name,
   size,
+  opacity,
   ...edge
 }: {
   name: SymbolViewProps["name"];
   size: number;
+  opacity: number;
   marginLeft?: number;
   marginRight?: number;
 }) {
   return (
-    <View
+    <Animated.View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={edge}
+      style={{
+        ...edge,
+        opacity,
+        transitionDuration: FADE_MS,
+        transitionProperty: "opacity",
+      }}
     >
       <SymbolIcon name={name} size={size} tintColorClassName="accent-muted" />
-    </View>
+    </Animated.View>
   );
 }

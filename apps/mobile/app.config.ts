@@ -96,6 +96,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     // Adopts the UIScene life cycle the iOS 27 SDK requires; remove with SDK 58.
     "./plugins/with-ios-scene-lifecycle.cjs",
     ["./plugins/with-alternate-icons.cjs", { icons: ALTERNATE_ICONS }],
+    // Strips the prebuilt frameworks' symbol tables from Release builds.
+    "./plugins/with-stripped-frameworks.cjs",
     "expo-router",
     // Playback in the background and on the lock screen (packages/audio).
     "@synq/audio",

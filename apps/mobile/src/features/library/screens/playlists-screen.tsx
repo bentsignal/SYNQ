@@ -1,5 +1,3 @@
-import { Stack } from "expo-router";
-
 import { listPlaylists } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
@@ -15,7 +13,7 @@ import {
   useSearchableList,
 } from "../searchable-list";
 import { playlistsSort } from "../sort";
-import { sortMenuItems } from "../sort-menu";
+import { SortToolbar } from "../sort-toolbar";
 
 function Empty({ query }: { query: string }) {
   if (query !== "") return <NoResults query={query} />;
@@ -39,19 +37,11 @@ export default function PlaylistsScreen() {
   return (
     <>
       <TabTitle title="Playlists" />
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Menu
-          icon="arrow.up.arrow.down"
-          accessibilityLabel="Sort"
-        >
-          {sortMenuItems({ sort, store: playlistsSort })}
-        </Stack.Toolbar.Menu>
-        <Stack.Toolbar.Button
-          icon="plus"
-          accessibilityLabel="New Playlist"
-          onPress={openNewPlaylist}
-        />
-      </Stack.Toolbar>
+      <SortToolbar
+        store={playlistsSort}
+        sort={sort}
+        add={{ label: "New Playlist", onPress: openNewPlaylist }}
+      />
       <LibrarySearchBar placeholder="Search Playlists" search={search} />
       <ScreenList
         data={items}

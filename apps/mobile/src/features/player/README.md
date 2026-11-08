@@ -115,9 +115,33 @@ whole list is in edit mode.
 - **Auto-scroll tops out at 30 rows a second** (`MAX_AUTOSCROLL`). Remounting
   rows faster than that drops frames, in native mounting rather than JavaScript.
 
-One pan on the list handles every row: a touch on the handle's side picks up
-the row at once, and a swipe left anywhere else opens or deletes it. The
-screen-reader actions on each row are Move Up, Move Down, and Remove.
+The list's gestures handle every row: a touch on the handle's side picks up the
+row at once; anywhere else, a tap plays the row and a sideways pan swipes it
+(`use-queue-swipe.ts`). The screen-reader actions on each row are Play Next,
+Add to Queue, Move Up, Move Down, and Delete.
+
+## Swiping and tapping rows
+
+- **The capsules are drawn by hand** (`queue-swipe-actions.tsx`), since only a
+  `UITableView` or a list `UICollectionView` has iOS's own. `swipe-layout.ts`
+  (pure, node-tested) places them every frame: growing in as the row opens,
+  the first stretching past open, and taking the whole space once armed. A
+  capsule's length changes without animating layout: a round end either side
+  of a middle that scales. They measure their labels once, for Dynamic Type.
+- **Taps go through a gesture, not a `Pressable`,** in a race with the swipe
+  and the handle's drag, so moving 10 points turns a tap into a scroll or a
+  swipe instead of playing the row. Taps on an open row's capsules go through
+  the same gesture, by where they land.
+- **A new order slides only when a row's action made it.** `useSlideNextOrder`
+  marks it; the UI thread then eases rows from `previousPositions` with one
+  `orderProgress`, and the moved row fades out, the rest slide, and it fades
+  in. Anything else (a tap, a song ending, a drop) is just in place.
+- **A new current song can't flicker.** It comes with new React content (the
+  header, a row leaving Up Next), and the UI thread placing rows by the new
+  order before that content is on screen showed one frame of rows on top of
+  each other. So such an order reaches the UI thread a frame later, and the
+  row that left stays drawn until then, so that frame shows the old list
+  rather than a gap.
 
 `synqDev.player.drag(index, toY, ms, holdMs)` runs a drag from the UI thread
 for `scripts/sim.sh frames`. Touches injected into a simulator stall frames on

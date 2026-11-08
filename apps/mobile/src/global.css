@@ -24,6 +24,8 @@
       --color-accent: #77adf8;
       --color-on-accent: #141414;
       --color-destructive: #ff453a;
+      /* A swipe action that isn't the accent or destructive (systemGray2). */
+      --color-action: #636366;
     }
     @variant light {
       --color-background: #141414;
@@ -38,6 +40,8 @@
       --color-accent: #77adf8;
       --color-on-accent: #141414;
       --color-destructive: #ff453a;
+      /* A swipe action that isn't the accent or destructive (systemGray2). */
+      --color-action: #636366;
     }
   }
 }

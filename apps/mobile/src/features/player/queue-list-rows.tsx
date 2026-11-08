@@ -1,5 +1,4 @@
-import type { SharedValue } from "react-native-reanimated";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
@@ -12,40 +11,53 @@ import type { SongListItem } from "@synq/db";
 import type { QueueEntry } from "./queue-model";
 import type { QueueDragValues } from "./use-queue-drag";
 import type { QueueSwipeState } from "./use-queue-swipe";
-import { SymbolIcon } from "~/components/symbol-icon";
-import { displacedSlot } from "./queue-layout";
+import { displacedSlot, settlingRow } from "./queue-layout";
 import { QueueHandle, QueueRow, QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
 import { artistLine } from "./tracks";
-import { SWIPE_OPEN } from "./use-queue-swipe";
+import { DRAGGING } from "./use-queue-drag";
 
 const SHIFT = { duration: 180 };
 const LIFT_SHADOW = "0 6px 18px rgba(0, 0, 0, 0.45)";
+/** How far a row's swiped backing takes to show. */
+const BACKING_IN = 24;
 const ROW_ACTIONS = [
+  { label: "Play Next", name: "playNext" },
+  { label: "Add to Queue", name: "addToQueue" },
   { label: "Move Up", name: "moveUp" },
   { label: "Move Down", name: "moveDown" },
-  { label: "Remove", name: "remove" },
-];
+  { label: "Delete", name: "delete" },
+] as const;
+
+export type RowAction = (typeof ROW_ACTIONS)[number]["name"];
 
 /** A row of Up Next, placed by the UI thread. Rows are recycled. */
 export function UpNextRow({
   entry,
   song,
-  values: { autoScrolling, floating, from, hover, positions },
-  swipe: { index: swipeIndex, x: swipeX },
-  onPress,
-  onMove,
-  onRemove,
+  values: {
+    autoScrolling,
+    floating,
+    from,
+    hover,
+    movedKey,
+    orderProgress,
+    phase,
+    positions,
+    previousPositions,
+  },
+  swipe,
+  onPlay,
+  onAction,
 }: {
   entry: QueueEntry;
   song: SongListItem;
   values: QueueDragValues;
   swipe: QueueSwipeState;
-  onPress: () => void;
-  onMove: (delta: number) => void;
-  onRemove: () => void;
+  onPlay: () => void;
+  onAction: (action: RowAction) => void;
 }) {
   const key = entry.key;
-  /** The rest of a slide into this row's slot; 0 at rest. */
+  /** The rest of a slide into this row's slot during a drag; 0 at rest. */
   const slide = useSharedValue(0);
 
   useAnimatedReaction(
@@ -58,10 +70,15 @@ export function UpNextRow({
     (slot, previous) => {
       if (previous === null || previous === -1 || slot === -1) return;
       const moved = previous - slot;
-      // A row closing a gap slides; a recycled row is just in place, and so is
-      // one the list is scrolling past too fast to watch.
+      // A row closing a gap under the drag slides; a recycled row is just in
+      // place, and so is one the list is scrolling past too fast to watch.
       const dragged = positions.get()[key] === from.get();
-      if (Math.abs(moved) !== 1 || dragged || autoScrolling.get()) {
+      if (
+        phase.get() !== DRAGGING ||
+        Math.abs(moved) !== 1 ||
+        dragged ||
+        autoScrolling.get()
+      ) {
         slide.set(0);
       } else {
         slide.set(moved * ROW);
@@ -76,11 +93,19 @@ export function UpNextRow({
     const slot =
       base === undefined ? 0 : displacedSlot(base, from.get(), hover.get());
     const lifted = floating.get() && base === from.get();
+    const moved = movedKey.get();
+    const settling = settlingRow({
+      anyMoved: moved !== null,
+      isMoved: key === moved,
+      previous: previousPositions.get()[key],
+      progress: orderProgress.get(),
+      slot,
+    });
     return {
-      opacity: base === undefined || lifted ? 0 : 1,
+      opacity: base === undefined || lifted ? 0 : settling.opacity,
       transform: [
-        { translateY: slot * ROW + slide.get() },
-        { translateX: base === swipeIndex.get() ? swipeX.get() : 0 },
+        { translateY: settling.slot * ROW + slide.get() },
+        { translateX: base === swipe.index.get() ? swipe.x.get() : 0 },
       ],
     };
   }, [key]);
@@ -90,23 +115,59 @@ export function UpNextRow({
       className="absolute inset-x-0 top-0 flex-row"
       style={[{ height: ROW }, style]}
     >
-      <Pressable
+      <RowBackground entryKey={key} positions={positions} swipe={swipe} />
+      <View
+        accessible
         accessibilityRole="button"
         accessibilityLabel={`${song.title}, ${artistLine(song)}`}
         accessibilityActions={ROW_ACTIONS}
+        onAccessibilityTap={onPlay}
         onAccessibilityAction={(event) => {
-          const action = event.nativeEvent.actionName;
-          if (action === "moveUp") onMove(-1);
-          if (action === "moveDown") onMove(1);
-          if (action === "remove") onRemove();
+          const action = ROW_ACTIONS.find(
+            ({ name }) => name === event.nativeEvent.actionName,
+          );
+          if (action !== undefined) onAction(action.name);
         }}
-        className="active:bg-fill flex-1"
-        onPress={onPress}
+        className="flex-1"
       >
         <QueueRow song={song} />
-      </Pressable>
+      </View>
       <QueueHandle />
     </Animated.View>
+  );
+}
+
+/**
+ * Behind a row: while it's swiped, a rounded backing, as iOS 27 gives a
+ * swiped table row; while it's touched, the highlight.
+ */
+function RowBackground({
+  entryKey,
+  positions,
+  swipe: { highlight, index, pressIndex, x },
+}: {
+  entryKey: string;
+  positions: QueueDragValues["positions"];
+  swipe: QueueSwipeState;
+}) {
+  const backing = useAnimatedStyle(() => {
+    const swiped = positions.get()[entryKey] === index.get();
+    return {
+      opacity: swiped ? Math.min(Math.abs(x.get()) / BACKING_IN, 1) : 0,
+    };
+  }, [entryKey]);
+  const highlighted = useAnimatedStyle(() => {
+    const pressed = positions.get()[entryKey] === pressIndex.get();
+    return { opacity: pressed ? highlight.get() : 0 };
+  }, [entryKey]);
+  return (
+    <>
+      <Animated.View
+        className="bg-fill absolute inset-0"
+        style={[{ borderRadius: ROW / 2 }, backing]}
+      />
+      <Animated.View className="bg-fill absolute inset-0" style={highlighted} />
+    </>
   );
 }
 
@@ -144,48 +205,6 @@ export function FloatingRow({
           <QueueHandle />
         </View>
       )}
-    </Animated.View>
-  );
-}
-
-/** Red behind the one row being swiped, sliding in with it. */
-export function SwipeBackground({
-  swipe: { index: swipeIndex, x: swipeX },
-  width,
-  onPress,
-}: {
-  swipe: QueueSwipeState;
-  width: SharedValue<number>;
-  onPress: () => void;
-}) {
-  const style = useAnimatedStyle(() => {
-    const index = swipeIndex.get();
-    return {
-      opacity: index === -1 ? 0 : 1,
-      transform: [
-        { translateY: Math.max(index, 0) * ROW },
-        { translateX: width.get() + swipeX.get() },
-      ],
-    };
-  });
-  return (
-    <Animated.View
-      className="bg-destructive absolute inset-x-0 top-0"
-      style={[{ height: ROW }, style]}
-    >
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Delete"
-        className="h-full items-center justify-center"
-        style={{ width: SWIPE_OPEN }}
-        onPress={onPress}
-      >
-        <SymbolIcon
-          name="trash.fill"
-          size={20}
-          tintColorClassName="accent-foreground"
-        />
-      </Pressable>
     </Animated.View>
   );
 }

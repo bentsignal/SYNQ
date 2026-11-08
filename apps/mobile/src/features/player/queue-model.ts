@@ -41,6 +41,11 @@ export function nextKey(songId: number) {
   return `${songId}.${lastKey.toString(36)}`;
 }
 
+/** The song an entry's key belongs to. */
+export function songIdOf(key: string) {
+  return Number.parseInt(key, 10);
+}
+
 export function newEntries(songIds: readonly number[], queued = false) {
   return songIds.map(
     (songId): QueueEntry => ({ key: nextKey(songId), queued, songId }),
@@ -243,6 +248,24 @@ export function upNextMove(queue: Queue, key: string, upNextIndex: number) {
   const last = queue.entries.length - 1;
   const to = Math.min(Math.max(current + 1 + upNextIndex, current + 1), last);
   return from === to ? null : { from, to };
+}
+
+/**
+ * Cues the Up Next entry `key` (a swipe right in the queue): "next" moves it
+ * straight after the current song, "last" behind the rest of the cued run,
+ * as Play Next and Add to Queue would put a new copy. `from` and `to` are
+ * the move for native (equal when only the entry's cueing changed), or the
+ * result is null when there's nothing to do.
+ */
+export function cueEntry(queue: Queue, key: string, place: "next" | "last") {
+  const current = currentIndex(queue);
+  const from = queue.entries.findIndex((entry) => entry.key === key);
+  if (current === -1 || from <= current) return null;
+  const rest = queue.entries.filter((_, index) => index !== from);
+  const to =
+    current + 1 + (place === "next" ? 0 : queuedRunLength(rest, current));
+  if (from === to && queue.entries[from]?.queued === true) return null;
+  return { from, queue: moveEntry(queue, from, to), to };
 }
 
 /** Drops every entry of these songs (they were deleted from the library). */

@@ -45,7 +45,7 @@ export function QueueScreen() {
                       : `Playing from ${sourceName}`
                   }
                 />
-                <QueueRow song={currentSong} />
+                <QueueRow song={currentSong} seamless />
               </>
             )}
             {upNext.length > 0 && <SectionTitle title="Up Next" />}

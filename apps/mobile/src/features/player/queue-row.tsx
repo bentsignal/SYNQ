@@ -2,7 +2,7 @@ import { Text, View } from "react-native";
 
 import type { SongListItem } from "@synq/db";
 
-import { Artwork } from "~/components/artwork";
+import { Artwork, SeamlessArtwork } from "~/components/artwork";
 import { SymbolIcon } from "~/components/symbol-icon";
 import { artistLine } from "./tracks";
 
@@ -12,15 +12,24 @@ export const QUEUE_HANDLE_WIDTH = 56;
 const ARTWORK = 44;
 
 /**
- * What a queue row shows: artwork, title, artist.
+ * What a queue row shows: artwork, title, artist. `seamless` for the song
+ * playing, whose cover changes in place: the old one stays until the new one
+ * is ready, as in the player (`README.md`, Skipping).
  */
-export function QueueRow({ song }: { song: SongListItem }) {
+export function QueueRow({
+  song,
+  seamless = false,
+}: {
+  song: SongListItem;
+  seamless?: boolean;
+}) {
+  const Cover = seamless ? SeamlessArtwork : Artwork;
   return (
     <View
       className="flex-row items-center gap-3 pl-4"
       style={{ height: QUEUE_ROW_HEIGHT }}
     >
-      <Artwork artwork={song.artwork} placeholder="song" size={ARTWORK} />
+      <Cover artwork={song.artwork} placeholder="song" size={ARTWORK} />
       <View className="flex-1">
         <Text numberOfLines={1} className="text-body text-foreground">
           {song.title}

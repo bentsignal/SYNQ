@@ -4,6 +4,7 @@ import { test } from "node:test";
 import type { Queue } from "./queue-model.ts";
 import {
   buildQueue,
+  cueEntry,
   cueSongs,
   currentIndex,
   moveEntry,
@@ -225,4 +226,50 @@ void test("dragging while shuffled: into the run it stays with the song, out of 
   const out = moveEntry(queue, 1, queue.entries.length - 1);
   assert.deepEqual(cued(out), []);
   assert.deepEqual(songs(unshuffleQueue(out)), [1, 10, 2, 3, 4, 5]);
+});
+
+function keyOf(queue: Queue, songId: number) {
+  return queue.entries.find((entry) => entry.songId === songId)?.key ?? "";
+}
+
+function cueSwiped(queue: Queue, songId: number, place: "next" | "last") {
+  return cueEntry(queue, keyOf(queue, songId), place)?.queue ?? queue;
+}
+
+void test("swiping a song in Up Next cues it, at the front or the back of the cued run", () => {
+  let queue = buildQueue([1, 2, 3, 4, 5], { shuffle: false, startIndex: 0 });
+  queue = addToQueue(queue, [10, 11]);
+  queue = cueSwiped(queue, 4, "last");
+  assert.deepEqual(songs(queue), [1, 10, 11, 4, 2, 3, 5]);
+  assert.deepEqual(cued(queue), [10, 11, 4]);
+  queue = cueSwiped(queue, 5, "next");
+  assert.deepEqual(songs(queue), [1, 5, 10, 11, 4, 2, 3]);
+  assert.deepEqual(cued(queue), [5, 10, 11, 4]);
+  // A song already in the run moves within it.
+  queue = cueSwiped(queue, 10, "last");
+  assert.deepEqual(songs(queue), [1, 5, 11, 4, 10, 2, 3]);
+  // The next Add to Queue still lands behind everything cued.
+  queue = addToQueue(queue, [12]);
+  assert.deepEqual(songs(queue), [1, 5, 11, 4, 10, 12, 2, 3]);
+});
+
+void test("swiping the song that's already next cues it without moving it", () => {
+  const queue = buildQueue([1, 2, 3], { shuffle: false, startIndex: 0 });
+  const result = cueEntry(queue, keyOf(queue, 2), "next");
+  assert.ok(result);
+  assert.equal(result.from, 1);
+  assert.equal(result.to, 1);
+  assert.deepEqual(cued(result.queue), [2]);
+  // Already cued and in place: nothing to do.
+  assert.equal(cueEntry(result.queue, keyOf(queue, 2), "last"), null);
+});
+
+void test("the current song and songs already played can't be cued", () => {
+  const queue = skipTo(
+    buildQueue([1, 2, 3], { shuffle: false, startIndex: 0 }),
+    1,
+  );
+  assert.equal(cueEntry(queue, keyOf(queue, 2), "next"), null);
+  assert.equal(cueEntry(queue, keyOf(queue, 1), "last"), null);
+  assert.equal(cueEntry(queue, "missing", "last"), null);
 });

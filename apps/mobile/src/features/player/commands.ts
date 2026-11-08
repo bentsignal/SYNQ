@@ -7,6 +7,7 @@ import { forgetPushedTracks, native, tracksFor } from "./native-queue";
 import { persist } from "./persistence";
 import {
   buildQueue,
+  cueEntry,
   cueSongs,
   currentIndex,
   forgetSongIds,
@@ -177,10 +178,25 @@ export function moveInUpNext(key: string, upNextIndex: number) {
   return true;
 }
 
-/** Removes the entry `key` (a swipe in the queue). */
+/**
+ * Moves the Up Next entry `key` to the front of the cued run ("next") or to
+ * its end ("last"): a swipe right in the queue.
+ */
+export function cueQueueEntry(key: string, place: "next" | "last") {
+  const cued = cueEntry(getPlayerState().queue, key, place);
+  if (cued === null) return false;
+  setPlayerState({ queue: cued.queue });
+  if (cued.from !== cued.to) native(Audio.move(cued.from, cued.to));
+  persist();
+  return true;
+}
+
+/** Removes the entry `key` (a swipe left in the queue). */
 export function removeEntry(key: string) {
   const index = entryIndex(key);
-  if (index !== -1) removeFromQueue([index]);
+  if (index === -1) return false;
+  removeFromQueue([index]);
+  return true;
 }
 
 /** Plays the entry `key` (a tap in the queue). */

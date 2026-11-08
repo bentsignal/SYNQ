@@ -1,17 +1,18 @@
 /**
  * Where a queue row's swipe actions are, as iOS 27 draws a table view's:
- * capsules beside the row, spaced from it, from each other, and from the
- * screen's edge. Pure, so node tests cover it; the UI thread runs it every
+ * circles with a symbol beside the row, spaced from it, from each other, and
+ * from the screen's edge. Pure, so node tests cover it; the UI thread runs it every
  * frame of a swipe. Distances are from the edge the row moved away from, and
  * actions go outermost first: the first is the one a full swipe does.
  */
 
 export const ACTION_GAP = 10;
-export const ACTION_HEIGHT = 36;
+/** Each action's circle; the first stretches into a capsule past open. */
+export const ACTION_SIZE = 44;
 /** A full swipe needs at least this much past the open buttons. */
 const FULL_BEYOND_OPEN = 32;
 /** Or this share of the row, whichever is further. */
-const FULL_SHARE = 0.55;
+const FULL_SHARE = 0.5;
 
 /** How far a row opens to show actions this wide. */
 export function openDistance(widths: readonly number[]) {
@@ -60,7 +61,7 @@ export function actionFrames(
       };
     }
     const length = width + extra;
-    const full = Math.max(revealed - 2 * ACTION_GAP, ACTION_HEIGHT);
+    const full = Math.max(revealed - 2 * ACTION_GAP, ACTION_SIZE);
     return {
       length: length + (full - length) * armed,
       opacity: reveal,

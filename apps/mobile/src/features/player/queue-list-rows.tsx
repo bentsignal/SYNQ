@@ -115,7 +115,6 @@ export function UpNextRow({
       className="absolute inset-x-0 top-0 flex-row"
       style={[{ height: ROW }, style]}
     >
-      <RowBackground entryKey={key} positions={positions} swipe={swipe} />
       <View
         accessible
         accessibilityRole="button"
@@ -138,35 +137,45 @@ export function UpNextRow({
 }
 
 /**
- * Behind a row: while it's swiped, a rounded backing, as iOS 27 gives a
- * swiped table row; while it's touched, the highlight.
+ * Under the rows: the swiped row's rounded backing, as iOS 27 gives a swiped
+ * table row, and the touched row's highlight. One of each for the whole list,
+ * since only one row is ever swiped or touched, so a row mounts with nothing
+ * extra.
  */
-function RowBackground({
-  entryKey,
-  positions,
+export function RowUnderlays({
   swipe: { highlight, index, pressIndex, x },
 }: {
-  entryKey: string;
-  positions: QueueDragValues["positions"];
   swipe: QueueSwipeState;
 }) {
   const backing = useAnimatedStyle(() => {
-    const swiped = positions.get()[entryKey] === index.get();
+    const row = index.get();
     return {
-      opacity: swiped ? Math.min(Math.abs(x.get()) / BACKING_IN, 1) : 0,
+      opacity: row === -1 ? 0 : Math.min(Math.abs(x.get()) / BACKING_IN, 1),
+      transform: [
+        { translateY: Math.max(row, 0) * ROW },
+        { translateX: x.get() },
+      ],
     };
-  }, [entryKey]);
+  });
   const highlighted = useAnimatedStyle(() => {
-    const pressed = positions.get()[entryKey] === pressIndex.get();
-    return { opacity: pressed ? highlight.get() : 0 };
-  }, [entryKey]);
+    const row = pressIndex.get();
+    return {
+      opacity: row === -1 ? 0 : highlight.get(),
+      transform: [{ translateY: Math.max(row, 0) * ROW }],
+    };
+  });
   return (
     <>
       <Animated.View
-        className="bg-fill absolute inset-0"
-        style={[{ borderRadius: ROW / 2 }, backing]}
+        pointerEvents="none"
+        className="bg-fill absolute inset-x-0 top-0"
+        style={[{ borderRadius: ROW / 2, height: ROW }, backing]}
       />
-      <Animated.View className="bg-fill absolute inset-0" style={highlighted} />
+      <Animated.View
+        pointerEvents="none"
+        className="bg-fill absolute inset-x-0 top-0"
+        style={[{ height: ROW }, highlighted]}
+      />
     </>
   );
 }

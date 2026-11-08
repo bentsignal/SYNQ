@@ -11,11 +11,17 @@ import {
 import { scheduleOnRN, scheduleOnUI } from "react-native-worklets";
 
 import type { QueueEntry } from "./queue-model";
+import type { SlideNextOrderMark } from "./slide-next-order";
 import type { QueueGeometry } from "./use-queue-geometry";
 import type { QueueSwipeState } from "./use-queue-swipe";
 import { lightImpact, selectionTick } from "~/lib/haptics";
 import { moveInUpNext } from "./commands";
-import { autoScrollSpeed, positionsOf, slotAtOffset } from "./queue-layout";
+import {
+  autoScrollSpeed,
+  positionsOf,
+  sameKeys,
+  slotAtOffset,
+} from "./queue-layout";
 import { QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
 
 /** How close to the list's edge a drag starts scrolling it. */
@@ -27,29 +33,6 @@ const SETTLE = { duration: 160 };
 const REORDER = { duration: 300, easing: Easing.linear };
 /** With a row moving, it fades out and in around the slide. */
 const REORDER_WITH_MOVE = { duration: 480, easing: Easing.linear };
-
-/**
- * The next order comes from a row's action, so rows slide into it; `moved` is
- * the entry that moved, which fades across instead of sliding over the rest.
- */
-type SlideNextOrder = { moved: string | null } | null;
-
-/** Marks the next order as one to slide into; the order takes the mark. */
-export function useSlideNextOrder() {
-  const slideRef = useRef<SlideNextOrder>(null);
-  return {
-    mark(slide: SlideNextOrder) {
-      slideRef.current = slide;
-    },
-    take() {
-      const slide = slideRef.current;
-      slideRef.current = null;
-      return slide;
-    },
-  };
-}
-
-export type SlideNextOrderMark = ReturnType<typeof useSlideNextOrder>;
 
 const IDLE = 0;
 export const DRAGGING = 1;
@@ -69,6 +52,8 @@ interface QueueDragOptions {
   swipe: QueueSwipeState;
   /** Marked when the next order comes from a row's action. */
   slideNextOrder: SlideNextOrderMark;
+  /** The UI thread has these entries' order. */
+  orderShown: (entries: readonly QueueEntry[]) => void;
 }
 
 export function useQueueDrag(options: QueueDragOptions) {
@@ -278,6 +263,7 @@ function useQueueOrder({
   entries,
   geometry: { count },
   letGo,
+  orderShown,
   slideNextOrder,
   swipe,
   values: {
@@ -295,8 +281,24 @@ function useQueueOrder({
   values: QueueDragValues;
 }) {
   const { reset: resetSwipe } = swipe;
+  /** The order the UI thread was last given. */
+  const givenKeys = useRef<readonly string[] | null>(null);
   useLayoutEffect(() => {
     const keys = entries.map((entry) => entry.key);
+    function shown() {
+      orderShown(entries);
+    }
+    function tellShown() {
+      "worklet";
+      scheduleOnRN(shown);
+    }
+    if (sameKeys(givenKeys.current, keys)) {
+      // Rendered again with the same order: nothing moves, and a slide or an
+      // open row carries on. After any swap still on its way.
+      requestAnimationFrame(() => scheduleOnUI(tellShown));
+      return;
+    }
+    givenKeys.current = keys;
     const dragged = draggedIndex(keys);
     const next = positionsOf(keys);
     // Anything else (a tap, a song ending, a drop) is just in place.
@@ -328,6 +330,7 @@ function useQueueOrder({
       } else if (phase.get() !== IDLE) {
         letGo();
       }
+      tellShown();
     }
     // A new order from elsewhere (a tap, a song ending, a drop) can come with
     // new rows and a new current song. The UI thread must move the rows after
@@ -344,6 +347,7 @@ function useQueueOrder({
     letGo,
     movedKey,
     orderProgress,
+    orderShown,
     phase,
     positions,
     previousPositions,

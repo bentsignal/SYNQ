@@ -62,7 +62,7 @@ void test("armed, the first takes the whole space and the others fade", () => {
 });
 
 void test("a full swipe is always past the open buttons", () => {
-  assert.equal(Math.round(fullDistance([90], 400)), 220);
+  assert.equal(fullDistance([44], 400), 200);
   assert.equal(fullDistance(WIDTHS, 400), openDistance(WIDTHS) + 32);
 });
 

@@ -58,6 +58,15 @@ export function autoScrollSpeed({
   return (above > below ? -1 : 1) * Math.min(speed, MAX_AUTOSCROLL);
 }
 
+/** Whether two orders are the same keys in the same order. */
+export function sameKeys(a: readonly string[] | null, b: readonly string[]) {
+  return (
+    a !== null &&
+    a.length === b.length &&
+    a.every((key, index) => key === b[index])
+  );
+}
+
 /** Each entry's index, for the UI thread to place rows by. */
 export function positionsOf(keys: readonly string[]) {
   return Object.fromEntries(keys.map((key, index) => [key, index]));
@@ -66,25 +75,28 @@ export function positionsOf(keys: readonly string[]) {
 /**
  * Hands the rows in view to a fixed pool of mounted rows. A key already in a
  * slot stays there, so a reorder rebuilds nothing, and each key that scrolled
- * in takes the slot of one that left. Returns `slots` itself when nothing
- * changed.
+ * in takes the slot of one that left. A key in `held` keeps its slot too, so
+ * a row that just left stays drawn; a key with no slot free waits. Returns
+ * `slots` itself when nothing changed.
  */
 export function assignSlots(
   slots: readonly (string | null)[],
   keys: readonly string[],
+  held: (key: string) => boolean = () => false,
 ) {
   const wanted = new Set(keys);
   const placed = new Set(slots);
   const incoming = keys.filter((key) => !placed.has(key));
   if (incoming.length === 0) return slots;
   let next = 0;
-  return slots.map((slot) => {
-    if (slot !== null && wanted.has(slot)) return slot;
+  const assigned = slots.map((slot) => {
+    if (slot !== null && (wanted.has(slot) || held(slot))) return slot;
     const key = incoming[next];
     if (key === undefined) return slot;
     next += 1;
     return key;
   });
+  return next === 0 ? slots : assigned;
 }
 
 /** Further than this, a row settling into a new order jumps there. */
@@ -93,7 +105,8 @@ const MAX_SETTLE_SLIDE = 12;
 const FADE_OUT_END = 0.25;
 const FADE_IN_START = 0.75;
 
-function easeInOut(t: number) {
+/** How far rows settling into a new order have gone, at `t` of the way. */
+export function easeInOut(t: number) {
   "worklet";
   return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }

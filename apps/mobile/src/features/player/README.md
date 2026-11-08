@@ -122,12 +122,22 @@ Add to Queue, Move Up, Move Down, and Delete.
 
 ## Swiping and tapping rows
 
-- **The capsules are drawn by hand** (`queue-swipe-actions.tsx`), since only a
-  `UITableView` or a list `UICollectionView` has iOS's own. `swipe-layout.ts`
-  (pure, node-tested) places them every frame: growing in as the row opens,
-  the first stretching past open, and taking the whole space once armed. A
-  capsule's length changes without animating layout: a round end either side
-  of a middle that scales. They measure their labels once, for Dynamic Type.
+- **The actions are drawn by hand** (`queue-swipe-actions.tsx`), since only a
+  `UITableView` or a list `UICollectionView` has iOS's own: 44 pt circles with
+  a symbol and no label, so a short swipe shows them all (64 pt left, 118 pt
+  right). `swipe-layout.ts` (pure, node-tested) places them every frame:
+  growing in as the row opens, the first stretching into a capsule past open,
+  and taking the whole space once armed (half the row). Its length changes
+  without animating layout: a round end either side of a middle that scales.
+- **Let go short of a full swipe, a row opens if it's still moving toward the
+  edge**, or if it's past halfway; otherwise it closes.
+- **A deleted row's Delete collapses with its gap.** It stays full while the
+  row is off screen, then shrinks with the gap as the rows below slide up into
+  it, so they never pass over it.
+- **One backing and one highlight for the whole list** (`RowUnderlays`), placed
+  under whichever row is swiped or touched, so each row mounts with no more
+  animated styles than it needs to be placed. A highlight and a backing in
+  every row made the queue's sheet take half again as long to open.
 - **Taps go through a gesture, not a `Pressable`,** in a race with the swipe
   and the handle's drag, so moving 10 points turns a tap into a scroll or a
   swipe instead of playing the row. Taps on an open row's capsules go through
@@ -139,9 +149,15 @@ Add to Queue, Move Up, Move Down, and Delete.
 - **A new current song can't flicker.** It comes with new React content (the
   header, a row leaving Up Next), and the UI thread placing rows by the new
   order before that content is on screen showed one frame of rows on top of
-  each other. So such an order reaches the UI thread a frame later, and the
-  row that left stays drawn until then, so that frame shows the old list
-  rather than a gap.
+  each other. So such an order reaches the UI thread a frame later. Until it
+  does, a row whose song left keeps its slot (`useHeldRows` in
+  `use-queue-window.ts`), so that time shows the old list. Otherwise a row
+  scrolling in took the slot and showed, in the old place, another song with
+  its cover still loading; on a phone, where playing a song keeps JavaScript
+  busy, that lasted several frames.
+- **Only a new order reaches the UI thread.** The queue screen renders again
+  for other reasons with the same order; handing that over again cut a slide
+  short and closed an open row.
 
 `synqDev.player.drag(index, toY, ms, holdMs)` runs a drag from the UI thread
 for `scripts/sim.sh frames`. Touches injected into a simulator stall frames on

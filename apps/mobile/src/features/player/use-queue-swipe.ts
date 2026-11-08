@@ -11,7 +11,12 @@ import { scheduleOnRN } from "react-native-worklets";
 import type { QueueGeometry } from "./use-queue-geometry";
 import { lightImpact } from "~/lib/haptics";
 import { QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
-import { actionAt, fullDistance, openDistance } from "./swipe-layout";
+import {
+  ACTION_SIZE,
+  actionAt,
+  fullDistance,
+  openDistance,
+} from "./swipe-layout";
 
 /** Like a table view's: settles without bouncing. */
 const SETTLE = { damping: 30, mass: 1, stiffness: 300 };
@@ -25,9 +30,8 @@ const UNHIGHLIGHT = { duration: 300 };
 /** A touch this soon after the list moved only stops it, as in a table view. */
 const SCROLL_SETTLE_MS = 120;
 const FLING_VELOCITY = 1000;
-/** Before measuring, roughly how wide each capsule is. */
-const LEADING_GUESS = [140, 112];
-const TRAILING_GUESS = [96];
+/** Let go moving this fast toward the edge, even a short swipe opens. */
+const OPEN_VELOCITY = 200;
 
 export type CuePlace = "next" | "last";
 
@@ -40,6 +44,14 @@ function nowMs() {
 /** Swiped right, outermost first: a full swipe adds to the queue. */
 export const LEADING_ACTIONS = ["last", "next"] as const;
 
+/** Each side's circles, outermost first. */
+export const ACTION_WIDTHS = {
+  leading: LEADING_ACTIONS.map(() => ACTION_SIZE),
+  trailing: [ACTION_SIZE],
+};
+const LEADING = ACTION_WIDTHS.leading;
+const TRAILING = ACTION_WIDTHS.trailing;
+
 interface SwipeCallbacks {
   play: (index: number) => void;
   remove: (index: number) => void;
@@ -51,7 +63,8 @@ interface SwipeCallbacks {
  * has them. A tap plays the row; the highlight waits a moment, so a touch
  * that becomes a scroll or a swipe never flashes. A swipe left opens Delete
  * and right opens Add to Queue and Play Next; swiping far does the first,
- * with a tap of haptics where letting go would.
+ * with a tap of haptics where letting go would. A short swipe opens a row
+ * if it's let go still moving toward the edge.
  */
 export function useQueueSwipe(
   geometry: QueueGeometry,
@@ -59,7 +72,7 @@ export function useQueueSwipe(
 ) {
   const values = useSwipeValues();
   const motions = swipeMotions(values, geometry, callbacks);
-  const { index, leadingWidths, scrolledAt, trailingWidths, x } = values;
+  const { index, scrolledAt, x } = values;
 
   /** The list scrolled: a touch now only stops it, and an open row closes. */
   function onListScroll(dragging: boolean) {
@@ -68,31 +81,21 @@ export function useQueueSwipe(
     if (dragging && index.get() !== -1 && x.get() !== 0) motions.close();
   }
 
-  /** A capsule's measured width. */
-  function measured(side: "leading" | "trailing", at: number, size: number) {
-    const widths = side === "leading" ? leadingWidths : trailingWidths;
-    const next = [...widths.get()];
-    if (next[at] === size) return;
-    next[at] = size;
-    widths.set(next);
-  }
-
   return {
     gestures: {
       pan: swipePan(values, geometry, motions),
       tap: rowTap(values, geometry, motions, callbacks.play),
     },
-    measured,
     onListScroll,
     state: {
       armedProgress: values.armedProgress,
       close: motions.close,
       highlight: values.highlight,
       index,
-      leadingWidths,
       pressIndex: values.pressIndex,
+      removedClosing: values.removedClosing,
+      removedIndex: values.removedIndex,
       reset: motions.reset,
-      trailingWidths,
       x,
     },
   };
@@ -112,8 +115,13 @@ function useSwipeValues() {
     armed: useSharedValue(0),
     /** `armed`, eased 0 → 1, for the first capsule to take over. */
     armedProgress: useSharedValue(0),
-    leadingWidths: useSharedValue(LEADING_GUESS),
-    trailingWidths: useSharedValue(TRAILING_GUESS),
+    /**
+     * A row just deleted, whose Delete stays drawn, full, until the rows
+     * below start closing its gap (`removedClosing`), then shrinks with the
+     * gap. -1 otherwise.
+     */
+    removedIndex: useSharedValue(-1),
+    removedClosing: useSharedValue(false),
     /** The row a touch is on, and its highlight. */
     pressIndex: useSharedValue(-1),
     highlight: useSharedValue(0),
@@ -126,10 +134,13 @@ type SwipeValues = ReturnType<typeof useSwipeValues>;
 
 /** Where a swiped row goes, on the UI thread. */
 function swipeMotions(
-  { armed, armedProgress, highlight, index, pressIndex, x }: SwipeValues,
+  values: SwipeValues,
   { width }: QueueGeometry,
   { cue, remove }: SwipeCallbacks,
 ) {
+  const { armed, armedProgress, highlight, index, pressIndex, x } = values;
+  const { removedClosing, removedIndex } = values;
+
   /** Past the full-swipe point; the finger getting there taps, as in iOS. */
   function arm(value: number, tap = true) {
     "worklet";
@@ -148,6 +159,13 @@ function swipeMotions(
     armedProgress.set(0);
     pressIndex.set(-1);
     highlight.set(0);
+    // The deletion's own order closes the gap; the order after it is done.
+    if (removedIndex.get() !== -1 && !removedClosing.get()) {
+      removedClosing.set(true);
+    } else {
+      removedIndex.set(-1);
+      removedClosing.set(false);
+    }
   }
 
   function close() {
@@ -186,7 +204,8 @@ function swipeMotions(
     x.set(
       withTiming(-width.get(), SLIDE_OFF, (finished) => {
         if (finished !== true) return;
-        arm(0);
+        removedIndex.set(row);
+        removedClosing.set(false);
         scheduleOnRN(remove, row);
       }),
     );
@@ -197,9 +216,21 @@ function swipeMotions(
 
 type SwipeMotions = ReturnType<typeof swipeMotions>;
 
+/**
+ * Let go short of a full swipe, a row opens if it's still moving toward the
+ * edge, or it's past halfway and not moving back.
+ */
+function opens(distance: number, opened: number, towardEdge: number) {
+  "worklet";
+  return (
+    towardEdge > OPEN_VELOCITY ||
+    (distance > opened / 2 && towardEdge > -OPEN_VELOCITY)
+  );
+}
+
 /** A row follows a sideways drag, and settles where letting go leaves it. */
 function swipePan(
-  { armed, index, leadingWidths, start, trailingWidths, x }: SwipeValues,
+  { armed, index, start, x }: SwipeValues,
   { count, listTop, scrollY, width }: QueueGeometry,
   { arm, close, closeAndCue, open, slideOffAndRemove }: SwipeMotions,
 ) {
@@ -207,15 +238,13 @@ function swipePan(
     "worklet";
     const left = x.get() < 0;
     const distance = Math.abs(x.get());
-    const opened = openDistance(
-      left ? trailingWidths.get() : leadingWidths.get(),
-    );
+    const opened = openDistance(left ? TRAILING : LEADING);
     const towardEdge = left ? -velocityX : velocityX;
     const flung = towardEdge > FLING_VELOCITY && distance > opened;
     if (armed.get() !== 0 || flung) {
       if (left) slideOffAndRemove(row);
       else closeAndCue(row, LEADING_ACTIONS[0]);
-    } else if (distance > opened / 2 && towardEdge > -FLING_VELOCITY) {
+    } else if (opens(distance, opened, towardEdge)) {
       open(left ? -opened : opened);
     } else {
       close();
@@ -241,7 +270,7 @@ function swipePan(
         rowWidth,
       );
       x.set(value);
-      const widths = value < 0 ? trailingWidths.get() : leadingWidths.get();
+      const widths = value < 0 ? TRAILING : LEADING;
       const past = Math.abs(value) > fullDistance(widths, rowWidth);
       arm(past ? Math.sign(value) : 0);
     })
@@ -261,8 +290,7 @@ function rowTap(
   { close, closeAndCue, slideOffAndRemove }: SwipeMotions,
   play: (index: number) => void,
 ) {
-  const { highlight, index, leadingWidths, pressIndex, scrolledAt } = values;
-  const { trailingWidths, x } = values;
+  const { highlight, index, pressIndex, scrolledAt, x } = values;
 
   function rowAt(y: number) {
     "worklet";
@@ -278,8 +306,8 @@ function rowTap(
       row !== index.get()
         ? -1
         : left
-          ? actionAt(trailingWidths.get(), width.get() - tapX)
-          : actionAt(leadingWidths.get(), tapX);
+          ? actionAt(TRAILING, width.get() - tapX)
+          : actionAt(LEADING, tapX);
     if (action === -1) close();
     else if (left) slideOffAndRemove(row);
     else closeAndCue(row, LEADING_ACTIONS[action] ?? "last");

@@ -16,7 +16,7 @@ import {
   togglePlayback,
   toggleShuffle,
 } from "~/features/player/commands";
-import { getPlayerState } from "~/features/player/store";
+import { getPlayerState, setPlayerState } from "~/features/player/store";
 import { seedPlayer } from "./player-seed";
 import { driveQueueDrag } from "./queue-drag-control";
 
@@ -59,6 +59,19 @@ const automation = {
     void seekTo(ms);
   },
   skipTo: playQueueIndex,
+  /**
+   * What the app shows for a skip to `index`, without telling native, so
+   * nothing starts playing: for checking the queue's rows in a simulator
+   * without sound. Native's queue is left behind; `skipTo` or a relaunch
+   * puts them back together.
+   */
+  showSkip(index: number) {
+    const { queue } = getPlayerState();
+    const entry = queue.entries[index];
+    if (entry !== undefined) {
+      setPlayerState({ queue: { ...queue, currentKey: entry.key } });
+    }
+  },
   move: moveInQueue,
   /** With the queue open: a drag of the row at `index` (see queue-drag-driver). */
   drag: driveQueueDrag,

@@ -23,11 +23,12 @@ import {
   playEntry,
   removeEntry,
 } from "./commands";
-import { FloatingRow, UpNextRow } from "./queue-list-rows";
+import { FloatingRow, RowUnderlays, UpNextRow } from "./queue-list-rows";
 import { songIdOf } from "./queue-model";
 import { QUEUE_HANDLE_WIDTH, QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
 import { SwipeActions } from "./queue-swipe-actions";
-import { useQueueDrag, useSlideNextOrder } from "./use-queue-drag";
+import { useSlideNextOrder } from "./slide-next-order";
+import { useQueueDrag } from "./use-queue-drag";
 import { useQueueGeometry } from "./use-queue-geometry";
 import { useQueueSwipe } from "./use-queue-swipe";
 import { useQueueWindow } from "./use-queue-window";
@@ -51,16 +52,19 @@ export function QueueList({
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const geometry = useQueueGeometry(entries.length);
   const { listTop, scrollY, viewportHeight, width } = geometry;
-  const { act, gestures, measured, onListScroll, slideNextOrder, swipe } =
-    useRowActions(entries, geometry);
+  const { act, gestures, onListScroll, slideNextOrder, swipe } = useRowActions(
+    entries,
+    geometry,
+  );
+  const { onScrolled, orderShown, slots } = useQueueWindow(entries, geometry);
   const { begin, end, isIdle, lifted, move, values } = useQueueDrag({
     entries,
     geometry,
+    orderShown,
     scrollRef,
     slideNextOrder,
     swipe,
   });
-  const { onScrolled, slots } = useQueueWindow(entries, geometry);
   const reorder = useReorderGesture({
     begin,
     end,
@@ -107,7 +111,6 @@ export function QueueList({
                 values={values}
                 swipe={swipe}
                 width={geometry.width}
-                onMeasure={measured}
                 onAction={act}
               />
             </View>
@@ -162,7 +165,6 @@ function useRowActions(
 
   const {
     gestures,
-    measured,
     onListScroll,
     state: swipe,
   } = useQueueSwipe(geometry, {
@@ -174,7 +176,7 @@ function useRowActions(
     },
     remove: (index) => act(entries[index], "delete"),
   });
-  return { act, gestures, measured, onListScroll, slideNextOrder, swipe };
+  return { act, gestures, onListScroll, slideNextOrder, swipe };
 }
 
 function useListScroll(
@@ -243,7 +245,7 @@ function useReorderGesture({
     .onFinalize(() => end());
 }
 
-/** The swipe actions and the pool of mounted rows. */
+/** The swipe actions, what's under the rows, and the pool of mounted rows. */
 function UpNextRows({
   entries,
   songs,
@@ -251,7 +253,6 @@ function UpNextRows({
   values,
   swipe,
   width,
-  onMeasure,
   onAction,
 }: {
   entries: readonly QueueEntry[];
@@ -260,7 +261,6 @@ function UpNextRows({
   values: QueueDragValues;
   swipe: QueueSwipeState;
   width: QueueGeometry["width"];
-  onMeasure: (side: "leading" | "trailing", at: number, size: number) => void;
   onAction: (entry: QueueEntry | undefined, action: RowAction) => void;
 }) {
   const byKey = new Map(entries.map((entry) => [entry.key, entry]));
@@ -270,14 +270,15 @@ function UpNextRows({
         side="trailing"
         swipe={swipe}
         width={width}
-        onMeasure={onMeasure}
+        orderProgress={values.orderProgress}
       />
       <SwipeActions
         side="leading"
         swipe={swipe}
         width={width}
-        onMeasure={onMeasure}
+        orderProgress={values.orderProgress}
       />
+      <RowUnderlays swipe={swipe} />
       {slots.map((key, slot) => {
         if (key === null) return null;
         const entry = byKey.get(key);

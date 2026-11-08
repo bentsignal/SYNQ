@@ -81,3 +81,19 @@ void test("keys in view keep their slots, and new ones take freed slots", () => 
   // A key that left stays in its slot until another needs it.
   assert.equal(assignSlots(slots, ["b"]), slots);
 });
+
+void test("a row that just left keeps its slot while it's held", () => {
+  const slots = ["a", "b", "c", null];
+  function held(key: string) {
+    return key === "a";
+  }
+  // "d" takes the free slot; "e" waits for "a" to go.
+  assert.deepEqual(assignSlots(slots, ["b", "c", "d", "e"], held), [
+    "a",
+    "b",
+    "c",
+    "d",
+  ]);
+  const full = ["a", "b", "c", "d"];
+  assert.equal(assignSlots(full, ["b", "c", "d", "e"], held), full);
+});

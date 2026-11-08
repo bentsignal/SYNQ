@@ -278,7 +278,19 @@ hold, so they're page sheets, and Done saves everything the sheet changed
   <source>", the current song, then "Up Next"; toolbar Shuffle / Repeat
   toggles and Clear. Every Up Next row has a `line.3.horizontal` handle: a
   touch on it picks the row up at once, with no edit mode, and dragging near
-  the edges scrolls. Swipe left to delete; tap to play. It's React Native
+  the edges scrolls. Rows swipe as iOS 27's table rows do: 44 pt circles with
+  a symbol, 10 pt from the row and the edge, that grow in as the row opens
+  over a rounded backing. Left opens Delete; right opens Add to Queue (at the
+  edge) and Play Next. A short swipe let go still moving opens the row.
+  Swiping past the open circles stretches the first into a capsule, and
+  further still (half the row, or 32 pt past them) it takes the whole space
+  with a haptic tap, where letting go does it; a fling past them does too. A
+  deleted row's Delete shrinks with its gap as the rows below close it. Add to Queue and Play Next move the song to the back or the front
+  of the cued run. Tap to play: the highlight waits 90 ms, so a touch that
+  becomes a scroll or a swipe never flashes, and a touch that stops a fling
+  only stops it. A new current song (a tap, a skip, a song ending) changes the
+  list in place; a swipe's change slides, the moved song fading out where it
+  was and in where it lands so it never crosses the rest. It's React Native
   rather than a SwiftUI `List`, which mounted a native view tree for every
   song and took about 15 seconds to open 3,000 of them, and which only
   reorders after a long press unless the whole list is in edit mode

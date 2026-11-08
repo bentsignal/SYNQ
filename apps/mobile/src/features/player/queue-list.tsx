@@ -5,29 +5,40 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedRef,
   useAnimatedScrollHandler,
+  useSharedValue,
 } from "react-native-reanimated";
 
 import type { SongListItem } from "@synq/db";
 
+import type { RowAction } from "./queue-list-rows";
 import type { QueueEntry } from "./queue-model";
 import type { QueueDragValues } from "./use-queue-drag";
 import type { QueueGeometry } from "./use-queue-geometry";
 import type { QueueSwipeState } from "./use-queue-swipe";
 import { env } from "~/env";
 import { QueueDragDriver } from "~/features/dev/queue-drag-driver";
-import { moveInUpNext, playEntry, removeEntry } from "./commands";
-import { FloatingRow, SwipeBackground, UpNextRow } from "./queue-list-rows";
+import {
+  cueQueueEntry,
+  moveInUpNext,
+  playEntry,
+  removeEntry,
+} from "./commands";
+import { FloatingRow, RowUnderlays, UpNextRow } from "./queue-list-rows";
+import { songIdOf } from "./queue-model";
 import { QUEUE_HANDLE_WIDTH, QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
+import { SwipeActions } from "./queue-swipe-actions";
+import { useSlideNextOrder } from "./slide-next-order";
 import { useQueueDrag } from "./use-queue-drag";
 import { useQueueGeometry } from "./use-queue-geometry";
-import { SWIPE_OPEN, useQueueSwipe } from "./use-queue-swipe";
+import { useQueueSwipe } from "./use-queue-swipe";
 import { useQueueWindow } from "./use-queue-window";
 
 /**
  * Up Next, drawn by hand so a reorder costs nothing however long the queue
- * is (`README.md`, Reordering the queue). One pan on the list handles every
- * row: a touch on the handle's side picks the row up at once, and a swipe
- * left anywhere else opens or deletes it.
+ * is (`README.md`, Reordering the queue). The list's gestures handle every
+ * row: a touch on the handle's side picks the row up at once, and anywhere
+ * else a tap plays the row and a swipe opens its actions: left Delete, right
+ * Add to Queue and Play Next.
  */
 export function QueueList({
   header,
@@ -41,20 +52,19 @@ export function QueueList({
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const geometry = useQueueGeometry(entries.length);
   const { listTop, scrollY, viewportHeight, width } = geometry;
-  const { gesture: swipeGesture, state: swipe } = useQueueSwipe(
+  const { act, gestures, onListScroll, slideNextOrder, swipe } = useRowActions(
+    entries,
     geometry,
-    (index) => {
-      const entry = entries[index];
-      if (entry !== undefined) removeEntry(entry.key);
-    },
   );
+  const { onScrolled, orderShown, slots } = useQueueWindow(entries, geometry);
   const { begin, end, isIdle, lifted, move, values } = useQueueDrag({
     entries,
     geometry,
+    orderShown,
     scrollRef,
+    slideNextOrder,
     swipe,
   });
-  const { onScrolled, slots } = useQueueWindow(entries, geometry);
   const reorder = useReorderGesture({
     begin,
     end,
@@ -64,7 +74,11 @@ export function QueueList({
     swipe,
   });
 
-  const onScroll = useListScroll(geometry, onScrolled);
+  const onScroll = useListScroll(geometry, (y, dragging) => {
+    "worklet";
+    onScrolled(y);
+    onListScroll(dragging);
+  });
 
   function onFrame(event: LayoutChangeEvent) {
     viewportHeight.set(event.nativeEvent.layout.height);
@@ -72,7 +86,9 @@ export function QueueList({
   }
 
   return (
-    <GestureDetector gesture={Gesture.Exclusive(reorder, swipeGesture)}>
+    <GestureDetector
+      gesture={Gesture.Race(reorder, gestures.pan, gestures.tap)}
+    >
       <View className="flex-1" onLayout={onFrame} collapsable={false}>
         <Animated.ScrollView
           ref={scrollRef}
@@ -95,6 +111,7 @@ export function QueueList({
                 values={values}
                 swipe={swipe}
                 width={geometry.width}
+                onAction={act}
               />
             </View>
           )}
@@ -121,22 +138,68 @@ export function QueueList({
   );
 }
 
+/**
+ * What a row's swipe, tap, or screen-reader action does. A row's action
+ * marks the order it makes, so the rows slide into it.
+ */
+function useRowActions(
+  entries: readonly QueueEntry[],
+  geometry: QueueGeometry,
+) {
+  const slideNextOrder = useSlideNextOrder();
+
+  function act(entry: QueueEntry | undefined, action: RowAction) {
+    if (entry === undefined) return;
+    // Set first: the queue's new order renders before these return.
+    const moves = action !== "delete";
+    slideNextOrder.mark({ moved: moves ? entry.key : null });
+    const index = entries.indexOf(entry);
+    const changed =
+      action === "playNext" || action === "addToQueue"
+        ? cueQueueEntry(entry.key, action === "playNext" ? "next" : "last")
+        : action === "delete"
+          ? removeEntry(entry.key)
+          : moveInUpNext(entry.key, index + (action === "moveUp" ? -1 : 1));
+    if (!changed) slideNextOrder.mark(null);
+  }
+
+  const {
+    gestures,
+    onListScroll,
+    state: swipe,
+  } = useQueueSwipe(geometry, {
+    cue: (index, place) =>
+      act(entries[index], place === "next" ? "playNext" : "addToQueue"),
+    play: (index) => {
+      const entry = entries[index];
+      if (entry !== undefined) playEntry(entry.key);
+    },
+    remove: (index) => act(entries[index], "delete"),
+  });
+  return { act, gestures, onListScroll, slideNextOrder, swipe };
+}
+
 function useListScroll(
   { maxScroll, scrollY, scrollYIsDriven, topInset }: QueueGeometry,
-  onScrolled: (y: number) => void,
+  onScrolled: (y: number, dragging: boolean) => void,
 ) {
-  return useAnimatedScrollHandler((event) => {
-    const { contentInset, contentOffset, contentSize, layoutMeasurement } =
-      event;
-    if (!scrollYIsDriven.get()) scrollY.set(contentOffset.y);
-    topInset.set(contentInset.top);
-    maxScroll.set(
-      Math.max(
-        contentSize.height + contentInset.bottom - layoutMeasurement.height,
-        -contentInset.top,
-      ),
-    );
-    onScrolled(contentOffset.y);
+  const dragging = useSharedValue(false);
+  return useAnimatedScrollHandler({
+    onBeginDrag: () => dragging.set(true),
+    onEndDrag: () => dragging.set(false),
+    onScroll: (event) => {
+      const { contentInset, contentOffset, contentSize, layoutMeasurement } =
+        event;
+      if (!scrollYIsDriven.get()) scrollY.set(contentOffset.y);
+      topInset.set(contentInset.top);
+      maxScroll.set(
+        Math.max(
+          contentSize.height + contentInset.bottom - layoutMeasurement.height,
+          -contentInset.top,
+        ),
+      );
+      onScrolled(contentOffset.y, dragging.get());
+    },
   });
 }
 
@@ -146,7 +209,7 @@ function useReorderGesture({
   geometry: { count, listTop, scrollY, width },
   isIdle,
   move,
-  swipe: { close, index: swipeIndex },
+  swipe: { index: swipeIndex },
 }: {
   begin: (index: number, y: number, grab: number) => void;
   end: () => void;
@@ -165,10 +228,8 @@ function useReorderGesture({
       }
       const offset = touch.y + scrollY.get() - listTop.get();
       const index = Math.floor(offset / ROW);
-      const open = swipeIndex.get();
-      if (open !== -1) {
-        // Delete takes this touch; anywhere else it only closes the row.
-        if (index !== open || touch.x < width.get() - SWIPE_OPEN) close();
+      // With a row open, a touch only closes it or taps its actions.
+      if (swipeIndex.get() !== -1) {
         manager.fail();
         return;
       }
@@ -184,7 +245,7 @@ function useReorderGesture({
     .onFinalize(() => end());
 }
 
-/** The swipe background and the pool of mounted rows. */
+/** The swipe actions, what's under the rows, and the pool of mounted rows. */
 function UpNextRows({
   entries,
   songs,
@@ -192,6 +253,7 @@ function UpNextRows({
   values,
   swipe,
   width,
+  onAction,
 }: {
   entries: readonly QueueEntry[];
   songs: ReadonlyMap<number, SongListItem>;
@@ -199,38 +261,43 @@ function UpNextRows({
   values: QueueDragValues;
   swipe: QueueSwipeState;
   width: QueueGeometry["width"];
+  onAction: (entry: QueueEntry | undefined, action: RowAction) => void;
 }) {
-  const byKey = new Map(
-    entries.map((entry, index) => [entry.key, { entry, index }]),
-  );
+  const byKey = new Map(entries.map((entry) => [entry.key, entry]));
   return (
     <>
-      <SwipeBackground
+      <SwipeActions
+        side="trailing"
         swipe={swipe}
         width={width}
-        onPress={() => {
-          const entry = entries[swipe.index.get()];
-          if (entry !== undefined) removeEntry(entry.key);
-        }}
+        orderProgress={values.orderProgress}
       />
+      <SwipeActions
+        side="leading"
+        swipe={swipe}
+        width={width}
+        orderProgress={values.orderProgress}
+      />
+      <RowUnderlays swipe={swipe} />
       {slots.map((key, slot) => {
-        const found = key === null ? undefined : byKey.get(key);
-        const song =
-          found === undefined ? undefined : songs.get(found.entry.songId);
-        return found === undefined || song === undefined ? null : (
+        if (key === null) return null;
+        const entry = byKey.get(key);
+        // An entry that just left Up Next (it's playing now) stays drawn
+        // until the new order reaches the UI thread, which hides it in the
+        // same frame the rest move up, so no frame shows a gap.
+        const shown = entry ?? { key, queued: false, songId: songIdOf(key) };
+        const song = songs.get(shown.songId);
+        return song === undefined ? null : (
           <UpNextRow
             key={slot}
-            entry={found.entry}
+            entry={shown}
             song={song}
             values={values}
             swipe={swipe}
-            onPress={() => {
-              if (swipe.index.get() === -1) playEntry(found.entry.key);
+            onPlay={() => {
+              if (entry !== undefined) playEntry(entry.key);
             }}
-            onMove={(delta) =>
-              moveInUpNext(found.entry.key, found.index + delta)
-            }
-            onRemove={() => removeEntry(found.entry.key)}
+            onAction={(action) => onAction(entry, action)}
           />
         );
       })}

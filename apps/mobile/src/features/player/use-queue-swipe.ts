@@ -130,12 +130,13 @@ function swipeMotions(
   { width }: QueueGeometry,
   { cue, remove }: SwipeCallbacks,
 ) {
-  function arm(value: number) {
+  /** Past the full-swipe point; the finger getting there taps, as in iOS. */
+  function arm(value: number, tap = true) {
     "worklet";
     if (armed.get() === value) return;
     armed.set(value);
     armedProgress.set(withTiming(value === 0 ? 0 : 1, ARM));
-    if (value !== 0) scheduleOnRN(lightImpact);
+    if (value !== 0 && tap) scheduleOnRN(lightImpact);
   }
 
   /** Back to rest at once: the queue changed under the row. */
@@ -181,7 +182,7 @@ function swipeMotions(
   /** Slides the row off the screen, then deletes it. */
   function slideOffAndRemove(row: number) {
     "worklet";
-    arm(-1);
+    arm(-1, false);
     x.set(
       withTiming(-width.get(), SLIDE_OFF, (finished) => {
         if (finished !== true) return;

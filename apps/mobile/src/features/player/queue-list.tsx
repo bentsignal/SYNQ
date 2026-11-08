@@ -17,7 +17,6 @@ import type { QueueGeometry } from "./use-queue-geometry";
 import type { QueueSwipeState } from "./use-queue-swipe";
 import { env } from "~/env";
 import { QueueDragDriver } from "~/features/dev/queue-drag-driver";
-import { lightImpact } from "~/lib/haptics";
 import {
   cueQueueEntry,
   moveInUpNext,
@@ -167,10 +166,8 @@ function useRowActions(
     onListScroll,
     state: swipe,
   } = useQueueSwipe(geometry, {
-    cue: (index, place) => {
-      lightImpact();
-      act(entries[index], place === "next" ? "playNext" : "addToQueue");
-    },
+    cue: (index, place) =>
+      act(entries[index], place === "next" ? "playNext" : "addToQueue"),
     play: (index) => {
       const entry = entries[index];
       if (entry !== undefined) playEntry(entry.key);

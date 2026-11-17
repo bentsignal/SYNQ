@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { AppState } from "react-native";
 import { NativeModule, requireNativeModule } from "expo";
 
 import type {
@@ -141,6 +142,19 @@ const stateStore = createSnapshotStore<PlaybackState>(
   idleState,
 );
 
+/**
+ * In the background nothing shows the position, though a player left open
+ * stays subscribed while the phone is locked: progress stops there, and is
+ * read again on the way back.
+ */
+const foreground = {
+  isOpen: () => AppState.currentState !== "background",
+  watch(onChange: () => void) {
+    const subscription = AppState.addEventListener("change", onChange);
+    return () => subscription.remove();
+  },
+};
+
 const progressStore = createSnapshotStore<Progress>(
   {
     listen(set) {
@@ -160,6 +174,7 @@ const progressStore = createSnapshotStore<Progress>(
       })),
   },
   { positionMs: 0, durationMs: 0 },
+  foreground,
 );
 
 /** The latest playback state; re-renders on state events only. */
@@ -167,7 +182,7 @@ export function usePlaybackState() {
   return useSyncExternalStore(stateStore.subscribe, stateStore.getSnapshot);
 }
 
-/** Position and duration, about twice a second while playing. */
+/** Position and duration, about twice a second while playing in the foreground. */
 export function useProgress() {
   return useSyncExternalStore(
     progressStore.subscribe,

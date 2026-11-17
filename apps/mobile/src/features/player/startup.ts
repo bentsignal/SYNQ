@@ -7,7 +7,10 @@ import * as Audio from "@synq/audio";
 import type { PlayerSongs } from "./songs";
 import { onLibraryErased } from "~/features/backup/backup";
 import { queryClient } from "~/lib/query-client";
-import { prefetchAroundCurrent } from "./artwork-prefetch";
+import {
+  prefetchAroundCurrent,
+  releasePrefetchedArtwork,
+} from "./artwork-prefetch";
 import { clearQueue, forgetSongs } from "./commands";
 import { reportPlaybackError } from "./errors";
 import { pushedTrack, resyncNative } from "./native-queue";
@@ -101,7 +104,10 @@ function startPlayer() {
   AppState.addEventListener("change", (next) => {
     if (next === "active") prefetchAroundCurrent();
     else saveFromNative();
-    if (next === "background") playsBackground();
+    if (next === "background") {
+      playsBackground();
+      releasePrefetchedArtwork();
+    }
   });
   setInterval(() => {
     if (getPlayerState().status === "playing") saveFromNative();

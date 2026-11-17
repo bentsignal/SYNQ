@@ -11,6 +11,7 @@ import type { SongListItem } from "@synq/db";
 import type { QueueEntry } from "./queue-model";
 import type { QueueDragValues } from "./use-queue-drag";
 import type { QueueSwipeState } from "./use-queue-swipe";
+import { playEntry } from "./commands";
 import { displacedSlot, settlingRow } from "./queue-layout";
 import { QueueHandle, QueueRow, QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
 import { artistLine } from "./tracks";
@@ -32,6 +33,7 @@ export type RowAction = (typeof ROW_ACTIONS)[number]["name"];
 
 /** A row of Up Next, placed by the UI thread. Rows are recycled. */
 export function UpNextRow({
+  entryKey: key,
   entry,
   song,
   values: {
@@ -46,17 +48,23 @@ export function UpNextRow({
     previousPositions,
   },
   swipe,
-  onPlay,
   onAction,
 }: {
-  entry: QueueEntry;
+  entryKey: string;
+  /**
+   * Undefined for a row that just left Up Next (it's playing now): it stays
+   * drawn until the new order reaches the UI thread, and does nothing.
+   */
+  entry: QueueEntry | undefined;
   song: SongListItem;
   values: QueueDragValues;
   swipe: QueueSwipeState;
-  onPlay: () => void;
-  onAction: (action: RowAction) => void;
+  /** The list's one handler, so scrolling, which recycles rows, re-renders only the rows it moves. */
+  onAction: (entry: QueueEntry | undefined, action: RowAction) => void;
 }) {
-  const key = entry.key;
+  function onPlay() {
+    if (entry !== undefined) playEntry(entry.key);
+  }
   /** The rest of a slide into this row's slot during a drag; 0 at rest. */
   const slide = useSharedValue(0);
 
@@ -125,7 +133,7 @@ export function UpNextRow({
           const action = ROW_ACTIONS.find(
             ({ name }) => name === event.nativeEvent.actionName,
           );
-          if (action !== undefined) onAction(action.name);
+          if (action !== undefined) onAction(entry, action.name);
         }}
         className="flex-1"
       >

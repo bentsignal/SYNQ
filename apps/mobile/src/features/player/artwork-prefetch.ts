@@ -1,8 +1,8 @@
 import { AppState } from "react-native";
-import { Paths } from "expo-file-system";
 import { Image } from "expo-image";
 
 import { artworkUri } from "@synq/db";
+import { documentsUri } from "@synq/db/expo";
 
 import type { PlayerSongs } from "./songs";
 import { queryClient } from "~/lib/query-client";
@@ -11,8 +11,12 @@ import { neighbors } from "./queue-model";
 import { PLAYER_SONGS_QUERY } from "./songs";
 import { getPlayerState } from "./store";
 
-/** Enough for a dozen 1500 px covers; the memory cache holds nothing else. */
-const MEMORY_CACHE_BYTES = 110 * 1024 * 1024;
+/**
+ * The covers around the current song (three 1500 px and three small ones,
+ * about 28 MB), with room for the ones a skip just moved past. The memory
+ * cache holds nothing else: other artwork uses expo-image's disk policy.
+ */
+const MEMORY_CACHE_BYTES = 48 * 1024 * 1024;
 
 let cacheConfigured = false;
 let lastUris = "";
@@ -42,8 +46,8 @@ export function prefetchAroundCurrent() {
   if (AppState.currentState !== "active") return;
   const artworks = artworksAroundCurrent();
   const uris = artworks.flatMap((artwork) => [
-    artworkUri(Paths.document.uri, artwork, "full"),
-    artworkUri(Paths.document.uri, artwork, "small"),
+    artworkUri(documentsUri(), artwork, "full"),
+    artworkUri(documentsUri(), artwork, "small"),
   ]);
   const key = uris.join();
   if (uris.length === 0 || key === lastUris) return;
@@ -57,3 +61,16 @@ export function prefetchAroundCurrent() {
   Image.prefetch(uris, "memory").catch(() => false);
   artworks.forEach(prefetchArtworkAnalysis);
 }
+
+/**
+ * In the background the covers are tens of MB nothing draws, and the
+ * app keeps running for the music, where a smaller footprint is less likely
+ * to be ended by iOS. On screens already showing, the views keep their own
+ * images; `prefetchAroundCurrent` warms the cache again on the way back.
+ */
+export function releasePrefetchedArtwork() {
+  if (lastUris === "") return;
+  lastUris = "";
+  void Image.clearMemoryCache();
+}
+

@@ -83,6 +83,18 @@ export async function openLegacyDatabaseCopy(
   };
 }
 
+let documents: string | undefined;
+
+/**
+ * `Paths.document.uri`, read once: the getter makes a native `Directory`
+ * every time, and the folder doesn't move while the app runs. For
+ * `artworkUri` in rows, which ask for it on every mount.
+ */
+export function documentsUri() {
+  documents ??= Paths.document.uri;
+  return documents;
+}
+
 /**
  * A file inside `Documents/` from a stored relative path (`file_path`,
  * `artworkPath()`). The URI is encoded here, every segment, and handed over

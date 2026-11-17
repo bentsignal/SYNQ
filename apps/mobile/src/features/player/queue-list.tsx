@@ -247,6 +247,11 @@ function useReorderGesture({
     .onFinalize(() => end());
 }
 
+/** Up Next's entries by key, kept while the entries are: not rebuilt on scroll. */
+function useEntriesByKey(entries: readonly QueueEntry[]) {
+  return new Map(entries.map((entry) => [entry.key, entry]));
+}
+
 /** The swipe actions, what's under the rows, and the pool of mounted rows. */
 function UpNextRows({
   entries,
@@ -265,7 +270,7 @@ function UpNextRows({
   width: QueueGeometry["width"];
   onAction: (entry: QueueEntry | undefined, action: RowAction) => void;
 }) {
-  const byKey = new Map(entries.map((entry) => [entry.key, entry]));
+  const byKey = useEntriesByKey(entries);
   return (
     <>
       <SwipeActions
@@ -283,23 +288,20 @@ function UpNextRows({
       <RowUnderlays swipe={swipe} />
       {slots.map((key, slot) => {
         if (key === null) return null;
-        const entry = byKey.get(key);
         // An entry that just left Up Next (it's playing now) stays drawn
         // until the new order reaches the UI thread, which hides it in the
         // same frame the rest move up, so no frame shows a gap.
-        const shown = entry ?? { key, queued: false, songId: songIdOf(key) };
-        const song = songs.get(shown.songId);
+        const entry = byKey.get(key);
+        const song = songs.get(entry?.songId ?? songIdOf(key));
         return song === undefined ? null : (
           <UpNextRow
             key={slot}
-            entry={shown}
+            entryKey={key}
+            entry={entry}
             song={song}
             values={values}
             swipe={swipe}
-            onPlay={() => {
-              if (entry !== undefined) playEntry(entry.key);
-            }}
-            onAction={(action) => onAction(entry, action)}
+            onAction={onAction}
           />
         );
       })}

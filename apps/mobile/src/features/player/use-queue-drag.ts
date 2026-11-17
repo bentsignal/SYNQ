@@ -303,6 +303,8 @@ function useQueueOrder({
     const next = positionsOf(keys);
     // Anything else (a tap, a song ending, a drop) is just in place.
     const slide = slideNextOrder.take();
+    // Captured alone: the worklet would otherwise copy every key to the UI thread for a count.
+    const length = keys.length;
     function swap() {
       "worklet";
       if (slide !== null) {
@@ -316,14 +318,14 @@ function useQueueOrder({
         orderProgress.set(1);
       }
       positions.set(next);
-      count.set(keys.length);
+      count.set(length);
       resetSwipe();
       if (dragged !== -1 && phase.get() === DRAGGING) {
         // The song changed mid-drag: the same row, a place up.
         hover.set(
           Math.min(
             Math.max(hover.get() + dragged - from.get(), 0),
-            keys.length - 1,
+            length - 1,
           ),
         );
         from.set(dragged);

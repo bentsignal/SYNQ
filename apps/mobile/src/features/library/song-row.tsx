@@ -103,8 +103,9 @@ export function SongRow({
   subtitle?: string | null;
 }) {
   const liked = useIsLiked(song.id);
-  const nowPlaying = useNowPlaying();
-  const current = nowPlaying.songId === song.id;
+  const nowPlaying = useNowPlaying(song.id);
+  const current = nowPlaying !== null;
+  const playing = nowPlaying === "playing";
   const detail = subtitle === undefined ? songDetail(song) : subtitle;
   const menu = songMenu(song, { ...place, liked });
   const textInset =
@@ -126,12 +127,12 @@ export function SongRow({
         song={song}
         track={track}
         current={current}
-        playing={nowPlaying.playing}
+        playing={playing}
       />
       <View className="flex-1 justify-center" style={{ marginLeft: GAP }}>
         <View className="flex-row items-center gap-1.5">
           {current && track === undefined && (
-            <PlayingMark playing={nowPlaying.playing} />
+            <PlayingMark playing={playing} />
           )}
           <Text
             numberOfLines={1}

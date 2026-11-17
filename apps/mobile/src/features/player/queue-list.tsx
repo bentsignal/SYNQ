@@ -15,8 +15,7 @@ import type { QueueEntry } from "./queue-model";
 import type { QueueDragValues } from "./use-queue-drag";
 import type { QueueGeometry } from "./use-queue-geometry";
 import type { QueueSwipeState } from "./use-queue-swipe";
-import { env } from "~/env";
-import { QueueDragDriver } from "~/features/dev/queue-drag-driver";
+import { devQueueDrag } from "~/features/dev/dev-only";
 import {
   cueQueueEntry,
   moveInUpNext,
@@ -32,6 +31,9 @@ import { useQueueDrag } from "./use-queue-drag";
 import { useQueueGeometry } from "./use-queue-geometry";
 import { useQueueSwipe } from "./use-queue-swipe";
 import { useQueueWindow } from "./use-queue-window";
+
+/** Development and profiling bundles only. */
+const QueueDragDriver = devQueueDrag?.QueueDragDriver;
 
 /**
  * Up Next, drawn by hand so a reorder costs nothing however long the queue
@@ -116,7 +118,7 @@ export function QueueList({
             </View>
           )}
         </Animated.ScrollView>
-        {(__DEV__ || env.profileBundle) && (
+        {QueueDragDriver !== undefined && (
           <QueueDragDriver
             begin={(index) => {
               "worklet";

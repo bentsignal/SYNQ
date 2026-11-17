@@ -323,10 +323,7 @@ function useQueueOrder({
       if (dragged !== -1 && phase.get() === DRAGGING) {
         // The song changed mid-drag: the same row, a place up.
         hover.set(
-          Math.min(
-            Math.max(hover.get() + dragged - from.get(), 0),
-            length - 1,
-          ),
+          Math.min(Math.max(hover.get() + dragged - from.get(), 0), length - 1),
         );
         from.set(dragged);
       } else if (phase.get() !== IDLE) {

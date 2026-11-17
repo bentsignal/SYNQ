@@ -1,5 +1,6 @@
-import type { PlayerSongs } from "./songs";
 import { CATALOG_TABLES } from "@synq/db";
+
+import type { PlayerSongs } from "./songs";
 import { useLibraryQuery } from "~/features/library/queries";
 import { PLAYER_SONGS_KEY, readPlayerSongs } from "./songs";
 

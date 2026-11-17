@@ -73,4 +73,3 @@ export function releasePrefetchedArtwork() {
   lastUris = "";
   void Image.clearMemoryCache();
 }
-

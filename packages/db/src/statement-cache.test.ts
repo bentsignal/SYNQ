@@ -5,7 +5,10 @@ import type { LibraryDb } from "./client.ts";
 import { listAlbums, listArtists, listPlaylists, listSongs } from "./index.ts";
 import { importLegacyLibrary } from "./legacy/import-legacy-library.ts";
 import { cacheStatements } from "./statement-cache.ts";
-import { IMPORTED_AT, openMigratedLibrary } from "./testing/migrated-library.ts";
+import {
+  IMPORTED_AT,
+  openMigratedLibrary,
+} from "./testing/migrated-library.ts";
 import { nodeFileSystem, openLegacyDatabaseFile } from "./testing/node-fs.ts";
 import { openTestLibraryDb } from "./testing/node-sqlite.ts";
 import { buildSyntheticInstall } from "./testing/synthetic-install.ts";

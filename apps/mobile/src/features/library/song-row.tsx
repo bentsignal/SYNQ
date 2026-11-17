@@ -123,17 +123,10 @@ export function SongRow({
       onPress={onPress}
     >
       <View style={{ width: LEADING }} />
-      <Leading
-        song={song}
-        track={track}
-        current={current}
-        playing={playing}
-      />
+      <Leading song={song} track={track} current={current} playing={playing} />
       <View className="flex-1 justify-center" style={{ marginLeft: GAP }}>
         <View className="flex-row items-center gap-1.5">
-          {current && track === undefined && (
-            <PlayingMark playing={playing} />
-          )}
+          {current && track === undefined && <PlayingMark playing={playing} />}
           <Text
             numberOfLines={1}
             className={cn(

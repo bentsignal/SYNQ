@@ -48,6 +48,15 @@ export function useSearchText({
 }
 
 /**
+ * How long a search's results stay cached once nothing shows them. The
+ * library's other reads stay for the session (`query-client.ts`), but every
+ * settled search is its own copy of its results, so keeping them all would
+ * grow with every word typed. The shown results don't depend on the cache:
+ * the hook keeps the last answer itself.
+ */
+const SEARCH_GC_MS = 30_000;
+
+/**
  * A library query that follows a debounced search `query`. While the next
  * query's results load, the previous answer stays up: `data` and `query`
  * are still the previous query's, together, so screens never blank out,
@@ -67,6 +76,7 @@ export function useSearchQuery<
   options: UseQueryOptions<QueryFnData, DefaultError, Data, Key>;
 }) {
   const result = useQuery({
+    gcTime: SEARCH_GC_MS,
     ...options,
     placeholderData: keepPreviousData,
     select: options.select,

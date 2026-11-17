@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 
-import type { LibraryDb } from "@synq/db";
+import type { LibraryDb, LibraryTable } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
 import {
@@ -17,20 +17,26 @@ import { libraryQueryOptions, useLibraryQuery } from "./queries";
 export function useSearchableList<Item>({
   key,
   read,
+  reads,
 }: {
   key: readonly unknown[];
   read: (db: LibraryDb, search?: string) => Item[];
+  /** The tables `read` depends on (see `useLibraryQuery`). */
+  reads?: readonly LibraryTable[];
 }) {
   const search = useSearchText();
   const all = useLibraryQuery({
     key,
     read: (db) => read(db),
+    reads,
     select: (items) => items,
   });
   const found = useSearchQuery({
     options: {
-      ...libraryQueryOptions([...key, "search", search.query], (db) =>
-        read(db, search.query),
+      ...libraryQueryOptions(
+        [...key, "search", search.query],
+        (db) => read(db, search.query),
+        reads,
       ),
       enabled: search.query !== "",
       select: (items) => items,

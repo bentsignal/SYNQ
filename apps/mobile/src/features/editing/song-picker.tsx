@@ -3,7 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import { Stack } from "expo-router";
 
 import type { SongListItem } from "@synq/db";
-import { listSongs } from "@synq/db";
+import { CATALOG_TABLES, listSongs } from "@synq/db";
 
 import type { SongPick } from "./song-selection";
 import { Artwork } from "~/components/artwork";
@@ -193,6 +193,7 @@ export function SongPicker({
   const sort = songSort.useValue();
   const { items, query, search } = useSearchableList({
     key: ["songs", sort.key, sort.order],
+    reads: CATALOG_TABLES,
     read: (db, text) =>
       listSongs(db, { order: sort.order, search: text, sort: sort.key }),
   });

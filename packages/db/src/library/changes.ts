@@ -12,6 +12,20 @@ export type LibraryTable =
   | "playlists"
   | "playlist_songs";
 
+/**
+ * What reads of songs, albums, and artists depend on: every table but the
+ * playlists'. A playlist write (a like, an add, a reorder) changes none of
+ * them, so the app's whole-library lists skip refreshing for it.
+ */
+export const CATALOG_TABLES = [
+  "songs",
+  "artists",
+  "albums",
+  "song_artists",
+  "album_songs",
+  "album_artists",
+] as const satisfies readonly LibraryTable[];
+
 export interface WriteResult<T> {
   value: T;
   /** Tables whose rows this write inserted, updated, or deleted (cascades included). */

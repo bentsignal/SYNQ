@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm";
+import { asc, desc, eq, inArray } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import type { WriteOptions } from "./changes.ts";
@@ -31,6 +31,23 @@ export function listSongs(db: LibraryDb, options: ListSongsOptions = {}) {
     matchesSearch(options.search, songSearchFields(song)),
   );
   return sortSongs(items, options.sort ?? "addedAt", options.order ?? "desc");
+}
+
+/**
+ * Every song's id by date added (ties by id), the order `listSongs` gives
+ * for `addedAt`, without loading the songs: for playing the whole library.
+ */
+export function listSongIdsByDateAdded(
+  db: LibraryDb,
+  order: SortOrder = "desc",
+) {
+  const by = order === "desc" ? desc : asc;
+  return db
+    .select({ id: songs.id })
+    .from(songs)
+    .orderBy(by(songs.addedAt), by(songs.id))
+    .all()
+    .map((row) => row.id);
 }
 
 export function sortSongs<T extends SongListItem>(

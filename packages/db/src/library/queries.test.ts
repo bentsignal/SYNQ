@@ -13,6 +13,7 @@ import {
   listArtists,
   listPlaylists,
   listPlaylistSongs,
+  listSongIdsByDateAdded,
   listSongs,
   searchLibrary,
 } from "../index.ts";
@@ -38,6 +39,15 @@ void describe("songs", () => {
       ids(listSongs(db, { sort: "addedAt", order: "asc" })),
       [1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16],
     );
+  });
+
+  void test("ids by date added come in listSongs' order, without the songs", () => {
+    for (const order of ["asc", "desc"] as const) {
+      assert.deepEqual(
+        listSongIdsByDateAdded(db, order),
+        ids(listSongs(db, { sort: "addedAt", order })),
+      );
+    }
   });
 
   void test("sorts by title with locale collation (case and accents fold, ties by id)", () => {

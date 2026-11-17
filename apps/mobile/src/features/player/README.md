@@ -243,9 +243,11 @@ Holding on to the previous image means a file that fails would leave the last
 song's cover up, so `onError` moves to the cover's other size, and then to the
 placeholder.
 
-The memory cache holds only these covers, capped at 110 MB, about a dozen 1500 px
-ones. iOS can purge it at any time, and a miss just shows the old cover a moment
-longer.
+The memory cache holds only these covers, capped at 48 MB: the three songs' full
+and small covers (about 28 MB at 1500 px) and room for the ones a skip just moved
+past. It's emptied when the app goes to the background, where nothing draws them,
+and warmed again on the way back. iOS can purge it at any time, and a miss just
+shows the old cover a moment longer.
 
 ## Marquee
 

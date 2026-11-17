@@ -8,7 +8,7 @@ import { albumSongs, playlists, playlistSongs, songs } from "../schema.ts";
 import { deleteAlbum, listEmptyAlbums } from "./albums.ts";
 import { artworkDir } from "./artwork.ts";
 import { nowFrom, written } from "./changes.ts";
-import { uniqueIds } from "./find-or-create.ts";
+import { inIds, uniqueIds } from "./find-or-create.ts";
 import { loadSongItems, songSearchFields } from "./song-items.ts";
 import { matchesSearch, sortBy } from "./text.ts";
 
@@ -66,7 +66,7 @@ export function sortSongs<T extends SongListItem>(
 export function getSongItems(db: LibraryDb, ids: readonly number[]) {
   const unique = uniqueIds(ids);
   if (unique.length === 0) return [];
-  return loadSongItems(db, inArray(songs.id, unique));
+  return loadSongItems(db, inIds(songs.id, unique));
 }
 
 export interface SongDetail extends SongListItem {

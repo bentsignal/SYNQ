@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, max } from "drizzle-orm";
+import { and, asc, eq, inArray, max, sql } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import type { WriteOptions } from "./changes.ts";
@@ -246,20 +246,18 @@ function positionBetween(
 
 /**
  * Renumbers 1..n in two passes so the unique (playlist, position) index never
- * sees a collision: first below every current position, then to 1..n.
+ * sees a collision: first below every current position, then to 1..n. Each
+ * pass is one statement over the ids as JSON (`json_each`'s `key` is the
+ * index), not one per song.
  */
 function renumber(db: LibraryDb, entries: readonly Entry[]) {
+  if (entries.length === 0) return;
   const base = Math.min(0, entries[0]?.position ?? 0) - entries.length - 1;
-  entries.forEach((entry, index) => {
-    db.update(playlistSongs)
-      .set({ position: base - index })
-      .where(eq(playlistSongs.id, entry.id))
-      .run();
-  });
-  entries.forEach((entry, index) => {
-    db.update(playlistSongs)
-      .set({ position: index + 1 })
-      .where(eq(playlistSongs.id, entry.id))
-      .run();
-  });
+  const ids = JSON.stringify(entries.map((entry) => entry.id));
+  db.run(
+    sql`UPDATE playlist_songs SET position = ${base} - j.key FROM json_each(${ids}) AS j WHERE playlist_songs.id = j.value`,
+  );
+  db.run(
+    sql`UPDATE playlist_songs SET position = j.key + 1 FROM json_each(${ids}) AS j WHERE playlist_songs.id = j.value`,
+  );
 }

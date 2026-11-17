@@ -14,17 +14,20 @@ import { LEGACY_DB_PATH } from "./legacy/index.ts";
 import { encodedPath } from "./library/file-uri.ts";
 import { libraryMigrations } from "./migrations.ts";
 import * as schema from "./schema.ts";
+import { cacheStatements } from "./statement-cache.ts";
 
 /** `Documents/SQLite/library.db` (expo-sqlite's default directory is `Documents/SQLite`). */
 export const LIBRARY_DB_NAME = "library.db";
 
 /**
  * Opens library.db with foreign keys on (cascades depend on it; it is a
- * per-connection setting) and WAL. Call `migrateLibraryDb` before any query.
+ * per-connection setting), WAL, and its statements reused
+ * (`cacheStatements`). Call `migrateLibraryDb` before any query.
  */
 export function openLibraryDb() {
   const client = openDatabaseSync(LIBRARY_DB_NAME);
   client.execSync("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
+  cacheStatements(client);
   return { db: drizzle(client, { schema }), client };
 }
 
@@ -37,6 +40,7 @@ export function openLibraryDbIn(directory: Directory) {
   const path = decodeURIComponent(directory.uri.replace(/^file:\/\//, ""));
   const client = openDatabaseSync(LIBRARY_DB_NAME, {}, path);
   client.execSync("PRAGMA foreign_keys = ON;");
+  cacheStatements(client);
   return { close: () => client.closeSync(), db: drizzle(client, { schema }) };
 }
 

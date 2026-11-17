@@ -14,8 +14,8 @@ interface Preparing<Statement extends Finalizable> {
 }
 
 /**
- * Makes the connection reuse its prepared statements, by SQL text, and
- * finalize the ones it stops keeping.
+ * A client for Drizzle that reuses the connection's prepared statements, by
+ * SQL text, and finalizes the ones it stops keeping.
  *
  * Drizzle's expo driver prepares a statement for every query it runs and
  * never finalizes it, and expo-sqlite frees a statement only when it's
@@ -25,33 +25,37 @@ interface Preparing<Statement extends Finalizable> {
  *
  * Reusing one is safe: expo-sqlite resets a statement and clears its
  * bindings before every run, and Drizzle reads each result before it
- * returns, so no two runs of one statement overlap.
+ * returns, so no two runs of one statement overlap. Drizzle's driver calls
+ * only `prepareSync`, so that's all this has; the connection itself is left
+ * as it is, since its own helpers (`runSync`, `getAllSync`) finalize the
+ * statements they prepare.
  */
 export function cacheStatements<Statement extends Finalizable>(
   client: Preparing<Statement>,
   size = STATEMENT_CACHE_SIZE,
 ) {
-  const prepare = client.prepareSync.bind(client);
   const statements = new Map<string, Statement>();
-  client.prepareSync = (source) => {
-    const cached = statements.get(source);
-    if (cached !== undefined) {
-      // Most recently used goes last; the first is the next to go.
-      statements.delete(source);
-      statements.set(source, cached);
-      return cached;
-    }
-    const statement = prepare(source);
-    statements.set(source, statement);
-    if (statements.size > size) {
-      const [oldest, evicted] = statements.entries().next().value ?? [];
-      if (oldest !== undefined && evicted !== undefined) {
-        statements.delete(oldest);
-        finalizeQuietly(evicted);
+  return {
+    prepareSync(source: string) {
+      const cached = statements.get(source);
+      if (cached !== undefined) {
+        // Most recently used goes last; the first is the next to go.
+        statements.delete(source);
+        statements.set(source, cached);
+        return cached;
       }
-    }
-    return statement;
-  };
+      const statement = client.prepareSync(source);
+      statements.set(source, statement);
+      if (statements.size > size) {
+        const [oldest, evicted] = statements.entries().next().value ?? [];
+        if (oldest !== undefined && evicted !== undefined) {
+          statements.delete(oldest);
+          finalizeQuietly(evicted);
+        }
+      }
+      return statement;
+    },
+  } satisfies Preparing<Statement>;
 }
 
 /**

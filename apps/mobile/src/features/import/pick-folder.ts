@@ -17,7 +17,7 @@ const STAGING = new Directory(Paths.cache, "folder-import");
 let picking = false;
 /** Songs picked folders will still hand to the queue. */
 let incoming = 0;
-/** Folders picked one after another copy in turn. */
+/** Songs copy one at a time, folder after folder. */
 let copying = Promise.resolve();
 
 /** A name as Files shows it (URIs are percent-encoded). */
@@ -49,37 +49,39 @@ function songsTitle(count: number) {
 }
 
 /**
- * Copies each song into the cache and hands it to the import queue, which
- * moves it into the library. The folder's own files are never moved or
- * deleted. Songs import while later ones are still copying.
+ * Copies a song into the cache and hands it to the import queue, which moves
+ * the copy into the library. The folder's own files are never moved or
+ * deleted. Never rejects.
  */
-async function copyIn(songs: readonly { name: string; file: File }[]) {
+async function copyIn(song: { name: string; file: File }, key: string) {
+  const copy = new File(
+    STAGING,
+    `${key}.${audioExtension(song.name) ?? "audio"}`,
+  );
+  await Promise.resolve()
+    .then(() => {
+      STAGING.create({ idempotent: true, intermediates: true });
+      return song.file.copy(copy);
+    })
+    // A song that didn't copy is still handed over: reading it fails, and
+    // the batch names it with the others that failed.
+    .catch(() => undefined);
+  addImportSources([{ key, mimeType: null, name: song.name, uri: copy.uri }]);
+  incoming -= 1;
+  setIncoming("folder", incoming);
+}
+
+/** Counts the songs in, then copies them one at a time, in order. Songs
+ * import while later ones are still copying. */
+function startImport(songs: readonly { name: string; file: File }[]) {
+  incoming += songs.length;
+  setIncoming("folder", incoming);
   // Unique across picks, and across launches.
   const batch = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   for (const [index, song] of songs.entries()) {
     const key = `folder-${batch}-${String(index)}`;
-    const copy = new File(
-      STAGING,
-      `${key}.${audioExtension(song.name) ?? "audio"}`,
-    );
-    await Promise.resolve()
-      .then(() => {
-        STAGING.create({ idempotent: true, intermediates: true });
-        return song.file.copy(copy);
-      })
-      // A song that didn't copy is still handed over: reading it fails, and
-      // the batch names it with the others that failed.
-      .catch(() => undefined);
-    addImportSources([{ key, mimeType: null, name: song.name, uri: copy.uri }]);
-    incoming -= 1;
-    setIncoming("folder", incoming);
+    copying = copying.then(() => copyIn(song, key));
   }
-}
-
-function startImport(songs: readonly { name: string; file: File }[]) {
-  incoming += songs.length;
-  setIncoming("folder", incoming);
-  copying = copying.then(() => copyIn(songs));
 }
 
 /** Imports what's in a picked folder, asking first if some isn't downloaded. */

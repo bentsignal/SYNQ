@@ -123,7 +123,7 @@ numbers.
 ### Library
 
 - "Library" sits on the bar's own row (`RootTabTitle`, as on Settings),
-  left-aligned opposite the `plus` menu: Import from Files, Import Folder,
+  left-aligned opposite the `plus` menu: Import Files, Import Folder,
   Wi-Fi Transfer, Download, divider, New Playlist. A large title would leave that row's left half
   empty, with the title alone on the row below; pushed screens keep large
   titles, since their top left is Back.
@@ -153,8 +153,8 @@ numbers.
 - Both are the same two-column grid: artwork with two lines below. A tap opens a
   playlist, album, or artist, and plays a song, carrying on through the library
   as a tap in Songs does.
-- Empty library: "No Music Yet" with Import from Files, Import Folder, and
-  Wi-Fi Transfer.
+- Empty library: "No Music Yet", with no buttons: every way to add music is
+  in the `plus` menu.
 
 ### Songs, Albums, Artists, Playlists
 
@@ -357,7 +357,7 @@ start a new batch in the same capsule.
 appeared, once ever, and not after a batch with failures or if another import
 has started by then; the next clean batch asks instead.
 
-- **Files**: Import from Files opens the document picker (audio types,
+- **Files**: Import Files opens the document picker (audio types,
   multiple) directly, with no sheet.
 - **Folder**: Import Folder opens the document picker for a folder
   (`pick-folder.ts`). The songs in it and in the folders inside it import in

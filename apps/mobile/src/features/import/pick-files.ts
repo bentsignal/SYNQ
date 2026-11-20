@@ -34,7 +34,7 @@ async function pickAudioFiles() {
 let picking = false;
 
 /**
- * Import from Files: the Files picker comes up right away, and what's
+ * Import Files: the Files picker comes up right away, and what's
  * picked imports in the background (`addImportSources`).
  */
 export function importFromFiles() {

@@ -63,7 +63,7 @@ export const DOWNLOAD_ACTION =
 
 /** What an empty page offers to get music in. */
 export const IMPORT_ACTIONS = [
-  { label: "Import from Files", onPress: () => openImport("files") },
+  { label: "Import Files", onPress: () => openImport("files") },
   { label: "Import Folder", onPress: () => openImport("folder") },
   { label: "Wi-Fi Transfer", onPress: () => openImport("wifi") },
   ...(DOWNLOAD_ACTION === null ? [] : [DOWNLOAD_ACTION]),

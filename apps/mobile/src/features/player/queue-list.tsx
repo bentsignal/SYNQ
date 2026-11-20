@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { LayoutChangeEvent } from "react-native";
+import { useLayoutEffect, useState, useSyncExternalStore } from "react";
 import { View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -12,19 +13,23 @@ import type { SongListItem } from "@synq/db";
 
 import type { RowAction } from "./queue-list-rows";
 import type { QueueEntry } from "./queue-model";
+import type { QueueSlots } from "./queue-slots";
 import type { QueueDragValues } from "./use-queue-drag";
 import type { QueueGeometry } from "./use-queue-geometry";
 import type { QueueSwipeState } from "./use-queue-swipe";
 import { devQueueDrag } from "~/features/dev/dev-only";
 import {
   cueQueueEntry,
-  moveInUpNext,
+  nudgeInUpNext,
   playEntry,
   removeEntry,
+  upNextEntry,
+  upNextEntryAt,
 } from "./commands";
 import { FloatingRow, RowUnderlays, UpNextRow } from "./queue-list-rows";
 import { songIdOf } from "./queue-model";
 import { QUEUE_HANDLE_WIDTH, QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
+import { createQueueSlots } from "./queue-slots";
 import { SwipeActions } from "./queue-swipe-actions";
 import { useSlideNextOrder } from "./slide-next-order";
 import { useQueueDrag } from "./use-queue-drag";
@@ -54,11 +59,12 @@ export function QueueList({
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const geometry = useQueueGeometry(entries.length);
   const { listTop, scrollY, viewportHeight, width } = geometry;
-  const { act, gestures, onListScroll, slideNextOrder, swipe } = useRowActions(
-    entries,
-    geometry,
-  );
+  const { act, gestures, onListScroll, slideNextOrder, swipe } =
+    useRowActions(geometry);
   const { onScrolled, orderShown, slots } = useQueueWindow(entries, geometry);
+  const [slotStore] = useState(() => createQueueSlots(slots));
+  // Before paint, and before the UI thread gets the new order (a frame on).
+  useLayoutEffect(() => slotStore.set(slots), [slotStore, slots]);
   const { begin, end, isIdle, lifted, move, values } = useQueueDrag({
     entries,
     geometry,
@@ -107,9 +113,9 @@ export function QueueList({
               style={{ height: entries.length * ROW }}
             >
               <UpNextRows
-                entries={entries}
+                pool={slots.length}
+                slots={slotStore}
                 songs={songs}
-                slots={slots}
                 values={values}
                 swipe={swipe}
                 width={geometry.width}
@@ -131,8 +137,8 @@ export function QueueList({
           />
         )}
         <FloatingRow
-          song={lifted === null ? undefined : songs.get(lifted.songId)}
-          entryKey={lifted?.key}
+          song={lifted === null ? undefined : songs.get(lifted.entry.songId)}
+          pickup={lifted?.pickup}
           values={values}
         />
       </View>
@@ -142,26 +148,24 @@ export function QueueList({
 
 /**
  * What a row's swipe, tap, or screen-reader action does. A row's action
- * marks the order it makes, so the rows slide into it.
+ * marks the order it makes, so the rows slide into it. These look the entry
+ * up in the queue when they run, so they stay the same as it changes, and so
+ * do the rows they're given.
  */
-function useRowActions(
-  entries: readonly QueueEntry[],
-  geometry: QueueGeometry,
-) {
+function useRowActions(geometry: QueueGeometry) {
   const slideNextOrder = useSlideNextOrder();
 
-  function act(entry: QueueEntry | undefined, action: RowAction) {
-    if (entry === undefined) return;
+  function act(key: string | undefined, action: RowAction) {
+    if (key === undefined || upNextEntry(key) === undefined) return;
     // Set first: the queue's new order renders before these return.
     const moves = action !== "delete";
-    slideNextOrder.mark({ moved: moves ? entry.key : null });
-    const index = entries.indexOf(entry);
+    slideNextOrder.mark({ moved: moves ? key : null });
     const changed =
       action === "playNext" || action === "addToQueue"
-        ? cueQueueEntry(entry.key, action === "playNext" ? "next" : "last")
+        ? cueQueueEntry(key, action === "playNext" ? "next" : "last")
         : action === "delete"
-          ? removeEntry(entry.key)
-          : moveInUpNext(entry.key, index + (action === "moveUp" ? -1 : 1));
+          ? removeEntry(key)
+          : nudgeInUpNext(key, action === "moveUp" ? -1 : 1);
     if (!changed) slideNextOrder.mark(null);
   }
 
@@ -171,12 +175,15 @@ function useRowActions(
     state: swipe,
   } = useQueueSwipe(geometry, {
     cue: (index, place) =>
-      act(entries[index], place === "next" ? "playNext" : "addToQueue"),
+      act(
+        upNextEntryAt(index)?.key,
+        place === "next" ? "playNext" : "addToQueue",
+      ),
     play: (index) => {
-      const entry = entries[index];
+      const entry = upNextEntryAt(index);
       if (entry !== undefined) playEntry(entry.key);
     },
-    remove: (index) => act(entries[index], "delete"),
+    remove: (index) => act(upNextEntryAt(index)?.key, "delete"),
   });
   return { act, gestures, onListScroll, slideNextOrder, swipe };
 }
@@ -247,30 +254,28 @@ function useReorderGesture({
     .onFinalize(() => end());
 }
 
-/** Up Next's entries by key, kept while the entries are: not rebuilt on scroll. */
-function useEntriesByKey(entries: readonly QueueEntry[]) {
-  return new Map(entries.map((entry) => [entry.key, entry]));
-}
-
-/** The swipe actions, what's under the rows, and the pool of mounted rows. */
+/**
+ * The swipe actions, what's under the rows, and the pool of mounted rows.
+ * Nothing here changes with the queue, so a new order doesn't render it
+ * again; each row follows its own slot.
+ */
 function UpNextRows({
-  entries,
-  songs,
+  pool,
   slots,
+  songs,
   values,
   swipe,
   width,
   onAction,
 }: {
-  entries: readonly QueueEntry[];
+  pool: number;
+  slots: QueueSlots;
   songs: ReadonlyMap<number, SongListItem>;
-  slots: readonly (string | null)[];
   values: QueueDragValues;
   swipe: QueueSwipeState;
   width: QueueGeometry["width"];
-  onAction: (entry: QueueEntry | undefined, action: RowAction) => void;
+  onAction: (key: string, action: RowAction) => void;
 }) {
-  const byKey = useEntriesByKey(entries);
   return (
     <>
       <SwipeActions
@@ -286,25 +291,52 @@ function UpNextRows({
         orderProgress={values.orderProgress}
       />
       <RowUnderlays swipe={swipe} />
-      {slots.map((key, slot) => {
-        if (key === null) return null;
-        // An entry that just left Up Next (it's playing now) stays drawn
-        // until the new order reaches the UI thread, which hides it in the
-        // same frame the rest move up, so no frame shows a gap.
-        const entry = byKey.get(key);
-        const song = songs.get(entry?.songId ?? songIdOf(key));
-        return song === undefined ? null : (
-          <UpNextRow
-            key={slot}
-            entryKey={key}
-            entry={entry}
-            song={song}
-            values={values}
-            swipe={swipe}
-            onAction={onAction}
-          />
-        );
-      })}
+      {Array.from({ length: pool }, (_, slot) => (
+        <PooledRow
+          key={slot}
+          slot={slot}
+          slots={slots}
+          songs={songs}
+          values={values}
+          swipe={swipe}
+          onAction={onAction}
+        />
+      ))}
     </>
+  );
+}
+
+/**
+ * One of the pool's rows: the entry its slot holds, if any. An entry that
+ * just left Up Next (it's playing now) keeps its slot until the new order
+ * reaches the UI thread, which hides it in the same frame the rest move up,
+ * so no frame shows a gap.
+ */
+function PooledRow({
+  slot,
+  slots,
+  songs,
+  values,
+  swipe,
+  onAction,
+}: {
+  slot: number;
+  slots: QueueSlots;
+  songs: ReadonlyMap<number, SongListItem>;
+  values: QueueDragValues;
+  swipe: QueueSwipeState;
+  onAction: (key: string, action: RowAction) => void;
+}) {
+  const key = useSyncExternalStore(slots.subscribe, () => slots.get(slot));
+  const song = key === null ? undefined : songs.get(songIdOf(key));
+  if (key === null || song === undefined) return null;
+  return (
+    <UpNextRow
+      entryKey={key}
+      song={song}
+      values={values}
+      swipe={swipe}
+      onAction={onAction}
+    />
   );
 }

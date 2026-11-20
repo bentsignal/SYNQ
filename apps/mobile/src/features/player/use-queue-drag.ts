@@ -59,7 +59,17 @@ interface QueueDragOptions {
 export function useQueueDrag(options: QueueDragOptions) {
   const { entries, geometry, scrollRef } = options;
   const { listTop, scrollY, scrollYIsDriven } = geometry;
-  const [lifted, setLifted] = useState<QueueEntry | null>(null);
+  /**
+   * What the floating copy shows: the last entry picked up, kept after the
+   * drop (the copy is hidden then), since a render as the drop's order lands
+   * can put back the copy's place and opacity from mid-drag. `pickup` counts
+   * pick-ups, so even the same entry mounts again and says it's drawn.
+   */
+  const [lifted, setLifted] = useState<{
+    entry: QueueEntry;
+    pickup: number;
+  } | null>(null);
+  const pickups = useRef(0);
   const liftedKey = useRef<string | null>(null);
   const values = useDragValues(entries);
   const { floatY, floating, from, grabOffset, heldMs, hover } = values;
@@ -77,7 +87,6 @@ export function useQueueDrag(options: QueueDragOptions) {
     from.set(-1);
     hover.set(-1);
     floating.set(false);
-    scheduleOnRN(setLifted, null);
   }
 
   /** The dragged entry's index in `keys`; -1 ends the drag's scrolling. */
@@ -98,7 +107,8 @@ export function useQueueDrag(options: QueueDragOptions) {
     const entry = entries[index];
     if (entry === undefined) return;
     liftedKey.current = entry.key;
-    setLifted(entry);
+    pickups.current += 1;
+    setLifted({ entry, pickup: pickups.current });
     autoScroll.setActive(true);
     lightImpact();
   }

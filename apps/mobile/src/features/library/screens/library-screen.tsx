@@ -23,7 +23,6 @@ import { revealWhenSettled } from "../launch-splash";
 import { LibraryLinkRow } from "../library-link-row";
 import {
   DOWNLOAD_ACTION,
-  IMPORT_ACTIONS,
   LIBRARY_ROWS,
   openImport,
   openLibraryScreen,
@@ -120,7 +119,13 @@ function LibraryToolbar() {
             icon="folder"
             onPress={() => openImport("files")}
           >
-            Import from Files
+            Import Files
+          </Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction
+            icon="folder.badge.plus"
+            onPress={() => openImport("folder")}
+          >
+            Import Folder
           </Stack.Toolbar.MenuAction>
           <Stack.Toolbar.MenuAction
             icon="wifi"
@@ -248,13 +253,10 @@ export default function LibraryScreen() {
       {hasMusic ? (
         <LibraryHome />
       ) : (
-        <ScreenScroll onLayout={revealWhenSettled}>
-          <EmptyState
-            icon="music.note.house"
-            title="No Music Yet"
-            actions={IMPORT_ACTIONS}
-          />
-        </ScreenScroll>
+        <>
+          <ScreenScroll onLayout={revealWhenSettled} />
+          <EmptyState icon="music.note.house" title="No Music Yet" centered />
+        </>
       )}
       <HeaderGlass />
     </>

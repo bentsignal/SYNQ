@@ -1,17 +1,25 @@
+import { useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 
-import { listPlaylists } from "@synq/db";
+import { countSongsInPlaylists, listPlaylists } from "@synq/db";
 
+import type { RowMark } from "~/features/library/collection-row";
 import { SymbolIcon } from "~/components/symbol-icon";
-import { addToPlaylist } from "~/features/library/actions";
+import { changePlaylists } from "~/features/library/actions";
 import {
   COLLECTION_ROW_HEIGHT,
   CollectionRow,
 } from "~/features/library/collection-row";
 import { songCount } from "~/features/library/format";
 import { songIdsParam } from "~/features/library/params";
+import {
+  markOf,
+  playlistChange,
+  toggled,
+} from "~/features/library/playlist-choices";
 import { useLibraryQuery } from "~/features/library/queries";
+import { selectionTick } from "~/lib/haptics";
 
 /** The top row: an accent `plus` where a playlist's artwork would be. */
 function NewPlaylistRow({ onPress }: { onPress: () => void }) {
@@ -33,17 +41,34 @@ function NewPlaylistRow({ onPress }: { onPress: () => void }) {
 }
 
 /**
- * Adds songs (`songs`, comma-separated ids) to a playlist: Liked Songs
- * first, New Playlist at the top. A tap adds them and closes at once.
+ * Puts songs (`songs`, comma-separated ids) in playlists and takes them out:
+ * a checklist of playlists, Liked Songs first, each checked when it holds
+ * every song and marked with a dash when it holds some. Done writes what was
+ * tapped; Cancel or a swipe down discards it. New Playlist, at the top,
+ * starts with the songs and comes back here, checked.
  */
 export default function AddToPlaylistScreen() {
   const { songs } = useLocalSearchParams<{ songs?: string }>();
-  const songIds = songIdsParam(songs);
+  const songIds = [...new Set(songIdsParam(songs))];
   const playlists = useLibraryQuery({
     key: ["playlists", "name", "asc"],
     read: (db) => listPlaylists(db, { order: "asc", sort: "name" }),
     select: (items) => items,
   });
+  const held = useLibraryQuery({
+    key: ["playlists-holding", songs],
+    read: (db) => countSongsInPlaylists(db, songIds),
+    select: (rows) =>
+      new Map(rows.map((row) => [row.playlistId, row.count] as const)),
+  });
+  const [chosen, setChosen] = useState<ReadonlyMap<number, RowMark>>(
+    () => new Map(),
+  );
+  // Done closes the sheet; a second tap must not write twice.
+  const finished = useRef(false);
+  function start(playlistId: number) {
+    return markOf(held.get(playlistId) ?? 0, songIds.length);
+  }
   return (
     <>
       <Stack.Toolbar placement="left">
@@ -51,6 +76,19 @@ export default function AddToPlaylistScreen() {
           icon="xmark"
           accessibilityLabel="Cancel"
           onPress={() => router.back()}
+        />
+      </Stack.Toolbar>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          icon="checkmark"
+          accessibilityLabel="Done"
+          variant="prominent"
+          onPress={() => {
+            if (finished.current) return;
+            finished.current = true;
+            changePlaylists(songIds, playlistChange(start, chosen));
+            router.back();
+          }}
         />
       </Stack.Toolbar>
       <ScrollView
@@ -70,10 +108,15 @@ export default function AddToPlaylistScreen() {
               placeholder={playlist.kind === "liked" ? "liked" : "playlist"}
               name={playlist.name}
               detail={songCount(playlist.songCount)}
-              chevron={false}
+              mark={chosen.get(playlist.id) ?? start(playlist.id)}
               onPress={() => {
-                addToPlaylist(playlist.id, songIds);
-                router.back();
+                selectionTick();
+                setChosen((current) =>
+                  new Map(current).set(
+                    playlist.id,
+                    toggled(current.get(playlist.id) ?? start(playlist.id)),
+                  ),
+                );
               }}
             />
           ))}

@@ -5,6 +5,7 @@ import type { ArtworkRef } from "@synq/db";
 import type { ArtworkPlaceholder } from "~/components/artwork";
 import type { MenuGroups } from "~/components/menu";
 import { Artwork } from "~/components/artwork";
+import { ChoiceMark } from "~/components/choice-mark";
 import { NativeRow } from "~/components/native-row";
 import { SymbolIcon } from "~/components/symbol-icon";
 
@@ -15,14 +16,19 @@ const ARTWORK_SIZE = 56;
 const LEADING = 16;
 const GAP = 12;
 
+/** A choice's state: chosen, not, or (for some of several songs) mixed. */
+export type RowMark = "on" | "off" | "mixed";
+
 function RowText({
   name,
   detail,
   chevron,
+  mark,
 }: {
   name: string;
   detail: string | undefined;
   chevron: boolean;
+  mark: RowMark | undefined;
 }) {
   return (
     <>
@@ -36,7 +42,10 @@ function RowText({
           </Text>
         )}
       </View>
-      {chevron && (
+      {mark !== undefined && (
+        <ChoiceMark chosen={mark === "on"} mixed={mark === "mixed"} />
+      )}
+      {chevron && mark === undefined && (
         <SymbolIcon
           name="chevron.right"
           size={13}
@@ -53,6 +62,7 @@ function RowText({
  * artwork, name over a muted detail (`12 songs`, `Kestrel · 2021`), and a
  * chevron. Artists' artwork is round. `menu` is what a long press offers
  * (collection-menu.ts); a row that picks something in a sheet has none.
+ * `mark` makes it a choice in a checklist, with a circle for the chevron.
  */
 export function CollectionRow({
   artwork,
@@ -60,6 +70,7 @@ export function CollectionRow({
   name,
   detail,
   chevron = true,
+  mark,
   menu,
   onPress,
 }: {
@@ -68,6 +79,7 @@ export function CollectionRow({
   name: string;
   detail?: string;
   chevron?: boolean;
+  mark?: RowMark;
   menu?: MenuGroups;
   onPress: () => void;
 }) {
@@ -92,15 +104,20 @@ export function CollectionRow({
           className="h-full flex-1 flex-row items-center pr-4"
           style={{ marginLeft: GAP }}
         >
-          <RowText name={name} detail={detail} chevron={chevron} />
+          <RowText name={name} detail={detail} chevron={chevron} mark={mark} />
         </View>
       </NativeRow>
     );
   }
   return (
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole={mark === undefined ? "button" : "checkbox"}
       accessibilityLabel={label}
+      accessibilityState={
+        mark === undefined
+          ? undefined
+          : { checked: mark === "mixed" ? "mixed" : mark === "on" }
+      }
       className="active:bg-fill flex-row items-center"
       style={{ height: COLLECTION_ROW_HEIGHT, paddingLeft: LEADING }}
       onPress={onPress}
@@ -114,7 +131,7 @@ export function CollectionRow({
         className="border-b-hairline border-separator h-full flex-1 flex-row items-center pr-4"
         style={{ marginLeft: GAP }}
       >
-        <RowText name={name} detail={detail} chevron={chevron} />
+        <RowText name={name} detail={detail} chevron={chevron} mark={mark} />
       </View>
     </Pressable>
   );

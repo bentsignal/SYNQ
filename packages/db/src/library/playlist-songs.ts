@@ -1,11 +1,11 @@
-import { and, asc, eq, inArray, max, sql } from "drizzle-orm";
+import { and, asc, count, eq, inArray, max, sql } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
-import type { WriteOptions } from "./changes.ts";
+import type { LibraryTable, WriteOptions } from "./changes.ts";
 import { playlistSongs, songs } from "../schema.ts";
 import { changesOf, written } from "./changes.ts";
 import { LibraryError } from "./errors.ts";
-import { uniqueIds } from "./find-or-create.ts";
+import { inIds, uniqueIds } from "./find-or-create.ts";
 import { requirePlaylistRow, touchPlaylist } from "./playlist-rows.ts";
 import { chunked } from "./text.ts";
 
@@ -98,6 +98,53 @@ export function removeSongsFromPlaylist(
     { removed },
     removed > 0 ? ["playlist_songs", "playlists"] : [],
   );
+}
+
+/**
+ * How many of `songIds` each playlist holds, for Add to Playlist's checks.
+ * Playlists that hold none of them aren't listed.
+ */
+export function countSongsInPlaylists(
+  db: LibraryDb,
+  songIds: readonly number[],
+) {
+  return db
+    .select({
+      playlistId: playlistSongs.playlistId,
+      count: count(playlistSongs.id),
+    })
+    .from(playlistSongs)
+    .where(inIds(playlistSongs.songId, uniqueIds(songIds)))
+    .groupBy(playlistSongs.playlistId)
+    .all();
+}
+
+/**
+ * Add to Playlist's Done: appends the songs to the playlists in `add` (those
+ * already there stay where they are) and takes them out of those in
+ * `remove`, in one transaction.
+ */
+export function changeSongPlaylists(
+  db: LibraryDb,
+  songIds: readonly number[],
+  change: { add: readonly number[]; remove: readonly number[] },
+  options?: WriteOptions,
+) {
+  const changed = db.transaction((tx) => {
+    const tables = new Array<LibraryTable>();
+    for (const playlistId of change.add) {
+      tables.push(
+        ...addSongsToPlaylist(tx, playlistId, songIds, options).changed,
+      );
+    }
+    for (const playlistId of change.remove) {
+      tables.push(
+        ...removeSongsFromPlaylist(tx, playlistId, songIds, options).changed,
+      );
+    }
+    return tables;
+  });
+  return written(undefined, changed);
 }
 
 /** Below this gap between neighbours, a move renumbers the playlist instead of bisecting. */

@@ -108,8 +108,8 @@ function saveEdits(playlist: PlaylistListItem) {
 
 /**
  * Creates the playlist with its songs, then its artwork. Coming from Add to
- * Playlist closes both sheets; otherwise it opens the new playlist. False
- * keeps the sheet up.
+ * Playlist goes back there, where it's checked; otherwise it opens the new
+ * playlist. False keeps the sheet up.
  */
 function saveNew(fromAddToPlaylist: boolean) {
   const edits = draft.get();
@@ -122,7 +122,7 @@ function saveNew(fromAddToPlaylist: boolean) {
   );
   if (created === undefined) return false;
   if (fromAddToPlaylist) {
-    router.dismiss(2);
+    router.back();
   } else {
     router.back();
     openLibraryScreen({ id: created.id, screen: "playlist" });

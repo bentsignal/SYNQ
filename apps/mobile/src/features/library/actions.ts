@@ -3,7 +3,7 @@ import { router } from "expo-router";
 
 import type { HomeRef, LibraryDb, WriteResult } from "@synq/db";
 import {
-  addSongsToPlaylist,
+  changeSongPlaylists,
   deleteAlbum,
   deleteAlbumAndSongs,
   deleteArtist,
@@ -77,10 +77,14 @@ export function pinAction(item: HomeRef, pinnedAt: number | null) {
   } satisfies MenuAction;
 }
 
-export function addToPlaylist(playlistId: number, songIds: readonly number[]) {
-  selectionTick();
-  tryWrite("Couldn't Add to Playlist", (db) =>
-    addSongsToPlaylist(db, playlistId, songIds),
+/** Add to Playlist's Done: the songs join the playlists in `add` and leave those in `remove`. */
+export function changePlaylists(
+  songIds: readonly number[],
+  change: { add: readonly number[]; remove: readonly number[] },
+) {
+  if (change.add.length === 0 && change.remove.length === 0) return;
+  tryWrite("Couldn't Change Playlists", (db) =>
+    changeSongPlaylists(db, songIds, change),
   );
 }
 

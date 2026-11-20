@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, mock, test } from "node:test";
 
+import { setIncoming } from "./incoming.ts";
 import { CAPSULE_MIN_MS } from "./progress.ts";
 import { advance, setup, source } from "./queue-test-kit.ts";
 import {
@@ -9,7 +10,7 @@ import {
   setIncomingImports,
 } from "./queue.ts";
 
-void describe("a batch waiting on a download", () => {
+void describe("a batch waiting on a download or a folder", () => {
   beforeEach(() => {
     mock.timers.enable({ apis: ["setTimeout", "setInterval", "Date"] });
   });
@@ -64,5 +65,20 @@ void describe("a batch waiting on a download", () => {
     assert.equal(log.refreshes, 0);
     assert.equal(log.nothing, 0);
     assert.deepEqual(log.finished, []);
+  });
+
+  void test("a folder and a download on their way at once both count", async () => {
+    const log = setup();
+    setIncoming("download", 2);
+    setIncoming("folder", 3);
+    assert.equal(getImportState().shown.total, 5);
+    setIncoming("download", 0);
+    await advance(CAPSULE_MIN_MS);
+    assert.equal(getImportState().incoming, 3);
+    assert.equal(log.refreshes, 0);
+    for (const name of ["a", "b", "c"]) addImportSources([source(name)]);
+    setIncoming("folder", 0);
+    await advance(CAPSULE_MIN_MS);
+    assert.deepEqual(log.finished, [{ failed: 0, imported: 3 }]);
   });
 });

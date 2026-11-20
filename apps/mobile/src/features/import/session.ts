@@ -45,11 +45,11 @@ installImportQueue({
   },
 });
 
+export { setIncoming } from "./incoming";
 export {
   addImportSources,
   getImportState,
   onTransferStart,
-  setIncomingImports,
   setTransfersOn,
   subscribeImportState,
   uploadFailed,

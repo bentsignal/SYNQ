@@ -4,10 +4,7 @@ import { Directory, File, Paths } from "expo-file-system";
 
 import type { Download, DownloadState } from "./engine";
 import { discardSource } from "~/features/import/pipeline";
-import {
-  addImportSources,
-  setIncomingImports,
-} from "~/features/import/session";
+import { addImportSources, setIncoming } from "~/features/import/session";
 import { readJson, writeJson } from "~/lib/kv";
 import {
   acknowledgeTrack,
@@ -75,7 +72,7 @@ export const downloads = createDownloads({
     `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
   save: (list) => writeJson(STORAGE_KEY, list),
   server: serverAccess,
-  setIncoming: setIncomingImports,
+  setIncoming: (count) => setIncoming("download", count),
   startJob,
   wait: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 });

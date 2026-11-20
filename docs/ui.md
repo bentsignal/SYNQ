@@ -123,8 +123,8 @@ numbers.
 ### Library
 
 - "Library" sits on the bar's own row (`RootTabTitle`, as on Settings),
-  left-aligned opposite the `plus` menu: Import from Files, Wi-Fi Transfer,
-  Download, divider, New Playlist. A large title would leave that row's left half
+  left-aligned opposite the `plus` menu: Import from Files, Import Folder,
+  Wi-Fi Transfer, Download, divider, New Playlist. A large title would leave that row's left half
   empty, with the title alone on the row below; pushed screens keep large
   titles, since their top left is Back.
 - The bar is transparent, so at the top of the page there's no bar to see.
@@ -153,7 +153,8 @@ numbers.
 - Both are the same two-column grid: artwork with two lines below. A tap opens a
   playlist, album, or artist, and plays a song, carrying on through the library
   as a tap in Songs does.
-- Empty library: "No Music Yet" with Import from Files and Wi-Fi Transfer.
+- Empty library: "No Music Yet" with Import from Files, Import Folder, and
+  Wi-Fi Transfer.
 
 ### Songs, Albums, Artists, Playlists
 
@@ -358,6 +359,16 @@ has started by then; the next clean batch asks instead.
 
 - **Files**: Import from Files opens the document picker (audio types,
   multiple) directly, with no sheet.
+- **Folder**: Import Folder opens the document picker for a folder
+  (`pick-folder.ts`). The songs in it and in the folders inside it import in
+  the order Files lists them, folder by folder. Each is copied into the cache
+  and handed to the queue, which moves the copy into the library; the folder
+  itself is never changed. The batch counts every song from the start
+  (`setIncoming`) and imports while later ones copy, and a file that
+  won't copy fails in the batch's report like any other. Songs in iCloud Drive
+  that aren't downloaded to the phone (`.Song.mp3.icloud`) can't be copied:
+  an alert says how many, and offers to import the rest or cancel so they can
+  be downloaded in Files first. A folder with no audio says so.
 - **Wi-Fi Transfer**: a short glass sheet of plain views rather than a form:
   nothing scrolls, so iOS draws no band under its bar. An Allow Transfers switch,
   the address to open on a computer (selectable, with a copy button), and whether a

@@ -123,6 +123,12 @@ function LibraryToolbar() {
             Import from Files
           </Stack.Toolbar.MenuAction>
           <Stack.Toolbar.MenuAction
+            icon="folder.badge.plus"
+            onPress={() => openImport("folder")}
+          >
+            Import Folder
+          </Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction
             icon="wifi"
             onPress={() => openImport("wifi")}
           >

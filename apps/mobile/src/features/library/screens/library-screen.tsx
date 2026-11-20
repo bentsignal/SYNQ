@@ -253,9 +253,10 @@ export default function LibraryScreen() {
       {hasMusic ? (
         <LibraryHome />
       ) : (
-        <ScreenScroll onLayout={revealWhenSettled}>
-          <EmptyState icon="music.note.house" title="No Music Yet" />
-        </ScreenScroll>
+        <>
+          <ScreenScroll onLayout={revealWhenSettled} />
+          <EmptyState icon="music.note.house" title="No Music Yet" centered />
+        </>
       )}
       <HeaderGlass />
     </>

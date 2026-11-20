@@ -109,7 +109,7 @@ numbers.
 - **Empty states** (`EmptyState`, one component for every empty page and
   every "no results"): a small `subtle` symbol (26 pt), a short `muted` title,
   and only the actions that help, as quiet capsules on `fill`, sitting in the
-  upper part of the page. A page that's empty and has no artwork drops its
+  upper part of the page (the empty library's, alone on its page, is centered). A page that's empty and has no artwork drops its
   collection header, so there's no large placeholder: its name moves to the
   bar and the state stands alone (Liked Songs: "No Liked Songs" + Add Songs).
 - **Errors**: `Alert.alert("Couldn't <Verb> <Noun>", "Try again.")`.
@@ -153,8 +153,8 @@ numbers.
 - Both are the same two-column grid: artwork with two lines below. A tap opens a
   playlist, album, or artist, and plays a song, carrying on through the library
   as a tap in Songs does.
-- Empty library: "No Music Yet", with no buttons: every way to add music is
-  in the `plus` menu.
+- Empty library: "No Music Yet", in the middle of the screen, with no
+  buttons: every way to add music is in the `plus` menu.
 
 ### Songs, Albums, Artists, Playlists
 

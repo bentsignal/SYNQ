@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 
 import type { HomeItem } from "@synq/db";
-import { listSongs } from "@synq/db";
+import { listSongIdsByDateAdded, listSongs } from "@synq/db";
 
 import { Artwork } from "~/components/artwork";
 import { NativeRow } from "~/components/native-row";
@@ -15,12 +15,16 @@ import { songMenu } from "./song-menu";
 import { useIsLiked } from "./song-row";
 import { songSort } from "./sort";
 
-/** Plays the whole library from this song, as a tap in Songs does. */
+/**
+ * Plays the whole library from this song, as a tap in Songs does. Songs'
+ * first order is by date added, which reads only ids, not every song.
+ */
 function playFromLibrary(songId: number) {
   const { key, order } = songSort.initial;
-  const ids = listSongs(libraryDb(), { order, sort: key }).map(
-    (song) => song.id,
-  );
+  const ids =
+    key === "addedAt"
+      ? listSongIdsByDateAdded(libraryDb(), order)
+      : listSongs(libraryDb(), { order, sort: key }).map((song) => song.id);
   playSongs(ids, {
     source: { kind: "library" },
     startIndex: ids.indexOf(songId),

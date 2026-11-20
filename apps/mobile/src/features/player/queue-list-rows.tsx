@@ -8,9 +8,9 @@ import Animated, {
 
 import type { SongListItem } from "@synq/db";
 
-import type { QueueEntry } from "./queue-model";
 import type { QueueDragValues } from "./use-queue-drag";
 import type { QueueSwipeState } from "./use-queue-swipe";
+import { playEntry, upNextEntry } from "./commands";
 import { displacedSlot, settlingRow } from "./queue-layout";
 import { QueueHandle, QueueRow, QUEUE_ROW_HEIGHT as ROW } from "./queue-row";
 import { artistLine } from "./tracks";
@@ -32,7 +32,7 @@ export type RowAction = (typeof ROW_ACTIONS)[number]["name"];
 
 /** A row of Up Next, placed by the UI thread. Rows are recycled. */
 export function UpNextRow({
-  entry,
+  entryKey: key,
   song,
   values: {
     autoScrolling,
@@ -46,17 +46,19 @@ export function UpNextRow({
     previousPositions,
   },
   swipe,
-  onPlay,
   onAction,
 }: {
-  entry: QueueEntry;
+  entryKey: string;
   song: SongListItem;
   values: QueueDragValues;
   swipe: QueueSwipeState;
-  onPlay: () => void;
-  onAction: (action: RowAction) => void;
+  /** The list's one handler, which looks the entry up when it acts. */
+  onAction: (key: string, action: RowAction) => void;
 }) {
-  const key = entry.key;
+  function onPlay() {
+    // A row that just left Up Next (it's playing now) does nothing.
+    if (upNextEntry(key) !== undefined) playEntry(key);
+  }
   /** The rest of a slide into this row's slot during a drag; 0 at rest. */
   const slide = useSharedValue(0);
 
@@ -125,7 +127,7 @@ export function UpNextRow({
           const action = ROW_ACTIONS.find(
             ({ name }) => name === event.nativeEvent.actionName,
           );
-          if (action !== undefined) onAction(action.name);
+          if (action !== undefined) onAction(key, action.name);
         }}
         className="flex-1"
       >
@@ -183,11 +185,12 @@ export function RowUnderlays({
 /** The dragged row, above the list, so it can outlive its recycled row. */
 export function FloatingRow({
   song,
-  entryKey,
+  pickup,
   values: { floatY, floating, from, lift },
 }: {
   song: SongListItem | undefined;
-  entryKey: string | undefined;
+  /** Which pick-up this is: each mounts the row afresh. */
+  pickup: number | undefined;
   values: QueueDragValues;
 }) {
   const style = useAnimatedStyle(() => ({
@@ -204,7 +207,7 @@ export function FloatingRow({
       {song !== undefined && (
         // Once this has mounted, its row can hide under it.
         <View
-          key={entryKey}
+          key={pickup}
           className="flex-row"
           onLayout={() => floating.set(true)}
         >

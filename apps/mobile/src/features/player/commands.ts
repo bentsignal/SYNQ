@@ -179,6 +179,31 @@ export function moveInUpNext(key: string, upNextIndex: number) {
 }
 
 /**
+ * The entry `key` while it's in Up Next, or undefined: a row whose song just
+ * started playing stays drawn for a frame, and does nothing. The queue's rows
+ * look entries up when they act, so they don't render again when it changes.
+ */
+export function upNextEntry(key: string) {
+  const { queue } = getPlayerState();
+  const index = entryIndex(key);
+  return index > currentIndex(queue) ? queue.entries[index] : undefined;
+}
+
+/** The entry at `index` of Up Next as the queue is now. */
+export function upNextEntryAt(index: number) {
+  if (index < 0) return undefined;
+  const { queue } = getPlayerState();
+  return queue.entries[currentIndex(queue) + 1 + index];
+}
+
+/** Moves the Up Next entry `key` a place up or down (a screen reader's Move Up and Move Down). */
+export function nudgeInUpNext(key: string, by: -1 | 1) {
+  const { queue } = getPlayerState();
+  const index = entryIndex(key) - currentIndex(queue) - 1;
+  return index >= 0 && moveInUpNext(key, index + by);
+}
+
+/**
  * Moves the Up Next entry `key` to the front of the cued run ("next") or to
  * its end ("last"): a swipe right in the queue.
  */

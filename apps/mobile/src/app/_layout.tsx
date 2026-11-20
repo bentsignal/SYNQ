@@ -6,7 +6,7 @@ import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useCSSVariable } from "uniwind";
 
-import { installDevAutomation } from "~/features/dev/automation";
+import { devAutomation } from "~/features/dev/dev-only";
 import { downloadFeature } from "~/features/download/feature";
 import { ExportBanner } from "~/features/export/export-banner";
 import { ImportActivity } from "~/features/import/import-activity";
@@ -21,7 +21,7 @@ import { queryClient } from "~/lib/query-client";
 // The splash is a plain background, up until the Library tab has laid out.
 holdSplash();
 applyStoredPreferences();
-installDevAutomation();
+devAutomation?.installDevAutomation();
 installWifiTransfer();
 downloadFeature?.installDownloads();
 

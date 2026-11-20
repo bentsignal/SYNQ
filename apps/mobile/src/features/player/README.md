@@ -101,8 +101,17 @@ whole list is in edit mode.
   the hovered slot changes, and nothing runs in JavaScript per frame. Rows hold
   no position of their own, only the rest of a slide, so a recycled row can't
   end up in the wrong slot.
+- **Rows don't render again when the queue changes.** Each pooled row reads
+  its own slot (`queue-slots.ts`), and the rows' handlers look entries up by
+  key when they act (`upNextEntry`), so a new order renders only rows whose
+  song changed. It also keeps them right: the UI thread moves rows straight
+  on screen (`IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS`), and a React render of a row
+  just after can put its old place back on screen. That made a skip show the
+  old order for a couple of frames when every row rendered again.
 - **The dragged row is a floating copy** above the list, so it survives its
-  own row being recycled when the list auto-scrolls far away.
+  own row being recycled when the list auto-scrolls far away. It keeps its
+  song after the drop rather than rendering empty, for the same reason: that
+  render left the copy drawn, blank, over the dropped row for a second or two.
 - **A drop can't flicker.** JavaScript commits the move, then one UI-thread
   call swaps in the new `positions` as it clears the drag. Row content never
   depends on an index, so no frame shows the old order.
@@ -243,9 +252,11 @@ Holding on to the previous image means a file that fails would leave the last
 song's cover up, so `onError` moves to the cover's other size, and then to the
 placeholder.
 
-The memory cache holds only these covers, capped at 110 MB, about a dozen 1500 px
-ones. iOS can purge it at any time, and a miss just shows the old cover a moment
-longer.
+The memory cache holds only these covers, capped at 48 MB: the three songs' full
+and small covers (about 28 MB at 1500 px) and room for the ones a skip just moved
+past. It's emptied when the app goes to the background, where nothing draws them,
+and warmed again on the way back. iOS can purge it at any time, and a miss just
+shows the old cover a moment longer.
 
 ## Marquee
 

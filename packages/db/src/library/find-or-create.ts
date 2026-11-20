@@ -2,7 +2,8 @@
  * Artist and album references in writes: either an existing id or a name to
  * find or create (so a form can mix picked and newly typed artists).
  */
-import { asc, eq } from "drizzle-orm";
+import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
+import { asc, eq, sql } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import type { AlbumCandidate } from "./album-identity.ts";
@@ -129,6 +130,17 @@ export function requireName(name: string, what: string) {
 
 export function uniqueIds(ids: readonly number[]) {
   return [...new Set(ids)];
+}
+
+/**
+ * `column IN (ids)` as one JSON parameter rather than one per id: the SQL is
+ * the same for any number of ids, so its statement is reused
+ * (`cacheStatements`), and a list longer than SQLite's limit on parameters
+ * (32,766) still works. For lists that can be the whole library, such as a
+ * queue.
+ */
+export function inIds(column: SQLiteColumn, ids: readonly number[]) {
+  return sql`${column} IN (SELECT value FROM json_each(${JSON.stringify(ids)}))`;
 }
 
 /**

@@ -218,10 +218,14 @@ hold, so they're page sheets, and Done saves everything the sheet changed
 - **New Playlist / Album**: the same form as editing, with no field focused
   so the keyboard doesn't hide Add Songs, so someone can pick a picture and
   songs before it exists. From Add to Playlist, New Playlist
-  starts with those songs and Done closes both sheets.
+  starts with those songs and Done goes back to Add to Playlist, with the new
+  playlist checked.
 - **New Artist**: a small form sheet with the name field focused.
-- **Add to Playlist**: a form sheet listing playlists (Liked Songs first)
-  with a New Playlist row at the top; tapping adds and closes at once.
+- **Add to Playlist**: a form sheet with a checklist of playlists (Liked
+  Songs first) and a New Playlist row at the top. A playlist is checked when
+  it holds every song, and shows a dash when it holds some of several. A tap
+  checks or unchecks it; Done adds the songs to what's checked and removes
+  them from what was unchecked, and Cancel or a swipe down discards.
 
 ## Player
 

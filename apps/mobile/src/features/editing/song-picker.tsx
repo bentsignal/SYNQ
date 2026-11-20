@@ -3,15 +3,15 @@ import { Pressable, Text, View } from "react-native";
 import { Stack } from "expo-router";
 
 import type { SongListItem } from "@synq/db";
-import { listSongs } from "@synq/db";
+import { CATALOG_TABLES, listSongs } from "@synq/db";
 
 import type { SongPick } from "./song-selection";
 import { Artwork } from "~/components/artwork";
+import { ChoiceMark } from "~/components/choice-mark";
 import { EmptyState } from "~/components/empty-state";
 import { useNativeColor } from "~/components/native-host";
 import { RowSeparator } from "~/components/row-separator";
 import { ScreenList } from "~/components/screen-list";
-import { SymbolIcon } from "~/components/symbol-icon";
 import { songDetail } from "~/features/library/format";
 import {
   NoResults,
@@ -27,32 +27,6 @@ type SongSelection = ReturnType<typeof createSongSelection<SongListItem>>;
 const ARTWORK_SIZE = 48;
 const LEADING = 16;
 const GAP = 12;
-const MARK_SIZE = 24;
-
-/** The trailing circle: empty, or filled with a check. Plain views, for a list of thousands. */
-function Mark({ chosen }: { chosen: boolean }) {
-  if (!chosen) {
-    return (
-      <View
-        className="border-subtle rounded-full border"
-        style={{ height: MARK_SIZE, width: MARK_SIZE }}
-      />
-    );
-  }
-  return (
-    <View
-      className="bg-accent items-center justify-center rounded-full"
-      style={{ height: MARK_SIZE, width: MARK_SIZE }}
-    >
-      <SymbolIcon
-        name="checkmark"
-        size={12}
-        weight="bold"
-        tintColorClassName="accent-on-accent"
-      />
-    </View>
-  );
-}
 
 /**
  * A song in the picker. Rows are recycled, so what they show comes only from
@@ -94,7 +68,7 @@ export function PickerRow({
             {detail}
           </Text>
         </View>
-        <Mark chosen={chosen} />
+        <ChoiceMark chosen={chosen} />
       </View>
       <RowSeparator inset={LEADING + ARTWORK_SIZE + GAP} />
     </Pressable>
@@ -193,6 +167,7 @@ export function SongPicker({
   const sort = songSort.useValue();
   const { items, query, search } = useSearchableList({
     key: ["songs", sort.key, sort.order],
+    reads: CATALOG_TABLES,
     read: (db, text) =>
       listSongs(db, { order: sort.order, search: text, sort: sort.key }),
   });

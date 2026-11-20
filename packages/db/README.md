@@ -119,8 +119,22 @@ extensions (Vera's config already does).
 | `album_songs`, `albums`, `album_artists` | songs list (album names, artwork), albums list, album detail/tracks, artist detail, search          |
 | `playlists`, `playlist_songs`            | playlists list, playlist detail/songs, song detail (`liked`, `playlistIds`)                         |
 
-A simple start: key every query `["library", table, ...]` by its primary
-table and invalidate `["library"]` for any write. Refine using `changed`.
+The app keys every query `["library", ...]`, and `writeLibrary`
+(`apps/mobile/src/features/library/queries.ts`) refreshes the ones a write's
+`changed` can reach. A read that loads the whole library declares the tables it
+reads (`reads: CATALOG_TABLES` for songs, albums, artists, and the queue's
+songs), so a playlist-only write such as a like skips it. A read without a
+declaration refreshes on every write.
+
+### Prepared statements
+
+Drizzle's expo driver prepares a statement for every query and never finalizes
+it, and expo-sqlite frees statements only when the database closes.
+`openLibraryDb` hands Drizzle a client that reuses statements by SQL text and
+finalizes the ones its LRU drops (`statement-cache.ts`). Keep SQL text stable
+for queries that run often: bind a list of ids as one JSON parameter
+(`inIds`, `json_each`) rather than `inArray`, whose SQL changes with the list's
+length.
 
 ## Scripts
 

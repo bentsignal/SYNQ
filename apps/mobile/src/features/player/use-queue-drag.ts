@@ -59,7 +59,17 @@ interface QueueDragOptions {
 export function useQueueDrag(options: QueueDragOptions) {
   const { entries, geometry, scrollRef } = options;
   const { listTop, scrollY, scrollYIsDriven } = geometry;
-  const [lifted, setLifted] = useState<QueueEntry | null>(null);
+  /**
+   * What the floating copy shows: the last entry picked up, kept after the
+   * drop (the copy is hidden then), since a render as the drop's order lands
+   * can put back the copy's place and opacity from mid-drag. `pickup` counts
+   * pick-ups, so even the same entry mounts again and says it's drawn.
+   */
+  const [lifted, setLifted] = useState<{
+    entry: QueueEntry;
+    pickup: number;
+  } | null>(null);
+  const pickups = useRef(0);
   const liftedKey = useRef<string | null>(null);
   const values = useDragValues(entries);
   const { floatY, floating, from, grabOffset, heldMs, hover } = values;
@@ -77,7 +87,6 @@ export function useQueueDrag(options: QueueDragOptions) {
     from.set(-1);
     hover.set(-1);
     floating.set(false);
-    scheduleOnRN(setLifted, null);
   }
 
   /** The dragged entry's index in `keys`; -1 ends the drag's scrolling. */
@@ -98,7 +107,8 @@ export function useQueueDrag(options: QueueDragOptions) {
     const entry = entries[index];
     if (entry === undefined) return;
     liftedKey.current = entry.key;
-    setLifted(entry);
+    pickups.current += 1;
+    setLifted({ entry, pickup: pickups.current });
     autoScroll.setActive(true);
     lightImpact();
   }
@@ -303,6 +313,8 @@ function useQueueOrder({
     const next = positionsOf(keys);
     // Anything else (a tap, a song ending, a drop) is just in place.
     const slide = slideNextOrder.take();
+    // Captured alone: the worklet would otherwise copy every key to the UI thread for a count.
+    const length = keys.length;
     function swap() {
       "worklet";
       if (slide !== null) {
@@ -316,15 +328,12 @@ function useQueueOrder({
         orderProgress.set(1);
       }
       positions.set(next);
-      count.set(keys.length);
+      count.set(length);
       resetSwipe();
       if (dragged !== -1 && phase.get() === DRAGGING) {
         // The song changed mid-drag: the same row, a place up.
         hover.set(
-          Math.min(
-            Math.max(hover.get() + dragged - from.get(), 0),
-            keys.length - 1,
-          ),
+          Math.min(Math.max(hover.get() + dragged - from.get(), 0), length - 1),
         );
         from.set(dragged);
       } else if (phase.get() !== IDLE) {

@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 
 import type { AlbumListItem, LibraryDb, SortOrder } from "@synq/db";
-import { compareText, listAlbums } from "@synq/db";
+import { CATALOG_TABLES, compareText, listAlbums } from "@synq/db";
 
 import type { Sort } from "../sort";
 import { EmptyState } from "~/components/empty-state";
@@ -52,6 +52,7 @@ export default function AlbumsScreen() {
   const sort = albumSort.useValue();
   const { items, query, search } = useSearchableList({
     key: ["albums", sort.key, sort.order],
+    reads: CATALOG_TABLES,
     read: (db, text) => readAlbums(db, sort, text),
   });
   return (

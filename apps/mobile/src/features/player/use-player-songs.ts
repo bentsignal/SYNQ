@@ -1,3 +1,5 @@
+import { CATALOG_TABLES } from "@synq/db";
+
 import type { PlayerSongs } from "./songs";
 import { useLibraryQuery } from "~/features/library/queries";
 import { PLAYER_SONGS_KEY, readPlayerSongs } from "./songs";
@@ -12,6 +14,7 @@ export function usePlayerSongs<Selected>(
   return useLibraryQuery({
     key: PLAYER_SONGS_KEY,
     read: readPlayerSongs,
+    reads: CATALOG_TABLES,
     select,
   });
 }

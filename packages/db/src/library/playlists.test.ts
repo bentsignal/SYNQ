@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import type { LibraryDb } from "../client.ts";
 import {
   addSongsToPlaylist,
+  changeSongPlaylists,
+  countSongsInPlaylists,
   createPlaylist,
   deletePlaylist,
   ensureLikedPlaylist,
@@ -92,6 +94,30 @@ void describe("likes and playlists", () => {
     assert.throws(
       () => addSongsToPlaylist(db, 999, [1]),
       libraryError("not-found"),
+    );
+  });
+
+  void test("Add to Playlist counts the songs in each playlist and changes several at once", () => {
+    // Liked Songs (2) holds 3, 1, 5; Road Trip (3) holds 2, 1, 6, 7.
+    assert.deepEqual(
+      countSongsInPlaylists(db, [1, 3, 3]).sort(
+        (a, b) => a.playlistId - b.playlistId,
+      ),
+      [
+        { count: 2, playlistId: 2 },
+        { count: 1, playlistId: 3 },
+      ],
+    );
+    assert.deepEqual(
+      changeSongPlaylists(db, [1, 3], { add: [3], remove: [2] }, { now: NOW })
+        .changed,
+      ["playlist_songs", "playlists"],
+    );
+    assert.deepEqual(ids(listPlaylistSongs(db, 3)), [2, 1, 6, 7, 3]);
+    assert.deepEqual(ids(listPlaylistSongs(db, 2)), [5]);
+    assert.deepEqual(
+      changeSongPlaylists(db, [1, 3], { add: [3], remove: [2] }).changed,
+      [],
     );
   });
 });

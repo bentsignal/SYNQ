@@ -38,6 +38,21 @@ export function artworkFileUri(
 }
 
 /**
+ * Audio file URLs by stored path. Building one makes native objects, and a
+ * queue's tracks are built again whenever the library changes.
+ */
+const audioUrls = new Map<string, string>();
+
+function audioUrl(path: string) {
+  let url = audioUrls.get(path);
+  if (url === undefined) {
+    url = documentFile(path).uri;
+    audioUrls.set(path, url);
+  }
+  return url;
+}
+
+/**
  * The native track for a queue entry: its key is the track id, and the file
  * URL is built from path segments (`documentFile`), never concatenated, so
  * 2.5.2 file names with `#` or `%` resolve.
@@ -52,7 +67,7 @@ export function trackFor(entry: QueueEntry, song: SongListItem) {
     title: song.title,
     // A song without a file still gets a URL: native reports it missing
     // and moves past it, like any other file that went away.
-    url: documentFile(song.filePath ?? `library/${song.id}/missing`).uri,
+    url: audioUrl(song.filePath ?? `library/${song.id}/missing`),
   } satisfies Track;
 }
 

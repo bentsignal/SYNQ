@@ -2,7 +2,6 @@ import type { Href } from "expo-router";
 import { DevSettings } from "react-native";
 import { router } from "expo-router";
 
-import { env } from "~/env";
 import { exportSongs } from "~/features/export/export";
 import { frameReport, startFrames, stopFrames } from "./frames";
 import { importCached, importSample } from "./import-sample";
@@ -14,12 +13,11 @@ function isAppPath(path: string): path is Href & string {
 }
 
 /**
- * Development builds only: lets `scripts/sim.sh open` move around the app
+ * Development and profiling bundles only (`dev-only.ts`): lets `scripts/sim.sh open` move around the app
  * over Metro's debugger connection (scripts/sim-eval.mjs). iOS asks "Open
  * in SYNQ Dev?" before every `simctl openurl`, which scripts cannot answer.
  */
 export function installDevAutomation() {
-  if (!__DEV__ && !env.profileBundle) return;
   Object.assign(globalThis, {
     synqDev: {
       open(path: string) {

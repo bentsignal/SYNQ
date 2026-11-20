@@ -3,6 +3,7 @@
  * Kept out of the main entry so node tests never load native modules.
  */
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
+import type { SQLiteDatabase } from "expo-sqlite";
 import { Directory, File, Paths } from "expo-file-system";
 import { openDatabaseAsync, openDatabaseSync } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
@@ -14,18 +15,20 @@ import { LEGACY_DB_PATH } from "./legacy/index.ts";
 import { encodedPath } from "./library/file-uri.ts";
 import { libraryMigrations } from "./migrations.ts";
 import * as schema from "./schema.ts";
+import { cacheStatements } from "./statement-cache.ts";
 
 /** `Documents/SQLite/library.db` (expo-sqlite's default directory is `Documents/SQLite`). */
 export const LIBRARY_DB_NAME = "library.db";
 
 /**
  * Opens library.db with foreign keys on (cascades depend on it; it is a
- * per-connection setting) and WAL. Call `migrateLibraryDb` before any query.
+ * per-connection setting), WAL, and its statements reused
+ * (`cacheStatements`). Call `migrateLibraryDb` before any query.
  */
 export function openLibraryDb() {
   const client = openDatabaseSync(LIBRARY_DB_NAME);
   client.execSync("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
-  return { db: drizzle(client, { schema }), client };
+  return { db: drizzleWithCache(client), client };
 }
 
 /**
@@ -37,7 +40,15 @@ export function openLibraryDbIn(directory: Directory) {
   const path = decodeURIComponent(directory.uri.replace(/^file:\/\//, ""));
   const client = openDatabaseSync(LIBRARY_DB_NAME, {}, path);
   client.execSync("PRAGMA foreign_keys = ON;");
-  return { close: () => client.closeSync(), db: drizzle(client, { schema }) };
+  return { close: () => client.closeSync(), db: drizzleWithCache(client) };
+}
+
+/** Drizzle over the connection, through a statement cache (`cacheStatements`). */
+function drizzleWithCache(client: SQLiteDatabase) {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Drizzle's expo driver calls only prepareSync, which the cache has; its types ask for the whole connection.
+  return drizzle(cacheStatements(client) as unknown as SQLiteDatabase, {
+    schema,
+  });
 }
 
 /** Applies the bundled Drizzle migrations (no babel or Metro configuration needed). */
@@ -77,6 +88,18 @@ export async function openLegacyDatabaseCopy(
       copyDir.delete();
     },
   };
+}
+
+let documents: string | undefined;
+
+/**
+ * `Paths.document.uri`, read once: the getter makes a native `Directory`
+ * every time, and the folder doesn't move while the app runs. For
+ * `artworkUri` in rows, which ask for it on every mount.
+ */
+export function documentsUri() {
+  documents ??= Paths.document.uri;
+  return documents;
 }
 
 /**

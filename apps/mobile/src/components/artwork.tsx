@@ -1,11 +1,11 @@
 import type { SymbolViewProps } from "expo-symbols";
 import { useState } from "react";
 import { View } from "react-native";
-import { Paths } from "expo-file-system";
 import { Image } from "expo-image";
 
 import type { ArtworkRef, ArtworkSize } from "@synq/db";
 import { artworkUri } from "@synq/db";
+import { documentsUri } from "@synq/db/expo";
 
 import { SymbolIcon } from "~/components/symbol-icon";
 import { cn } from "~/lib/cn";
@@ -29,7 +29,11 @@ const PLACEHOLDER_SYMBOL = {
 /**
  * Library artwork from the entity's folder (`cover_small.jpg` at row sizes,
  * `cover_full.jpg` above `SMALL_MAX`), keyed by its version so an edit
- * shows at once, or a placeholder symbol on `fill`. Artists are circles.
+ * shows at once, or a placeholder symbol on `fill`. A 2.5.2 cover may exist
+ * in only one size, so a file that fails moves on to the other one
+ * (`useFallingBackSource`); not as expo-image's `placeholder`, which loads
+ * on every mount at full size, so every row decoded a 1500 px cover beside
+ * its 200 px one. Artists are circles.
  * A hairline edge, drawn over the art, keeps dark covers off the dark
  * background. Nothing sits behind the art or around it, so a cover with
  * clear corners shows only what's behind the whole component.
@@ -53,31 +57,26 @@ export function Artwork({
 }) {
   const round = placeholder === "artist";
   const corner = radius ?? (round ? size / 2 : size >= 120 ? 10 : 6);
+  const { source, onError } = useFallingBackSource(artwork, size);
   return (
     <View
       className={cn(
         "items-center justify-center overflow-hidden",
-        artwork === null && "bg-fill",
+        source === null && "bg-fill",
         className,
       )}
       style={{ borderRadius: corner, height: size, width: size }}
     >
-      {artwork === null ? (
+      {artwork === null || source === null ? (
         <PlaceholderSymbol placeholder={placeholder} size={size} />
       ) : (
         <Image
-          source={{
-            uri: artworkUri(Paths.document.uri, artwork, artworkSize(size)),
-          }}
-          // A 2.5.2 cover may exist in only one size; the other stands in.
-          placeholder={{
-            uri: artworkUri(Paths.document.uri, artwork, otherSize(size)),
-          }}
-          placeholderContentFit="cover"
+          source={{ uri: source }}
           style={{ height: size, transform: [{ scale: zoom }], width: size }}
           contentFit="cover"
           transition={120}
           recyclingKey={`${artwork.kind}-${artwork.id}`}
+          onError={onError}
           accessibilityIgnoresInvertColors
         />
       )}
@@ -177,11 +176,11 @@ function useFallingBackSource(artwork: ArtworkRef | null, size: number) {
   const primary =
     artwork === null
       ? null
-      : artworkUri(Paths.document.uri, artwork, artworkSize(size));
+      : artworkUri(documentsUri(), artwork, artworkSize(size));
   const standIn =
     artwork === null
       ? null
-      : artworkUri(Paths.document.uri, artwork, otherSize(size));
+      : artworkUri(documentsUri(), artwork, otherSize(size));
   const [failure, setFailure] = useState({ count: 0, uri: primary });
   const failures = failure.uri === primary ? failure.count : 0;
   const candidates = [primary, standIn];

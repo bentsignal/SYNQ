@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 
-import { listArtists } from "@synq/db";
+import { CATALOG_TABLES, listArtists } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
@@ -26,6 +26,7 @@ export default function ArtistsScreen() {
   const sort = artistSort.useValue();
   const { items, query, search } = useSearchableList({
     key: ["artists", sort.key, sort.order],
+    reads: CATALOG_TABLES,
     read: (db, text) =>
       listArtists(db, { order: sort.order, search: text, sort: sort.key }),
   });

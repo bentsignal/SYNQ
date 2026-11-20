@@ -35,9 +35,15 @@ export function nameKey(name: string) {
 }
 
 const combiningMarks = /[̀-ͯ]/g;
+const nonAscii = /[\u0080-\uffff]/;
 
-/** Lowercased, accent-stripped form used for search matching. */
+/**
+ * Lowercased, accent-stripped form used for search matching. ASCII has no
+ * accents to strip, so most names skip the normalizing, which a search does
+ * for every field of every song.
+ */
 export function searchKey(text: string) {
+  if (!nonAscii.test(text)) return text.toLowerCase();
   return text.normalize("NFD").replace(combiningMarks, "").toLowerCase();
 }
 
@@ -60,9 +66,15 @@ export function matchesSearch(
   );
 }
 
+/** The last query's terms: a search asks for them once per item it tests. */
+let lastTerms = { query: "", terms: new Array<string>() };
+
 export function searchTerms(query: string | undefined) {
   if (!query) return [];
-  return searchKey(query).split(/\s+/).filter(Boolean);
+  if (lastTerms.query !== query) {
+    lastTerms = { query, terms: searchKey(query).split(/\s+/).filter(Boolean) };
+  }
+  return lastTerms.terms;
 }
 
 export type SortOrder = "asc" | "desc";

@@ -62,6 +62,23 @@ function sectionRows(name: string, title: string, items: readonly HomeItem[]) {
   return [heading, ...cards];
 }
 
+/**
+ * Whether a row shows what it did. The rows are new objects every render,
+ * and Legend List redraws a row whose item changed, so without this every
+ * card re-rendered after any library write. The cards' items are the
+ * query's, which keeps an unchanged one the same object.
+ */
+function sameRow(previous: HomeRow, next: HomeRow) {
+  if (previous.type === "heading") {
+    return next.type === "heading" && previous.title === next.title;
+  }
+  return (
+    next.type === "card" &&
+    previous.item === next.item &&
+    previous.column === next.column
+  );
+}
+
 function LikedSongsRow() {
   const likedId = useLibraryQuery({
     key: ["liked-id"],
@@ -169,6 +186,7 @@ function LibraryHome() {
         atTop.current = next;
       }}
       keyExtractor={(row) => row.key}
+      itemsAreEqual={sameRow}
       getItemType={(row) => row.type}
       overrideItemLayout={(layout, row) => {
         layout.span = row.type === "heading" ? 2 : 1;

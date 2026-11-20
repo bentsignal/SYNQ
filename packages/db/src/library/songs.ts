@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm";
+import { asc, desc, eq, inArray } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
 import type { WriteOptions } from "./changes.ts";
@@ -8,7 +8,7 @@ import { albumSongs, playlists, playlistSongs, songs } from "../schema.ts";
 import { deleteAlbum, listEmptyAlbums } from "./albums.ts";
 import { artworkDir } from "./artwork.ts";
 import { nowFrom, written } from "./changes.ts";
-import { uniqueIds } from "./find-or-create.ts";
+import { inIds, uniqueIds } from "./find-or-create.ts";
 import { loadSongItems, songSearchFields } from "./song-items.ts";
 import { matchesSearch, sortBy } from "./text.ts";
 
@@ -31,6 +31,23 @@ export function listSongs(db: LibraryDb, options: ListSongsOptions = {}) {
     matchesSearch(options.search, songSearchFields(song)),
   );
   return sortSongs(items, options.sort ?? "addedAt", options.order ?? "desc");
+}
+
+/**
+ * Every song's id by date added (ties by id), the order `listSongs` gives
+ * for `addedAt`, without loading the songs: for playing the whole library.
+ */
+export function listSongIdsByDateAdded(
+  db: LibraryDb,
+  order: SortOrder = "desc",
+) {
+  const by = order === "desc" ? desc : asc;
+  return db
+    .select({ id: songs.id })
+    .from(songs)
+    .orderBy(by(songs.addedAt), by(songs.id))
+    .all()
+    .map((row) => row.id);
 }
 
 export function sortSongs<T extends SongListItem>(
@@ -66,7 +83,7 @@ export function sortSongs<T extends SongListItem>(
 export function getSongItems(db: LibraryDb, ids: readonly number[]) {
   const unique = uniqueIds(ids);
   if (unique.length === 0) return [];
-  return loadSongItems(db, inArray(songs.id, unique));
+  return loadSongItems(db, inIds(songs.id, unique));
 }
 
 export interface SongDetail extends SongListItem {

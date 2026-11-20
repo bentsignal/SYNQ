@@ -85,3 +85,59 @@ void test("a read that lands after unsubscribing is ignored", async () => {
   await tick();
   assert.equal(store.getSnapshot(), 0);
 });
+
+function fakeGate(open: boolean) {
+  let isOpen = open;
+  let onChange: (() => void) | undefined;
+  let watching = 0;
+  return {
+    gate: {
+      isOpen: () => isOpen,
+      watch(change: () => void) {
+        watching += 1;
+        onChange = change;
+        return () => {
+          watching -= 1;
+          onChange = undefined;
+        };
+      },
+    },
+    set(next: boolean) {
+      isOpen = next;
+      onChange?.();
+    },
+    watching: () => watching,
+  };
+}
+
+void test("a closed gate stops listening, and opening it listens and reads again", async () => {
+  const fake = fakeSource(7);
+  const gate = fakeGate(true);
+  const store = createSnapshotStore(fake.source, 0, gate.gate);
+  store.subscribe(() => undefined);
+  assert.deepEqual(fake.counts(), { listens: 1, stops: 0 });
+  gate.set(false);
+  assert.deepEqual(fake.counts(), { listens: 1, stops: 1 });
+  fake.emit(3);
+  assert.equal(store.getSnapshot(), 0);
+  gate.set(true);
+  assert.deepEqual(fake.counts(), { listens: 2, stops: 1 });
+  fake.resolveRead();
+  await tick();
+  assert.equal(store.getSnapshot(), 7);
+});
+
+void test("subscribing behind a closed gate waits for it to open", () => {
+  const fake = fakeSource(7);
+  const gate = fakeGate(false);
+  const store = createSnapshotStore(fake.source, 0, gate.gate);
+  const unsubscribe = store.subscribe(() => undefined);
+  assert.deepEqual(fake.counts(), { listens: 0, stops: 0 });
+  gate.set(true);
+  assert.deepEqual(fake.counts(), { listens: 1, stops: 0 });
+  unsubscribe();
+  assert.equal(gate.watching(), 0);
+  gate.set(false);
+  gate.set(true);
+  assert.deepEqual(fake.counts(), { listens: 1, stops: 1 });
+});

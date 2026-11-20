@@ -1,4 +1,4 @@
-import { listSongs } from "@synq/db";
+import { CATALOG_TABLES, listSongs } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
@@ -29,6 +29,7 @@ export default function SongsScreen() {
   const sort = songSort.useValue();
   const { items, query, search, empty } = useSearchableList({
     key: ["songs", sort.key, sort.order],
+    reads: CATALOG_TABLES,
     read: (db, text) =>
       listSongs(db, { order: sort.order, search: text, sort: sort.key }),
   });

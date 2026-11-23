@@ -9,9 +9,9 @@ import { addImportSources } from "./session";
 
 /**
  * Opens the Files picker for audio, and videos when this build can extract
- * their sound (several at once). The picked files are
- * copied into the cache, which the import moves into the library. An empty
- * list means the picker was cancelled.
+ * their sound (several at once). The picked files are copied into the
+ * cache, which the import moves into the library. An empty list means the
+ * picker was cancelled.
  */
 async function pickAudioFiles() {
   const result = await DocumentPicker.getDocumentAsync({

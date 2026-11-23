@@ -124,9 +124,10 @@ numbers.
 
 - "Library" sits on the bar's own row (`RootTabTitle`, as on Settings),
   left-aligned opposite the `plus` menu: Import Files, Import Folder,
-  Wi-Fi Transfer, Download, divider, New Playlist. A large title would leave that row's left half
-  empty, with the title alone on the row below; pushed screens keep large
-  titles, since their top left is Back.
+  Import from Photos, Wi-Fi Transfer, Download, divider, New Playlist. A
+  large title would leave that row's left half empty, with the title alone
+  on the row below; pushed screens keep large titles, since their top left
+  is Back.
 - The bar is transparent, so at the top of the page there's no bar to see.
   Once the page has scrolled, dark glass ending in a very faint hairline fades
   in over 0.25 s, and fades out back at the top, which keeps the title readable
@@ -358,7 +359,20 @@ appeared, once ever, and not after a batch with failures or if another import
 has started by then; the next clean batch asks instead.
 
 - **Files**: Import Files opens the document picker (audio types,
-  multiple) directly, with no sheet.
+  multiple) directly, with no sheet. It offers videos too, whose sound
+  imports (as from Photos).
+- **Photos**: Import from Photos opens the photo picker (`pick-videos.ts`),
+  showing only videos, several at once, and needing no permission. For a
+  song that's only out there as a video: a screen recording of a post, say.
+  The picked videos are copied into the cache and handed to the queue,
+  which writes each one's sound to an M4A file (`AudioExtractor.swift`) and
+  imports that, named after the video, then deletes the copy. One AAC track
+  is copied as it is; anything else (a screen recording with the
+  microphone on has two tracks, played together) is mixed and encoded to
+  AAC. Tags come from the sound alone, so a recording's date isn't taken
+  for the song's year. A video with no sound fails in the batch's report.
+  Builds without the native side hide the item, and the Files picker
+  offers audio only.
 - **Folder**: Import Folder opens the document picker for a folder
   (`pick-folder.ts`). The songs in it and in the folders inside it import in
   the order Files lists them, folder by folder. Each is copied into the cache

@@ -83,6 +83,16 @@ interface SynqMediaModule {
   copyText?: (text: string) => void;
   /** The photo picker, then Move and Scale; null when nothing was chosen. */
   pickSquarePhoto?: () => Promise<{ uri: string; width: number } | null>;
+  /**
+   * The photo picker, videos only and several at once, copying them into
+   * `directoryUri`. Empty when nothing was chosen. Older binaries lack this
+   * and `extractAudio`.
+   */
+  pickVideos?: (
+    directoryUri: string,
+  ) => Promise<{ uri: string; name: string }[]>;
+  /** Writes a video's sound to an M4A file. */
+  extractAudio?: (videoUri: string, destinationUri: string) => Promise<void>;
   /** A native alert whose button stays off until `phrase` is typed. */
   confirmTyped?: (
     title: string,
@@ -107,6 +117,11 @@ export function synqMedia() {
     throw new Error("This version of SYNQ can't read audio files.");
   }
   return native;
+}
+
+/** Whether this build can import a video's sound (`extractAudio`). */
+export function videoImportAvailable() {
+  return native?.extractAudio !== undefined && native.pickVideos !== undefined;
 }
 
 export function synqMediaAvailable() {

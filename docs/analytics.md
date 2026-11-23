@@ -12,6 +12,7 @@ Call `track(event, properties)` from anywhere.
 | --- | --- | --- |
 | `import_files` | | Import Files opens |
 | `import_folder` | | Import Folder opens |
+| `import_photos` | | Import from Photos opens |
 | `import_wifi` | | Wi-Fi Transfer opens |
 | `import_finish` | `numberOfSongs` | An import batch ends with songs imported |
 | `import_cancel` | | An import batch ends with files but none imported |

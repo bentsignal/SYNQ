@@ -27,6 +27,7 @@ import {
   openImport,
   openLibraryScreen,
   openNewPlaylist,
+  PHOTOS_IMPORT,
 } from "../links";
 import { useLibraryQuery } from "../queries";
 
@@ -127,6 +128,14 @@ function LibraryToolbar() {
           >
             Import Folder
           </Stack.Toolbar.MenuAction>
+          {PHOTOS_IMPORT ? (
+            <Stack.Toolbar.MenuAction
+              icon="photo.on.rectangle"
+              onPress={() => openImport("photos")}
+            >
+              Import from Photos
+            </Stack.Toolbar.MenuAction>
+          ) : null}
           <Stack.Toolbar.MenuAction
             icon="wifi"
             onPress={() => openImport("wifi")}

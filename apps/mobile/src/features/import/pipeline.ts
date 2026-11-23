@@ -9,12 +9,18 @@ import { libraryDb } from "~/features/library/database";
 import { withFileSource } from "~/features/media/file-source";
 import { synqMedia } from "~/features/media/native";
 import { readEmbeddedTags } from "~/features/media/retag";
-import { audioMimeType, cleanTags } from "./clean-tags";
+import {
+  audioMimeType,
+  cleanTags,
+  extractedAudioName,
+  isVideo,
+} from "./clean-tags";
 
 /** Where imports stage their work; cleared whenever the queue is idle. */
 export const IMPORT_DIRECTORY = new Directory(Paths.cache, "import");
 
-/** A file to import: picked in Files, or received over Wi-Fi. */
+/** A file to import: picked in Files or Photos, or received over Wi-Fi. A
+ * video's sound is what imports. */
 export interface ImportSource {
   /** Unique among the files being imported. */
   key: string;
@@ -40,6 +46,8 @@ export interface ReadSong {
   mimeType: string | null;
   /** The covers rendered from the embedded artwork, in the staging folder. */
   covers: Directory | null;
+  /** A video's sound, in the staging folder: what goes in the library. */
+  extracted?: { name: string; uri: string };
 }
 
 /**
@@ -116,26 +124,47 @@ function renderCovers(staging: Directory, artwork: File) {
 }
 
 /**
+ * A video's sound as an M4A file in its staging folder. Its tags come from
+ * the sound alone: a video's own (a recording's date, say) aren't a song's.
+ */
+async function extractAudio(source: ImportSource, staging: Directory) {
+  const extract = synqMedia().extractAudio;
+  if (extract === undefined) {
+    throw new Error("This version of SYNQ can't import videos.");
+  }
+  const audio = new File(staging, "audio.m4a");
+  await extract(source.uri, audio.uri);
+  return {
+    ...source,
+    mimeType: "audio/mp4",
+    name: extractedAudioName(source.name),
+    uri: audio.uri,
+  } satisfies ImportSource;
+}
+
+/**
  * Reads a file's tags, duration, and artwork (rendering the covers into
- * its staging folder). Throws when the file isn't playable audio.
+ * its staging folder). A video's sound is extracted first. Throws when the
+ * file isn't playable audio.
  */
 export async function readSource(source: ImportSource) {
   const staging = stagingFor(source.key);
   staging.create({ idempotent: true, intermediates: true });
+  const audio = isVideo(source.name)
+    ? await extractAudio(source, staging)
+    : source;
   const artwork = new File(staging, "artwork");
-  const info = await synqMedia().readAudioFile(source.uri, artwork.uri);
-  const read = withEmbeddedTags(
-    source,
-    rawTags(info),
-    artwork,
-    info.hasArtwork,
-  );
+  const info = await synqMedia().readAudioFile(audio.uri, artwork.uri);
+  const read = withEmbeddedTags(audio, rawTags(info), artwork, info.hasArtwork);
   const covers = read.hasArtwork ? await renderCovers(staging, artwork) : null;
   return {
-    ...cleanTags(source.name, read.tags),
+    ...cleanTags(audio.name, read.tags),
     covers,
     durationMs: info.durationMs,
-    mimeType: audioMimeType(source.name, source.mimeType),
+    mimeType: audioMimeType(audio.name, audio.mimeType),
+    ...(audio === source
+      ? {}
+      : { extracted: { name: audio.name, uri: audio.uri } }),
   } satisfies ReadSong;
 }
 
@@ -153,6 +182,7 @@ async function moveInto(file: File, destination: File) {
  */
 export async function importSong(source: ImportSource, read: ReadSong) {
   const db = libraryDb();
+  const audioFile = read.extracted ?? source;
   const [added] = addSongs(
     db,
     [
@@ -162,7 +192,7 @@ export async function importSong(source: ImportSource, read: ReadSong) {
         artists: read.artists,
         compilation: read.compilation,
         durationMs: read.durationMs,
-        fileName: source.name,
+        fileName: audioFile.name,
         hasArtwork: read.covers !== null,
         mimeType: read.mimeType,
         title: read.title,
@@ -176,7 +206,7 @@ export async function importSong(source: ImportSource, read: ReadSong) {
   try {
     const audio = documentFile(added.filePath);
     audio.parentDirectory.create({ idempotent: true, intermediates: true });
-    await moveInto(new File(source.uri), audio);
+    await moveInto(new File(audioFile.uri), audio);
   } catch (error) {
     deleteSongs(db, [added.id]);
     const folder = new Directory(Paths.document, "library", String(added.id));
@@ -202,7 +232,8 @@ export async function importSong(source: ImportSource, read: ReadSong) {
   return added.id;
 }
 
-/** Removes a source's staged files (its copy, artwork, and covers). */
+/** Removes a source's staged files (its copy, extracted sound, artwork, and
+ * covers). */
 export function discardSource(source: ImportSource) {
   for (const entry of [new File(source.uri), stagingFor(source.key)]) {
     try {

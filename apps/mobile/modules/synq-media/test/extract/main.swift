@@ -1,7 +1,8 @@
 // Runs the real AudioExtractor on the Mac for `extract-audio.test.ts`:
 // `extract <video> <destination>` writes one JSON line describing the M4A
 // it wrote (its audio tracks, their codec, the duration, and whether its
-// audio is the video's first track's, byte for byte) or the error.
+// audio is the video's first track's, byte for byte) or the error, and
+// whether a frame was written beside it (`<destination>.jpg`).
 import AVFoundation
 
 func write(_ object: [String: Any]) {
@@ -56,9 +57,13 @@ Task {
       "audioTracks": tracks.count, "formats": formats, "videoTracks": videoTracks.count,
       "durationMs": Int((CMTimeGetSeconds(duration) * 1000).rounded()),
       "sameSamples": try await samples(asset) == samples(AVURLAsset(url: video)),
+      "frame": await AudioExtractor.frame(
+        video: video, destination: destination.appendingPathExtension("jpg")),
     ])
   } catch {
-    write(["error": String(describing: error)])
+    let frame = await AudioExtractor.frame(
+      video: video, destination: destination.appendingPathExtension("jpg"))
+    write(["error": String(describing: error), "frame": frame])
   }
   done.signal()
 }

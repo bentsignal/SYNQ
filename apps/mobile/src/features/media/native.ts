@@ -93,6 +93,8 @@ interface SynqMediaModule {
   ) => Promise<{ uri: string; name: string }[]>;
   /** Writes a video's sound to an M4A file. */
   extractAudio?: (videoUri: string, destinationUri: string) => Promise<void>;
+  /** A still from the middle of a video, as a JPEG; false if it has none. */
+  writeVideoFrame?: (videoUri: string, imageUri: string) => Promise<boolean>;
   /** A native alert whose button stays off until `phrase` is typed. */
   confirmTyped?: (
     title: string,

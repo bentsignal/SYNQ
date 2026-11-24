@@ -1,4 +1,6 @@
 import AVFoundation
+import ImageIO
+import UniformTypeIdentifiers
 
 /// Writes a video's sound to an M4A file. One AAC or ALAC track is copied
 /// as it is (passthrough); anything else (several tracks, as a screen
@@ -60,6 +62,35 @@ enum AudioExtractor {
     var enabled: [AVAssetTrack] = []
     for track in tracks where try await track.load(.isEnabled) { enabled.append(track) }
     return enabled.isEmpty ? tracks : enabled
+  }
+
+  /// A still from the middle of the video, upright, as a JPEG at
+  /// `destination`: the song's cover. False when the video has no picture
+  /// or it can't be read.
+  static func frame(video: URL, destination: URL) async -> Bool {
+    let asset = AVURLAsset(url: video)
+    guard let tracks = try? await asset.loadTracks(withMediaType: .video), !tracks.isEmpty,
+      let duration = try? await asset.load(.duration), duration.isNumeric
+    else { return false }
+    let generator = AVAssetImageGenerator(asset: asset)
+    generator.appliesPreferredTrackTransform = true
+    // Twice the largest cover, so a portrait screen recording's square
+    // crop still fills it.
+    generator.maximumSize = CGSize(width: 3000, height: 3000)
+    let tolerance = CMTime(value: 1, timescale: 2)
+    generator.requestedTimeToleranceBefore = tolerance
+    generator.requestedTimeToleranceAfter = tolerance
+    let middle = CMTimeMultiplyByFloat64(duration, multiplier: 0.5)
+    guard let image = try? await generator.image(at: middle).image else { return false }
+    try? FileManager.default.createDirectory(
+      at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+    guard
+      let output = CGImageDestinationCreateWithURL(
+        destination as CFURL, UTType.jpeg.identifier as CFString, 1, nil)
+    else { return false }
+    CGImageDestinationAddImage(
+      output, image, [kCGImageDestinationLossyCompressionQuality: 0.9] as CFDictionary)
+    return CGImageDestinationFinalize(output)
   }
 
   private static func isPassthrough(_ track: AVAssetTrack) async throws -> Bool {

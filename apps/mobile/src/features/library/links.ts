@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import { downloadFeature } from "~/features/download/feature";
 import { importFromFiles } from "~/features/import/pick-files";
 import { importFromFolder } from "~/features/import/pick-folder";
-import { importFromPhotos } from "~/features/import/pick-videos";
+import { importFromVideo } from "~/features/import/pick-videos";
 import { videoImportAvailable } from "~/features/media/native";
 
 /** The tabs whose stacks show library screens. */
@@ -54,15 +54,15 @@ export function openLibraryScreen(target: LibraryScreen) {
  * Opens an import flow (docs/ui.md → Import): the Files picker, for files or
  * a folder, the photo picker for videos, or Wi-Fi Transfer.
  */
-export function openImport(kind: "files" | "folder" | "photos" | "wifi") {
+export function openImport(kind: "files" | "folder" | "video" | "wifi") {
   if (kind === "files") importFromFiles();
   else if (kind === "folder") importFromFolder();
-  else if (kind === "photos") importFromPhotos();
+  else if (kind === "video") importFromVideo();
   else router.push("/import/wifi");
 }
 
 /** Whether this build can import a video's sound from Photos. */
-export const PHOTOS_IMPORT = videoImportAvailable();
+export const VIDEO_IMPORT = videoImportAvailable();
 
 /** Download (docs/download-servers.md). */
 export const DOWNLOAD_ACTION =

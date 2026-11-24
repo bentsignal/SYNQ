@@ -27,7 +27,7 @@ import {
   openImport,
   openLibraryScreen,
   openNewPlaylist,
-  PHOTOS_IMPORT,
+  VIDEO_IMPORT,
 } from "../links";
 import { useLibraryQuery } from "../queries";
 
@@ -128,12 +128,12 @@ function LibraryToolbar() {
           >
             Import Folder
           </Stack.Toolbar.MenuAction>
-          {PHOTOS_IMPORT ? (
+          {VIDEO_IMPORT ? (
             <Stack.Toolbar.MenuAction
-              icon="photo.on.rectangle"
-              onPress={() => openImport("photos")}
+              icon="video"
+              onPress={() => openImport("video")}
             >
-              Import from Photos
+              Import from Video
             </Stack.Toolbar.MenuAction>
           ) : null}
           <Stack.Toolbar.MenuAction

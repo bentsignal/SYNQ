@@ -27,6 +27,7 @@ interface Extracted {
   formats?: string[];
   durationMs?: number;
   sameSamples?: boolean;
+  frame?: boolean;
   error?: string;
 }
 
@@ -61,6 +62,7 @@ void describe("extracting a video's sound", { skip: !hasSwift }, () => {
     assert.equal(result.videoTracks, 0);
     assert.ok(Math.abs((result.durationMs ?? 0) - 1000) < 100);
     assert.equal(result.sameSamples, true);
+    assert.equal(result.frame, true);
   });
 
   void test("encodes other sound to AAC", () => {
@@ -81,5 +83,7 @@ void describe("extracting a video's sound", { skip: !hasSwift }, () => {
   void test("refuses a video with no sound", () => {
     const { result } = extract("silent.mp4");
     assert.equal(result.error, "This video has no sound.");
+    // It has a picture all the same.
+    assert.equal(result.frame, true);
   });
 });

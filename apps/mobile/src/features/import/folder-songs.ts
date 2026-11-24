@@ -27,13 +27,19 @@ function byName(a: { name: string }, b: { name: string }) {
   });
 }
 
+function isAudio(name: string) {
+  return audioExtension(name) !== null;
+}
+
 /**
- * The audio SYNQ can import in a folder and the folders inside it. Hidden
- * files (such as the `._Song.mp3` files macOS leaves on drives) are skipped.
+ * The files SYNQ can import (`imports`: audio unless it says otherwise) in a
+ * folder and the folders inside it. Hidden files (such as the `._Song.mp3`
+ * files macOS leaves on drives) are skipped.
  */
 export function findFolderSongs<Folder, File>(
   root: Folder,
   list: (folder: Folder) => readonly FolderEntry<Folder, File>[],
+  imports: (name: string) => boolean = isAudio,
 ) {
   const songs = new Array<{ name: string; file: File }>();
   let notDownloaded = 0;
@@ -43,12 +49,12 @@ export function findFolderSongs<Folder, File>(
     for (const { entry, name } of entries) {
       const placeholder = ICLOUD_PLACEHOLDER.exec(name)?.[1];
       if (placeholder !== undefined) {
-        if (audioExtension(placeholder) !== null) notDownloaded += 1;
+        if (imports(placeholder)) notDownloaded += 1;
       } else if (name.startsWith(".")) {
         // Hidden.
       } else if ("folder" in entry) {
         folders.push(entry.folder);
-      } else if (audioExtension(name) !== null) {
+      } else if (imports(name)) {
         songs.push({ file: entry.file, name });
       }
     }

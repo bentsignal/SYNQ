@@ -3,7 +3,8 @@ import { Directory, File, Paths } from "expo-file-system";
 
 import type { FolderEntry } from "./folder-songs";
 import { track } from "~/features/analytics/analytics";
-import { audioExtension } from "./clean-tags";
+import { videoImportAvailable } from "~/features/media/native";
+import { audioExtension, fileExtension, isVideo } from "./clean-tags";
 import { findFolderSongs } from "./folder-songs";
 import { addImportSources, setIncoming } from "./session";
 
@@ -56,7 +57,7 @@ function songsTitle(count: number) {
 async function copyIn(song: { name: string; file: File }, key: string) {
   const copy = new File(
     STAGING,
-    `${key}.${audioExtension(song.name) ?? "audio"}`,
+    `${key}.${fileExtension(song.name) ?? "audio"}`,
   );
   await Promise.resolve()
     .then(() => {
@@ -84,14 +85,23 @@ function startImport(songs: readonly { name: string; file: File }[]) {
   }
 }
 
+/** Audio, and videos when this build can extract their sound. */
+function imports(name: string) {
+  return (
+    audioExtension(name) !== null || (videoImportAvailable() && isVideo(name))
+  );
+}
+
 /** Imports what's in a picked folder, asking first if some isn't downloaded. */
 function importFolder(folder: Directory) {
-  const { notDownloaded, songs } = findFolderSongs(folder, listFolder);
+  const { notDownloaded, songs } = findFolderSongs(folder, listFolder, imports);
   if (notDownloaded === 0) {
     if (songs.length === 0) {
       Alert.alert(
         "No Songs in This Folder",
-        "SYNQ imports MP3, M4A, AAC, FLAC, and WAV files.",
+        videoImportAvailable()
+          ? "SYNQ imports MP3, M4A, AAC, FLAC, and WAV files, and the sound of videos."
+          : "SYNQ imports MP3, M4A, AAC, FLAC, and WAV files.",
       );
     } else {
       startImport(songs);

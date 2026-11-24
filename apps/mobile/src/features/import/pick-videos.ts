@@ -32,13 +32,13 @@ async function pickVideos() {
 }
 
 /**
- * Import from Photos: the photo picker comes up right away, showing videos,
+ * Import from Video: the photo picker comes up right away, showing videos,
  * and the sound of each one picked imports in the background.
  */
-export function importFromPhotos() {
+export function importFromVideo() {
   if (picking) return;
   picking = true;
-  track("import_photos");
+  track("import_video");
   pickVideos().then(
     (sources) => {
       picking = false;

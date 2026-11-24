@@ -142,10 +142,17 @@ async function extractAudio(source: ImportSource, staging: Directory) {
   } satisfies ImportSource;
 }
 
+/** A video's middle frame, written to `artwork`: its song's cover. */
+async function videoFrame(video: ImportSource, artwork: File) {
+  const write = synqMedia().writeVideoFrame;
+  if (write === undefined) return false;
+  return write(video.uri, artwork.uri).catch(() => false);
+}
+
 /**
  * Reads a file's tags, duration, and artwork (rendering the covers into
- * its staging folder). A video's sound is extracted first. Throws when the
- * file isn't playable audio.
+ * its staging folder). A video's sound is extracted first, and its middle
+ * frame is the cover. Throws when the file isn't playable audio.
  */
 export async function readSource(source: ImportSource) {
   const staging = stagingFor(source.key);
@@ -156,7 +163,10 @@ export async function readSource(source: ImportSource) {
   const artwork = new File(staging, "artwork");
   const info = await synqMedia().readAudioFile(audio.uri, artwork.uri);
   const read = withEmbeddedTags(audio, rawTags(info), artwork, info.hasArtwork);
-  const covers = read.hasArtwork ? await renderCovers(staging, artwork) : null;
+  const hasArtwork =
+    read.hasArtwork ||
+    (audio !== source && (await videoFrame(source, artwork)));
+  const covers = hasArtwork ? await renderCovers(staging, artwork) : null;
   return {
     ...cleanTags(audio.name, read.tags),
     covers,

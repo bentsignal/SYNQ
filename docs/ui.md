@@ -124,7 +124,7 @@ numbers.
 
 - "Library" sits on the bar's own row (`RootTabTitle`, as on Settings),
   left-aligned opposite the `plus` menu: Import Files, Import Folder,
-  Import from Photos, Wi-Fi Transfer, Download, divider, New Playlist. A
+  Import from Video, Wi-Fi Transfer, Download, divider, New Playlist. A
   large title would leave that row's left half empty, with the title alone
   on the row below; pushed screens keep large titles, since their top left
   is Back.
@@ -358,21 +358,24 @@ start a new batch in the same capsule.
 appeared, once ever, and not after a batch with failures or if another import
 has started by then; the next clean batch asks instead.
 
-- **Files**: Import Files opens the document picker (audio types,
-  multiple) directly, with no sheet. It offers videos too, whose sound
-  imports (as from Photos).
-- **Photos**: Import from Photos opens the photo picker (`pick-videos.ts`),
-  showing only videos, several at once, and needing no permission. For a
-  song that's only out there as a video: a screen recording of a post, say.
-  The picked videos are copied into the cache and handed to the queue,
-  which writes each one's sound to an M4A file (`AudioExtractor.swift`) and
-  imports that, named after the video, then deletes the copy. One AAC track
-  is copied as it is; anything else (a screen recording with the
-  microphone on has two tracks, played together) is mixed and encoded to
-  AAC. Tags come from the sound alone, so a recording's date isn't taken
-  for the song's year. A video with no sound fails in the batch's report.
-  Builds without the native side hide the item, and the Files picker
-  offers audio only.
+**Videos import as their sound**, for a song that's only out there as a
+video (a screen recording of a post, say), by every route: Files, Folder,
+Video, and Wi-Fi Transfer. The queue writes each video's sound to an M4A
+file (`AudioExtractor.swift`) and imports that, named after the video, with
+the video's middle frame as its cover. One AAC track is copied as it is;
+anything else (a screen recording with the microphone on has two tracks,
+played together) is mixed and encoded to AAC. Tags come from the sound
+alone, so a recording's date isn't taken for the song's year. A video with
+no sound fails in the batch's report. Builds without the native side hide
+Import from Video and take audio only, except Wi-Fi Transfer, whose page
+is built in: a video sent to one fails in the report.
+
+- **Files**: Import Files opens the document picker (audio and video
+  types, multiple) directly, with no sheet.
+- **Video**: Import from Video opens the photo picker (`pick-videos.ts`),
+  showing only videos, several at once, and needing no permission. The
+  picked videos are copied into the cache and handed to the queue, which
+  deletes each copy once its sound is in.
 - **Folder**: Import Folder opens the document picker for a folder
   (`pick-folder.ts`). The songs in it and in the folders inside it import in
   the order Files lists them, folder by folder. Each is copied into the cache
@@ -382,7 +385,7 @@ has started by then; the next clean batch asks instead.
   won't copy fails in the batch's report like any other. Songs in iCloud Drive
   that aren't downloaded to the phone (`.Song.mp3.icloud`) can't be copied:
   an alert says how many, and offers to import the rest or cancel so they can
-  be downloaded in Files first. A folder with no audio says so.
+  be downloaded in Files first. A folder with nothing to import says so.
 - **Wi-Fi Transfer**: a short glass sheet of plain views rather than a form:
   nothing scrolls, so iOS draws no band under its bar. An Allow Transfers switch,
   the address to open on a computer (selectable, with a copy button), and whether a

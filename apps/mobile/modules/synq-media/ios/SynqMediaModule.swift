@@ -91,6 +91,10 @@ public class SynqMediaModule: Module {
       try await AudioExtractor.extract(video: videoUrl, destination: destinationUrl)
     }
 
+    AsyncFunction("writeVideoFrame") { (videoUrl: URL, imageUrl: URL) async -> Bool in
+      await AudioExtractor.frame(video: videoUrl, destination: imageUrl)
+    }
+
     AsyncFunction("confirmTyped") {
       (title: String, message: String, phrase: String, confirmTitle: String, promise: Promise) in
       MainActor.assumeIsolated {

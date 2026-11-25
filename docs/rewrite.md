@@ -117,7 +117,7 @@ fields need it.
 | Icon | `icon-blue` (alternates `icon-blue`, `icon-mint`, `icon-red`, `icon-yellow`, `icon-purple`, `icon-orange`, `icon-pink`; names must stay exactly these, iOS remembers the user's choice by name) | `synq-dev`: the same arrows, dark on amber (rendered by `apps/mobile/assets/icons/render-dev-icon.swift`) |
 
 EAS project `df86bb9d-1587-48b7-a40e-85a09eee2a72` (the production
-project). Version 3.3.0 (3.0.0 shipped as build 102, 3.1.0 as build 103, 3.2.0 as build 105); build numbers continue above 99 (EAS remote
+project). Version 3.4.0 (3.0.0 shipped as build 102, 3.1.0 as build 103, 3.2.0 as build 105, 3.3.0 as build 106); build numbers continue above 99 (EAS remote
 versioning; its counter still reads 1 and must be set to 99 before the
 first store build, see `apps/mobile/README.md`). Runtime version `ios-1`,
 set by hand like Vera's. Both variants are on Shawn's Apple team, signed

@@ -2,7 +2,10 @@ import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { buildSync } from "esbuild";
 
-import { AUDIO_TYPES } from "../src/features/import/clean-tags.ts";
+import {
+  AUDIO_TYPES,
+  VIDEO_EXTENSIONS,
+} from "../src/features/import/clean-tags.ts";
 
 const IMPORT = path.join(import.meta.dirname, "../src/features/import");
 const SOURCE = path.join(IMPORT, "transfer-page-source");
@@ -49,7 +52,8 @@ function bundleScript(extensions: string[], logo: string) {
  * as the source of the module the app imports. See docs/ui.md → Import.
  */
 export function buildTransferPage() {
-  const extensions = Object.keys(AUDIO_TYPES);
+  // As `TRANSFER_EXTENSIONS`, which reads this page.
+  const extensions = [...Object.keys(AUDIO_TYPES), ...VIDEO_EXTENSIONS];
   const logo = `data:image/png;base64,${readFileSync(path.join(SOURCE, "logo.png")).toString("base64")}`;
   const accept = extensions.map((extension) => `.${extension}`).join(",");
   const style = fill(read("style.css"), "./logo.png", logo);

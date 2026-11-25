@@ -1,8 +1,15 @@
-import { AUDIO_TYPES } from "./clean-tags.ts";
+import { AUDIO_TYPES, VIDEO_EXTENSIONS } from "./clean-tags.ts";
 import { TRANSFER_PAGE } from "./transfer-page.generated.ts";
 
-/** The extensions Wi-Fi Transfer accepts (the server checks them too). */
-export const TRANSFER_EXTENSIONS = Object.keys(AUDIO_TYPES);
+/**
+ * The extensions Wi-Fi Transfer accepts (the server checks them too): audio,
+ * and videos, whose sound imports. A binary without `extractAudio` takes a
+ * video, and the batch reports it as one that couldn't be imported.
+ */
+export const TRANSFER_EXTENSIONS = [
+  ...Object.keys(AUDIO_TYPES),
+  ...VIDEO_EXTENSIONS,
+];
 
 /**
  * The native server puts the live state here as it serves the page, so the

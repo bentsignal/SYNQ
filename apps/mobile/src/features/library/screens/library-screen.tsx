@@ -27,6 +27,7 @@ import {
   openImport,
   openLibraryScreen,
   openNewPlaylist,
+  VIDEO_IMPORT,
 } from "../links";
 import { useLibraryQuery } from "../queries";
 
@@ -127,6 +128,14 @@ function LibraryToolbar() {
           >
             Import Folder
           </Stack.Toolbar.MenuAction>
+          {VIDEO_IMPORT ? (
+            <Stack.Toolbar.MenuAction
+              icon="video"
+              onPress={() => openImport("video")}
+            >
+              Import from Video
+            </Stack.Toolbar.MenuAction>
+          ) : null}
           <Stack.Toolbar.MenuAction
             icon="wifi"
             onPress={() => openImport("wifi")}

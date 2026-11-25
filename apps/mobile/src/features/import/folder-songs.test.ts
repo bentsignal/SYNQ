@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
 import type { FolderEntry } from "./folder-songs.ts";
+import { audioExtension, isVideo } from "./clean-tags.ts";
 import { findFolderSongs } from "./folder-songs.ts";
 
 /** A folder in a test: file names, and folders by name. */
@@ -28,9 +29,11 @@ function nested(depth: number) {
   });
 }
 
-function find(tree: Tree) {
-  return findFolderSongs({ path: "", tree }, (folder) =>
-    list(folder.tree, folder.path),
+function find(tree: Tree, imports?: (name: string) => boolean) {
+  return findFolderSongs(
+    { path: "", tree },
+    (folder) => list(folder.tree, folder.path),
+    imports,
   );
 }
 
@@ -47,6 +50,28 @@ void describe("findFolderSongs", () => {
       ["/single.m4a", "/Album A/01 One.mp3", "/Album B/Disc/01 Deep.flac"],
     );
     assert.equal(found.notDownloaded, 0);
+  });
+
+  void test("takes videos only when asked to", () => {
+    const tree = {
+      ".Clip.mov.icloud": null,
+      "Leak.MOV": null,
+      "song.mp3": null,
+    };
+    assert.deepEqual(
+      find(tree).songs.map((song) => song.name),
+      ["song.mp3"],
+    );
+    assert.equal(find(tree).notDownloaded, 0);
+    const withVideos = find(
+      tree,
+      (name) => audioExtension(name) !== null || isVideo(name),
+    );
+    assert.deepEqual(
+      withVideos.songs.map((song) => song.name),
+      ["Leak.MOV", "song.mp3"],
+    );
+    assert.equal(withVideos.notDownloaded, 1);
   });
 
   void test("lists songs in the order Files shows them", () => {

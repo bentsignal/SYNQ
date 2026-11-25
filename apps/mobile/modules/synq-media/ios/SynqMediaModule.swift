@@ -2,8 +2,9 @@ import ExpoModulesCore
 import UIKit
 
 /// SYNQ's media helpers: reading imported audio (tags, duration, artwork),
-/// writing library covers, retagging exported copies, staging backups, and
-/// the Wi-Fi Transfer server. JavaScript: `src/features/media/native.ts`.
+/// writing library covers, retagging exported copies, staging backups,
+/// picking videos and extracting their sound, and the Wi-Fi Transfer server.
+/// JavaScript: `src/features/media/native.ts`.
 public class SynqMediaModule: Module {
   private var server: TransferServer?
   private var transferLive = TransferLiveState()
@@ -78,6 +79,21 @@ public class SynqMediaModule: Module {
         SquarePhotoPicker.show { promise.resolve($0) }
       }
     }.runOnQueue(.main)
+
+    // Newer than the module: JavaScript checks for these.
+    AsyncFunction("pickVideos") { (directoryUrl: URL, promise: Promise) in
+      MainActor.assumeIsolated {
+        VideoPicker.show(directory: directoryUrl) { promise.resolve($0) }
+      }
+    }.runOnQueue(.main)
+
+    AsyncFunction("extractAudio") { (videoUrl: URL, destinationUrl: URL) async throws in
+      try await AudioExtractor.extract(video: videoUrl, destination: destinationUrl)
+    }
+
+    AsyncFunction("writeVideoFrame") { (videoUrl: URL, imageUrl: URL) async -> Bool in
+      await AudioExtractor.frame(video: videoUrl, destination: imageUrl)
+    }
 
     AsyncFunction("confirmTyped") {
       (title: String, message: String, phrase: String, confirmTitle: String, promise: Promise) in

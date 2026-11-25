@@ -23,10 +23,35 @@ export const PICKER_TYPES = [
   "audio/x-wav",
 ];
 
+/** Videos whose sound SYNQ imports, as an M4A file (`extractAudio`). */
+export const VIDEO_EXTENSIONS = ["3gp", "m4v", "mov", "mp4"];
+
+/** What the document picker adds when this build can extract sound. */
+export const VIDEO_PICKER_TYPES = ["video/*"];
+
+function stripExtension(fileName: string) {
+  return fileName.replace(/\.[a-z0-9]+$/i, "");
+}
+
+/** "Song.MP3" → "mp3"; null without one. */
+export function fileExtension(fileName: string) {
+  return /\.([a-z0-9]+)$/i.exec(fileName)?.[1]?.toLowerCase() ?? null;
+}
+
+/** Whether a file is a video, whose sound is what gets imported. */
+export function isVideo(fileName: string) {
+  const extension = fileExtension(fileName);
+  return extension !== null && VIDEO_EXTENSIONS.includes(extension);
+}
+
+/** "Clip.mov" → "Clip.m4a": the name a video's sound is stored under. */
+export function extractedAudioName(fileName: string) {
+  return `${stripExtension(fileName)}.m4a`;
+}
+
 export function audioExtension(fileName: string) {
-  const match = /\.([a-z0-9]+)$/i.exec(fileName);
-  const extension = match?.[1]?.toLowerCase();
-  return extension !== undefined && extension in AUDIO_TYPES
+  const extension = fileExtension(fileName);
+  return extension !== null && extension in AUDIO_TYPES
     ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Checked against AUDIO_TYPES' keys on this line.
       (extension as AudioExtension)
     : null;
@@ -67,10 +92,6 @@ export function parseTrack(value: string | null) {
 function present(value: string | null) {
   const trimmed = value?.trim() ?? "";
   return trimmed === "" ? null : trimmed;
-}
-
-function stripExtension(fileName: string) {
-  return fileName.replace(/\.[a-z0-9]+$/i, "");
 }
 
 /**

@@ -3,19 +3,23 @@ import * as DocumentPicker from "expo-document-picker";
 
 import type { ImportSource } from "./pipeline";
 import { track } from "~/features/analytics/analytics";
-import { PICKER_TYPES } from "./clean-tags";
+import { videoImportAvailable } from "~/features/media/native";
+import { PICKER_TYPES, VIDEO_PICKER_TYPES } from "./clean-tags";
 import { addImportSources } from "./session";
 
 /**
- * Opens the Files picker for audio (several at once). The picked files are
- * copied into the cache, which the import moves into the library. An empty
- * list means the picker was cancelled.
+ * Opens the Files picker for audio, and videos when this build can extract
+ * their sound (several at once). The picked files are copied into the
+ * cache, which the import moves into the library. An empty list means the
+ * picker was cancelled.
  */
 async function pickAudioFiles() {
   const result = await DocumentPicker.getDocumentAsync({
     copyToCacheDirectory: true,
     multiple: true,
-    type: PICKER_TYPES,
+    type: videoImportAvailable()
+      ? [...PICKER_TYPES, ...VIDEO_PICKER_TYPES]
+      : PICKER_TYPES,
   });
   if (result.canceled) return [];
   // Unique across picks, and across launches.

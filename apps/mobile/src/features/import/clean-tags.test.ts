@@ -5,6 +5,8 @@ import {
   audioExtension,
   audioMimeType,
   cleanTags,
+  extractedAudioName,
+  isVideo,
   parseTrack,
   parseYear,
   splitTrackPrefix,
@@ -80,4 +82,16 @@ void test("knows the audio types by extension", () => {
   assert.equal(audioExtension("notes.txt"), null);
   assert.equal(audioMimeType("a.m4a", "audio/x-m4a"), "audio/mp4");
   assert.equal(audioMimeType("a.ogg", "audio/ogg"), "audio/ogg");
+});
+
+void test("imports a video's sound under the video's name", () => {
+  assert.equal(isVideo("RPReplay_Final1763.MOV"), true);
+  assert.equal(isVideo("clip.mp4"), true);
+  assert.equal(isVideo("Song.m4a"), false);
+  assert.equal(isVideo("video"), false);
+  assert.equal(extractedAudioName("03 Leak.mov"), "03 Leak.m4a");
+  assert.equal(
+    cleanTags(extractedAudioName("03 Leak.mov"), NO_TAGS).title,
+    "Leak",
+  );
 });

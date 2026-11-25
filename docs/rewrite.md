@@ -93,7 +93,7 @@ fields need it.
   embedded artwork), writes covers (`cover_full.jpg` ≤1500 px and
   `cover_small.jpg` ≤200 px, center-cropped square), splices new tag blocks
   into export copies, remuxes the M4A files TypeScript can't tag (passthrough
-  export),
+  export), picks videos from Photos and writes their sound to M4A files,
   hard-links the library for backups, and runs Wi-Fi Transfer's HTTP server
   (Network.framework; uploads stream to disk, and a Server-Sent Events stream
   gives the page a live link to the phone; docs/ui.md → Import). No file passes

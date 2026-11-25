@@ -44,7 +44,8 @@ SYNQ 3.0 is completely free (Shawn, October 2026). There is no Premium
 tier, paywall, or ad, and nothing is locked: import is unlimited and
 immediate, and export, backup, themes, and app icons are open to everyone.
 RevenueCat (`react-native-purchases`) and Facebook's SDK
-(`react-native-fbsdk-next`) are gone; PostHog stays. A 2.5.2 user's
+(`react-native-fbsdk-next`) are gone, and so is PostHog (Shawn, November
+2026): the app sends no analytics. A 2.5.2 user's
 premium status no longer matters, and whatever theme and icon they had
 stays. Paid cloud services may come one day, priced differently, but
 nothing in the app anticipates them. The App Store side waits for launch
@@ -76,8 +77,7 @@ Expo SDK 57, React Native 0.86.3 (New Architecture), React 19, React
 Compiler, expo-router (`NativeTabs` from `expo-router/unstable-native-tabs`,
 native stacks), `@expo/ui` (SwiftUI), `expo-symbols`, Uniwind (Tailwind 4),
 `@legendapp/list`, Reanimated 4.5, `expo-image`, `expo-sqlite` + Drizzle,
-TanStack Query for reading the library, `posthog-react-native`,
-`expo-updates`.
+TanStack Query for reading the library, `expo-updates`.
 
 From Vera's native setup, SYNQ carries the iOS 27 search tab patch
 (`patches/react-native-screens@4.26.2.patch`) and the UIScene life cycle
@@ -103,9 +103,7 @@ fields need it.
   module that sent files as base64 JSON.
 - Tags are read and written in TypeScript (`src/features/media`, node-tested):
   ID3, FLAC, M4A's iTunes atoms, and WAV. See [audio-tags.md](audio-tags.md).
-- **react-native-zip-archive** for backups (zip64, SSZipArchive);
-  **posthog-react-native** with `expo-application`, `expo-device`, and
-  `expo-localization` for its device properties.
+- **react-native-zip-archive** for backups (zip64, SSZipArchive).
 
 ## Variants
 
@@ -506,9 +504,8 @@ Native first, then SYNQ's tone on top:
 - Player, mini player, queue with drag reordering, shuffle, repeat.
 - Settings: theme accent, app icon, haptics, backup / restore / erase,
   review, support and social links.
-- PostHog events as in 2.5.2, less the paywall and purchase ones.
 - Not carried over: Premium, the paywall, Restore Purchases, the audio ad,
-  the import wait, and Facebook's SDK (see "Free").
+  the import wait, Facebook's SDK, and PostHog's analytics (see "Free").
 
 ## Launch day
 

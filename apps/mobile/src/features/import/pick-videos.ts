@@ -2,7 +2,6 @@ import { Alert } from "react-native";
 import { Directory, Paths } from "expo-file-system";
 
 import type { ImportSource } from "./pipeline";
-import { track } from "~/features/analytics/analytics";
 import { synqMedia } from "~/features/media/native";
 import { addImportSources } from "./session";
 
@@ -38,7 +37,6 @@ async function pickVideos() {
 export function importFromVideo() {
   if (picking) return;
   picking = true;
-  track("import_video");
   pickVideos().then(
     (sources) => {
       picking = false;

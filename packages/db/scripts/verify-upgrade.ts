@@ -54,7 +54,7 @@ const LEGACY_ROOTS = [
 const NEW_FILE =
   /^Documents\/SQLite\/(library|preferences)\.db(-wal|-shm|-journal)?$/;
 
-/** PostHog's own files (2.5.2's and 3.0's SDKs both write them): not library data. */
+/** PostHog's own files (2.5.2's SDK wrote them): not library data. */
 const ANALYTICS_FILE = /^(\.posthog-rn\.json|posthog\.)/;
 
 /**

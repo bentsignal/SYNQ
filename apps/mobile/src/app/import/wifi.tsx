@@ -8,7 +8,6 @@ import { labelsHidden } from "@expo/ui/swift-ui/modifiers";
 import type { WifiTransferState } from "~/features/import/wifi-transfer";
 import { EmptyState } from "~/components/empty-state";
 import { SymbolIcon } from "~/components/symbol-icon";
-import { track } from "~/features/analytics/analytics";
 import { onTransferStart } from "~/features/import/session";
 import { displayAddress } from "~/features/import/transfer-link";
 import {
@@ -121,7 +120,6 @@ export default function ImportWifiScreen() {
   // eslint-disable-next-line no-restricted-syntax -- Opening this sheet is what first starts the server (the prompt mustn't come at launch), and its listener must go when the sheet does, however it closes.
   useEffect(() => {
     openWifiTransfer();
-    track("import_wifi");
     return onTransferStart(() => router.back());
   }, [router]);
 

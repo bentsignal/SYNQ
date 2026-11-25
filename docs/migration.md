@@ -174,8 +174,7 @@ it: 3.0 is free, so a theme someone chose stays.
 - `LegacyImportError` `target-not-empty` means `library.db` already has
   data but no `legacy_import` row. That should be impossible with the order
   above. Report it; don't overwrite.
-- Warnings are informational. Send their codes and counts (not names) to
-  analytics so real-world data problems are visible.
+- Warnings are informational.
 
 ### Restoring a 2.5.2 backup zip
 

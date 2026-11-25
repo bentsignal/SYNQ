@@ -17,7 +17,6 @@ import {
 
 import type { ThemeId } from "~/features/preferences/themes";
 import { SymbolIcon } from "~/components/symbol-icon";
-import { track } from "~/features/analytics/analytics";
 import { setPreference, usePreference } from "~/features/preferences/store";
 import { THEMES } from "~/features/preferences/themes";
 import { contactSupport } from "~/features/support/contact-support";
@@ -84,10 +83,9 @@ export function AppearanceSection() {
   const router = useRouter();
   const theme = usePreference("theme");
   const appIcon = useAppIcon();
-  function choose(id: ThemeId, name: string) {
+  function choose(id: ThemeId) {
     if (id === theme) return;
     selectionTick();
-    track("theme_change", { theme: name });
     setPreference("theme", id);
   }
   return (
@@ -99,7 +97,7 @@ export function AppearanceSection() {
             color={option.accent}
             name={option.name}
             selected={theme === option.id}
-            onPress={() => choose(option.id, option.name)}
+            onPress={() => choose(option.id)}
           />
         ))}
       </UIRow>
@@ -141,7 +139,6 @@ export function LibrarySection() {
 }
 
 function openSocial(url: string) {
-  track("social_press", { url });
   void Linking.openURL(url);
 }
 

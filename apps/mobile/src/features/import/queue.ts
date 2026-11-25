@@ -48,8 +48,6 @@ export interface ImportQueueDeps {
     appeared: Promise<unknown>;
     isImporting: () => boolean;
   }) => void;
-  /** A batch where nothing imported is done. */
-  onNothingImported: () => void;
   reportFailures: (names: readonly string[]) => void;
 }
 
@@ -95,7 +93,6 @@ let deps = queueDeps({
   clearStaging: () => undefined,
   discard: () => undefined,
   onFinished: () => undefined,
-  onNothingImported: () => undefined,
   read: notInstalled,
   refreshLibrary: notInstalled,
   reportFailures: () => undefined,
@@ -162,7 +159,7 @@ function beginActivity() {
  * library. Says once which files failed, and may ask for a review if none did.
  */
 function finishBatch() {
-  const { failed, imported, total } = state.batch;
+  const { failed, imported } = state.batch;
   const { received } = state.transfer;
   stopCapsule();
   const names = failedNames;
@@ -175,8 +172,6 @@ function finishBatch() {
       isImporting: () => capsuleTimer !== undefined,
       received,
     });
-  } else if (total > 0) {
-    deps.onNothingImported();
   }
   clearStaging();
   if (names.length > 0) deps.reportFailures(names);

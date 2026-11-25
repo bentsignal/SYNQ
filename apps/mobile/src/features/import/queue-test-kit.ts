@@ -30,7 +30,6 @@ export function setup(failing: readonly string[] = []) {
   const log = {
     added: new Array<string>(),
     finished: new Array<{ imported: number; failed: number }>(),
-    nothing: 0,
     refreshes: 0,
     reported: new Array<readonly string[]>(),
     staged: 0,
@@ -47,9 +46,6 @@ export function setup(failing: readonly string[] = []) {
     discard: () => undefined,
     onFinished: ({ failed, imported }) =>
       log.finished.push({ failed, imported }),
-    onNothingImported: () => {
-      log.nothing += 1;
-    },
     read: () => Promise.resolve(READ),
     refreshLibrary: () => {
       log.refreshes += 1;

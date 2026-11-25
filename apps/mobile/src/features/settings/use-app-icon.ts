@@ -3,7 +3,6 @@ import { Alert } from "react-native";
 import Constants from "expo-constants";
 
 import type { AppIconName } from "~/features/app-icon/app-icon";
-import { track } from "~/features/analytics/analytics";
 import {
   APP_ICONS,
   appIconsAvailable,
@@ -34,9 +33,6 @@ export function chooseAppIcon(name: AppIconName) {
   const previous = snapshot();
   if (name === previous) return;
   selectionTick();
-  track("app_icon_change", {
-    icon: APP_ICONS.find((icon) => icon.name === name)?.label ?? name,
-  });
   // It reads as chosen at once, and goes back if iOS refuses.
   setAppIcon(name).catch(() => {
     Alert.alert("Couldn't Change App Icon", "Try again.");

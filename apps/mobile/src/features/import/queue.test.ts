@@ -123,7 +123,7 @@ void describe("a batch", () => {
     addImportSources([source("a")]);
     await advance(CAPSULE_MIN_MS);
     assert.equal(log.refreshes, 0);
-    assert.equal(log.nothing, 1);
+    assert.deepEqual(log.finished, []);
     assert.deepEqual(log.reported, [["a"]]);
   });
 });
@@ -223,7 +223,7 @@ void describe("a transfer that ends early", () => {
     await advance(SETTLED_MS);
     assert.deepEqual(log.reported, []);
     assert.equal(log.refreshes, 0);
-    assert.equal(log.nothing, 0);
+    assert.deepEqual(log.finished, []);
     assert.equal(getImportState().shown.total, 0);
   });
 

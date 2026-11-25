@@ -63,7 +63,6 @@ void describe("a batch waiting on a download or a folder", () => {
     await advance(0);
     assert.equal(getImportState().shown.total, 0);
     assert.equal(log.refreshes, 0);
-    assert.equal(log.nothing, 0);
     assert.deepEqual(log.finished, []);
   });
 

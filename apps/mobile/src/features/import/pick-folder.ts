@@ -2,7 +2,6 @@ import { Alert } from "react-native";
 import { Directory, File, Paths } from "expo-file-system";
 
 import type { FolderEntry } from "./folder-songs";
-import { track } from "~/features/analytics/analytics";
 import { videoImportAvailable } from "~/features/media/native";
 import { audioExtension, fileExtension, isVideo } from "./clean-tags";
 import { findFolderSongs } from "./folder-songs";
@@ -148,7 +147,6 @@ function isCancel(error: unknown) {
 export function importFromFolder() {
   if (picking) return;
   picking = true;
-  track("import_folder");
   Directory.pickDirectoryAsync().then(
     (folder) => {
       picking = false;

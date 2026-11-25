@@ -29,29 +29,8 @@ export default function Privacy() {
 
       <h2>Analytics</h2>
       <p>
-        The App Store version of SYNQ sends usage events to PostHog, an
-        analytics service. These include:
-      </p>
-      <ul>
-        <li>
-          features used, such as starting an import or an export, and opening
-          the app
-        </li>
-        <li>
-          how many songs an import added, and the theme or app icon chosen
-        </li>
-        <li>
-          a random ID created by the app, which isn&apos;t tied to your name or
-          Apple ID
-        </li>
-        <li>device and app details, such as the iOS version and app version</li>
-        <li>your IP address, as part of any connection to the service</li>
-      </ul>
-      <p>
-        They never include your song titles, file names or music. We use them to
-        see how the app is used and to improve it. We don&apos;t sell this data
-        or use it for advertising, and SYNQ doesn&apos;t track you across other
-        apps or websites.
+        SYNQ doesn&apos;t collect analytics or usage data, and doesn&apos;t
+        track you across other apps or websites.
       </p>
 
       <h2>App updates</h2>
@@ -63,13 +42,16 @@ export default function Privacy() {
       <h2>Earlier versions</h2>
       <p>
         Versions before 3.0 also used RevenueCat for purchases and the Facebook
-        SDK. SYNQ 3.0 removes both.
+        SDK. SYNQ 3.0 removes both. Until November 2026, SYNQ also sent usage
+        events to PostHog, an analytics service: features used, such as starting
+        an import, with a random ID that isn&apos;t tied to your name or Apple
+        ID. They never included your song titles, file names or music.
       </p>
 
       <h2>Deleting your data</h2>
       <p>
         Deleting the app removes your library and its settings from your iPhone.
-        To ask about analytics data, email us.
+        To ask about usage data earlier versions sent, email us.
       </p>
 
       <h2>Children</h2>

@@ -2,7 +2,6 @@ import { Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 
 import type { ImportSource } from "./pipeline";
-import { track } from "~/features/analytics/analytics";
 import { videoImportAvailable } from "~/features/media/native";
 import { PICKER_TYPES, VIDEO_PICKER_TYPES } from "./clean-tags";
 import { addImportSources } from "./session";
@@ -44,7 +43,6 @@ let picking = false;
 export function importFromFiles() {
   if (picking) return;
   picking = true;
-  track("import_files");
   pickAudioFiles().then(
     (sources) => {
       picking = false;

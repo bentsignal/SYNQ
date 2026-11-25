@@ -124,10 +124,10 @@ profile (the team's registered iPhones).
   `CAGradientLayer` mask. Optional: the title clips without it.
 - `modules/synq-backdrop`: the player's moving backdrop, in Metal, and the
   read of a cover behind it (`src/features/player/README.md` → Backdrop).
-- `src/features/import`, `export`, `backup`, `settings`, `analytics`:
+- `src/features/import`, `export`, `backup`, `settings`:
   Import from Files and Wi-Fi Transfer, Export (`exportSongs`, and
-  `exportAlbum`, `exportPlaylist`, `exportArtist` as zips), Backup & Restore, the Settings tab, and `track`
-  ([docs/analytics.md](../../docs/analytics.md)).
+  `exportAlbum`, `exportPlaylist`, `exportArtist` as zips), Backup & Restore,
+  and the Settings tab.
 - `src/features/import/transfer-page-source`: Wi-Fi Transfer's web page, in HTML,
   CSS, and browser TypeScript. After changing it, run
   `pnpm build:transfer-page` and commit

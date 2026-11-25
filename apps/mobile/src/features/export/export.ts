@@ -17,7 +17,6 @@ import {
 import { documentFile, fileIn } from "@synq/db/expo";
 
 import type { SongTags } from "~/features/media/song-tags";
-import { track } from "~/features/analytics/analytics";
 import { pathOf, withZipProgress } from "~/features/backup/backup";
 import {
   getBookkeeping,
@@ -322,7 +321,6 @@ async function shareFile(song: SongListItem) {
  * Resolves when the sheet closes.
  */
 export async function exportSongs(songIds: readonly number[]) {
-  track("export_song");
   const songs = songsById(songIds);
   const [only] = songs;
   if (only !== undefined && songs.length === 1) {
@@ -338,7 +336,6 @@ export async function exportSongs(songIds: readonly number[]) {
 
 /** Exports a playlist as a zip named after it, its songs numbered in its order. */
 export async function exportPlaylist(playlistId: number) {
-  track("export_playlist");
   const db = libraryDb();
   const playlist = getPlaylist(db, playlistId);
   const songs = listPlaylistSongs(db, playlistId);
@@ -349,7 +346,6 @@ export async function exportPlaylist(playlistId: number) {
 
 /** Exports an album as a zip named after it, its tracks numbered in track order. */
 export async function exportAlbum(albumId: number) {
-  track("export_album");
   const db = libraryDb();
   const album = getAlbum(db, albumId);
   const songs = listAlbumTracks(db, albumId);
@@ -360,7 +356,6 @@ export async function exportAlbum(albumId: number) {
 
 /** Exports an artist's songs as a zip named after them. */
 export async function exportArtist(artistId: number) {
-  track("export_artist");
   const db = libraryDb();
   const artist = getArtist(db, artistId);
   await shareZip(
